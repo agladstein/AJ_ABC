@@ -875,209 +875,80 @@ def main():
 
 	####
 
-	for line in list_regions:
-		
-		res=[]
+	chr=1
+	for chr_number in range(1,chr+1):
+		print 'running chr'+str(chr_number)
 
-		####From the file with the info about the regions, get the chr number, start of the region and the region number, and the length to simulate
-		array=string.split(line,'\t')
-		chr=array[0]
-		start=array[1]
-		end=array[2]
-		region=array[3]
-		#print 'REGION', region,
-		length=array[4]
-		recomb_file='region_'+str(region)+'_chr'+str(chr)+'_trunc.txt'
-	
-		##flag to tell if there are Affy SNPS on the region
-		flag_snps=array[5]
-		#print 'SNPS in regions', flag_snps
-	
+		res=[]
+		
 		#flag to check if the nb of asc SNPs is the same as the nb of Affy SNPs
 		flag_nb_asc_snps=0
-	
-		########
-	
-		if (int(flag_snps)==1): ###there are Affy snps in the region, so I have to run simulations of the regions until I get the number of sites I need 
-		
-			print 'Affy SNPs in region!!'
-		
-			snp_file='/rsgrps/mfh3/Consuelo/macsSWIG_Trees_July2015/regions_1KG_NAT_AXIOM_LAT_bim_files/region_'+str(region)+'_chr'+str(chr)+'_axiom.bim'
-		
-			####Get the positions of the SNPs that are on the chip 
-			fileSNP=open(snp_file,'r') 
-			#print "read SNP file"
-			SNP=[]
-			for line in fileSNP:
-				SNP.append(line)
-			fileSNP.close()
 
-			###get sites from snp array #each element of snps is an array of the positions of the snps on that region
-			#print "get sites from snp array"
-			snps=[]
-			for line_snp in SNP:
-				columns=line_snp.split('\t')
-				snps.append(int(columns[3]))
+		snp_file='/rsgrps/mfh3/Consuelo/macsSWIG_Trees_July2015/regions_1KG_NAT_AXIOM_LAT_bim_files/region_'+str(region)+'_chr'+str(chr)+'_axiom.bim'
 		
-			print 'nb Affy snps', len(snps) 
-			nb_affy_snps=len(snps)
-			#print snps
+		####Get the positions of the SNPs that are on the chip 
+		fileSNP=open(snp_file,'r') 
+		#print "read SNP file"
+		SNP=[]
+		for line in fileSNP:
+			SNP.append(line)
+		fileSNP.close()
+
+		###get sites from snp array #each element of snps is an array of the positions of the snps on that region
+		#print "get sites from snp array"
+		snps=[]
+		for line_snp in SNP:
+			columns=line_snp.split('\t')
+			snps.append(int(columns[3]))
+		
+		print 'nb Array snps', len(snps) 
+		nb_affy_snps=len(snps)
+		#print snps
 	
-			##flag to check if the simulation work (generate the number of file
-			flag_sim=False
-			rep=1
+		##flag to check if the simulation work (generate the number of file
+		flag_sim=False
+		rep=1
 		
-			while flag_sim==False:
+		while flag_sim==False:
 				
-				#print 'rep', rep
+			#print 'rep', rep
 		
-				#####Run simulations 
-				sim=run_sim(parameters,case,length,dir,recomb_file)
-
-				##number of segregating sites
-				nbss=sim.getNumSites()
-				print 'number sites in simulation', nbss
-
-				##alleles will have all the information of all the simulated sites for all the pops
-				#sites in each row 
-				alleles=[]
-				for x in xrange(0,nbss):
-					loc=[]
-					for m in xrange(0,total):
-						loc.append(sim.getSite(x,m))
-					alleles.append(loc)
-				#print 'total number of sites:',len(alleles) #number of elements in alleles
-				#print 'total number of chromosomes:',len(alleles[0])	
-	
-				##get position of the simulated sites and scale it to the "real" position in the SNP chip 
-				pos=[]
-				for i in xrange(nbss):
-					position=round(sim.getPosition(i)*(float(length))+float(start))
-					pos.append(position)
-				
-				del sim
-
-				#########get data from the simulations
-				Talleles=zip(*alleles)
-	
-				###Get data from the simulations 
-				seqAf=Talleles[0:total_naf]
-				#print 'seqAf'
-				#print len(seqAf)
-				seqEu=Talleles[total_naf:total_naf+total_neu]
-				seqAs=Talleles[total_naf+total_neu:total_naf+total_neu+total_nas]
-			
-				####CGI data
-				seqAfCGI=seqAf[:naf_CGI]
-				#print 'seqAfCGI'
-				#print len(seqAfCGI)
-				seqEuCGI=seqEu[:neu_CGI]
-				#print 'seqEuCGI'
-				#print len(seqEuCGI)
-				seqAsCGI=seqAs[:nas_CGI]
-				#print 'seqAsCGI'
-				#print len(seqAsCGI)
-			
-				####Discovery subset 
-				seqAf_ds=seqAf[naf_CGI:total_naf]
-				#print 'seqAf_ds'
-				#print len(seqAf_ds)
-				seqEu_ds=seqEu[neu_CGI:total_neu]
-				#print 'seqEu_ds'
-				#print len(seqEu_ds)
-				seqAs_ds=seqAs[nas_CGI:total_nas]
-				#print 'seqAs_ds'
-				#print len(seqAs_ds)
-
-				#####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
-				asc_panel=[]
-				asc_panel.extend(seqAf_ds)
-				asc_panel.extend(seqEu_ds)
-				asc_panel.extend(seqAs_ds)
-	
-				#print asc_panel	
-				Tasc_panel=zip(*asc_panel)
-				print 'number of sites in Tasc_panel:',len(Tasc_panel)
-				print 'number of chromosomes in Tasc_panel:',len(Tasc_panel[0])
-				#print Tasc_panel
-	
-				#######Array with the available sites given the frequency cut off
-				##array with the frequency of all the simulated snps
-				sites_freq=[]
-				##array with the available sites, that pass the frequency cut-off
-				avail_sites=[] ##this one has the positions of the snps
-				index_avail_sites=[] ##this one has the indexes of the snps
-	
-				for n in xrange(len(Tasc_panel)):
-					freq_site=float(Tasc_panel[n][0:len(asc_panel)].count('1'))/float(len(asc_panel))
-					if freq_site>=daf and freq_site<=1-daf:
-						sites_freq.append(freq_site)
-						avail_sites.append(pos[n])
-						index_avail_sites.append(n)
-					
-				#print sites_freq
-				#print 'nb avail sites', len(avail_sites)
-				#print index_avail_sites
-					
-				nb_avail_sites=len(avail_sites)
-				#print 'nb avail and seg sites', nb_avail_sites
-			
-				#print 'index_avail_sites', index_avail_sites		
-	
-				if (nb_avail_sites>=len(snps)):
-					flag_sim=True
-				
-				else:
-					flag_sim=False
-					rep=rep+1
-				
-
-		######## 
-
-		elif(int(flag_snps)==0):###No Affy SNPs in the region, so run simulation normally
-		
-			print 'No Affy SNPs in region!!'
-		
-			#####Run simulations
+			#####Run simulations 
 			sim=run_sim(parameters,case,length,dir,recomb_file)
 
-			##number of segregating sites 
+			##number of segregating sites
 			nbss=sim.getNumSites()
-			#print 'number sites in simulation', nbss
+			print 'number sites in simulation', nbss
 
 			##alleles will have all the information of all the simulated sites for all the pops
-			#sites in each row
+			#sites in each row 
 			alleles=[]
 			for x in xrange(0,nbss):
 				loc=[]
 				for m in xrange(0,total):
-					loc.append(sim.getSite(x,m))
-				alleles.append(loc)
+				       	loc.append(sim.getSite(x,m))
+			       	alleles.append(loc)
 			#print 'total number of sites:',len(alleles) #number of elements in alleles
-			#print 'total number of chromosomes:',len(alleles[0])	
-
-			##get position of the simulated sites and scale it to the "real" position in the SNP chip 
+		       	#print 'total number of chromosomes:',len(alleles[0])	
+	
+	       		##get position of the simulated sites and scale it to the "real" position in the SNP chip 
 			pos=[]
 			for i in xrange(nbss):
 				position=round(sim.getPosition(i)*(float(length))+float(start))
 				pos.append(position)
-			
+				
 			del sim
 
 			#########get data from the simulations
 			Talleles=zip(*alleles)
-
-			###Get data from the simulations
+	
+			###Get data from the simulations 
 			seqAf=Talleles[0:total_naf]
 			#print 'seqAf'
 			#print len(seqAf)
 			seqEu=Talleles[total_naf:total_naf+total_neu]
-			#print 'seqEu'
-			#print len(seqEu)
 			seqAs=Talleles[total_naf+total_neu:total_naf+total_neu+total_nas]
-			#print 'seqAs'
-			#print len(seqAs)
-				
+			
 			####CGI data
 			seqAfCGI=seqAf[:naf_CGI]
 			#print 'seqAfCGI'
@@ -1088,6 +959,60 @@ def main():
 			seqAsCGI=seqAs[:nas_CGI]
 			#print 'seqAsCGI'
 			#print len(seqAsCGI)
+			
+			####Discovery subset 
+			seqAf_ds=seqAf[naf_CGI:total_naf]
+			#print 'seqAf_ds'
+			#print len(seqAf_ds)
+			seqEu_ds=seqEu[neu_CGI:total_neu]
+			#print 'seqEu_ds'
+			#print len(seqEu_ds)
+			seqAs_ds=seqAs[nas_CGI:total_nas]
+			#print 'seqAs_ds'
+			#print len(seqAs_ds)
+
+			#####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
+			asc_panel=[]
+			asc_panel.extend(seqAf_ds)
+			asc_panel.extend(seqEu_ds)
+			asc_panel.extend(seqAs_ds)
+	
+			#print asc_panel	
+			Tasc_panel=zip(*asc_panel)
+			print 'number of sites in Tasc_panel:',len(Tasc_panel)
+			print 'number of chromosomes in Tasc_panel:',len(Tasc_panel[0])
+			#print Tasc_panel
+	
+			#######Array with the available sites given the frequency cut off
+			##array with the frequency of all the simulated snps
+			sites_freq=[]
+			##array with the available sites, that pass the frequency cut-off
+			avail_sites=[] ##this one has the positions of the snps
+			index_avail_sites=[] ##this one has the indexes of the snps
+	
+			for n in xrange(len(Tasc_panel)):
+			       	freq_site=float(Tasc_panel[n][0:len(asc_panel)].count('1'))/float(len(asc_panel))
+			       	if freq_site>=daf and freq_site<=1-daf:
+			       		sites_freq.append(freq_site)
+			       		avail_sites.append(pos[n])
+			       		index_avail_sites.append(n)
+					
+			#print sites_freq
+			#print 'nb avail sites', len(avail_sites)
+			#print index_avail_sites
+					
+			nb_avail_sites=len(avail_sites)
+			#print 'nb avail and seg sites', nb_avail_sites
+			
+			#print 'index_avail_sites', index_avail_sites		
+	
+			if (nb_avail_sites>=len(snps)):
+				flag_sim=True
+				
+			else:
+				flag_sim=False
+				rep=rep+1
+				
 
 
 		#######################
@@ -1138,365 +1063,311 @@ def main():
 			res.extend(pri_sha_h(seqEuCGI,seqAsCGI))		
 			#print 'len(res)', len(res)
 
-		#print 'Done calculating ss from regions'
+		print 'Done calculating ss from chomosomes'
 		############
 
 	
-		##If no Affy SNPs then no case in making the discovery set and ascertainment part
-		##Add zeros as summary statistics for all 7 pops
-		##85 in total 
-		##58 from the SFS and haplotypes, and 27 private/shared haplotypes
-		if (int(flag_snps)==0):
+		if flag_sim==False:
+			#print 'the sims did not work'
+			pos_asc=[]
+			pos_asc=index_avail_sites
+			nbss_asc=len(pos_asc)
+			#print 'nbss_asc', nbss_asc
 		
-			#print 'Adding zeros to res'
+		if (len(avail_sites)==len(snps)):
+			#print "number of avail_sites is equal to the number of Affy snps"
+			pos_asc=[]
+			pos_asc=index_avail_sites
+			nbss_asc=len(pos_asc)
+			#print pos_asc
+			flag_nb_asc_snps=1
 			
-			for i in xrange(58):
-				res.append(0)
+		elif (len(avail_sites)>len(snps)):
+			
+			pos_asc=[None]*int(len(snps)) ##indexes of the SNPs that pass the frequency cut-off and position
+			for i in xrange(len(snps)): #each snp on the snp array on a chromosome
+				## y is the position of the SNPs in the array
+				y=snps[i]
+				## find the closest SNP in the array
+				closestleft=find2(avail_sites,y)
+				#print 'closestleft', closestleft, avail_sites[closestleft]
 		
-			##shared and private haplotypes
-			res.append(1)
-			res.append(0)
-			res.append(0)
-			
-			res.append(1)
-			res.append(0)
-			res.append(0)
-			
-			res.append(1)
-			res.append(0)
-			res.append(0)
-			
-			res.append(1)
-			res.append(0)
-			res.append(0)
-			
-			res.append(1)
-			res.append(0)
-			res.append(0)
-			
-			res.append(1)
-			res.append(0)
-			res.append(0)
-			
-			res.append(1)
-			res.append(0)
-			res.append(0)
+				if(i>0 and pos_asc[i-1]==closestleft and closestleft+1<len(avail_sites)): ##avoid duplicates
+					#print 'duplicate 1'
+					closestleft=closestleft+1 ##move one position to the right
+					#print 'new closestleft', closestleft, avail_sites[closestleft]
+					pos_asc[i]=closestleft
+					
+				elif(i>0 and pos_asc[i-1]>closestleft and pos_asc[i-1]+1<len(avail_sites)):
+					#print 'duplicate 2'
+					closestleft=pos_asc[i-1]+1
+					#print 'new closestleft', closestleft, avail_sites[closestleft]
+					pos_asc[i]=closestleft
+					
+				else:
+					pos_asc[i]=closestleft
+				
+				#print 'after checking for dupl', pos_asc[i]
+				###if I have duplicates at this point, it means that there were not anyt more snps to choose from
+				###closestleft+1 or pos_asc[i-1]+1 == len(avail_sites)
+
 		
-			res.append(1)
-			res.append(0)
-			res.append(0)
+			#print 'before smoothing'	
+			#print pos_asc
 			
-			res.append(1)
-			res.append(0)
-			res.append(0)
+			#####smoothing
+			##last index of the pos_asc 
+			i=len(pos_asc)-1
+			#print 'last i', i
 		
-			print 'len(res)', len(res)
-			cont=cont+1
-	
-		################# 
+			##check if there is another position that might work better
+			for j in xrange(0,i):
+				if(j==i-1 and pos_asc[j]+1<pos_asc[j+1] and pos_asc[j]<(len(avail_sites)-1) and (j+1)<len(avail_sites)):
+					d1=abs(snps[j]-avail_sites[pos_asc[j]])
+					d2=abs(snps[j]-avail_sites[pos_asc[j]+1])
+					if(d2<d1):
+						pos_asc[j]=pos_asc[j]+1
 			
-		elif (int(flag_snps)==1): ###find SNPs in the available array (find left most close SNP to the Affy SNPs)	
-	
-			if flag_sim==False:
-				#print 'the sims did not work'
-				pos_asc=[]
-				pos_asc=index_avail_sites
-				nbss_asc=len(pos_asc)
-				#print 'nbss_asc', nbss_asc
-		
-			if (len(avail_sites)==len(snps)):
-				#print "number of avail_sites is equal to the number of Affy snps"
-				pos_asc=[]
-				pos_asc=index_avail_sites
-				nbss_asc=len(pos_asc)
-				#print pos_asc
+			#print 'after smoothing'				
+			#print pos_asc
+			##removes duplicates 
+			pos_asc=(list(set(pos_asc)))
+			pos_asc.sort()
+			#print 'check for duplicates ', pos_asc
+			
+			##might need to put this at the end of this part again
+			nbss_asc=len(pos_asc)
+			#print 'number of ascertained SNPs:',nbss_asc
+			#print 'position of ascertained SNPs:', pos_asc
+			
+			if (len(snps)==nbss_asc):
 				flag_nb_asc_snps=1
-			
-			elif (len(avail_sites)>len(snps)):
-			
-				pos_asc=[None]*int(len(snps)) ##indexes of the SNPs that pass the frequency cut-off and position
-				for i in xrange(len(snps)): #each snp on the snp array on a chromosome
-					## y is the position of the SNPs in the array
-					y=snps[i]
-					##find the closest SNP in the array
-					closestleft=find2(avail_sites,y)
-					#print 'closestleft', closestleft, avail_sites[closestleft]
-		
-					if(i>0 and pos_asc[i-1]==closestleft and closestleft+1<len(avail_sites)): ##avoid duplicates
-						#print 'duplicate 1'
-						closestleft=closestleft+1 ##move one position to the right
-						#print 'new closestleft', closestleft, avail_sites[closestleft]
-						pos_asc[i]=closestleft
+				#print 'nb of asc snps equal to nb affy snps'
+				
+			if (len(snps)!=len(pos_asc)):
+				flag_nb_asc_snps=0
+				#print 'nb of asc snps not equal to nb affy snps'
+				
+				diff=int(len(snps)-len(pos_asc))
+				#print 'diff', diff
+				
+				for m in xrange(1,diff+1):
+					#print 'm', m
 					
-					elif(i>0 and pos_asc[i-1]>closestleft and pos_asc[i-1]+1<len(avail_sites)):
-						#print 'duplicate 2'
-						closestleft=pos_asc[i-1]+1
-						#print 'new closestleft', closestleft, avail_sites[closestleft]
-						pos_asc[i]=closestleft
-						
+					pos_asc2=[]
+					
+					#print 'avail_sites', avail_sites
+					#print 'nb_avail_sites', nb_avail_sites
+					
+					pos_asc2=add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_affy_snps)
+					
+					pos_asc=pos_asc2
+					
+					#print 'new len of pos_asc', len(pos_asc)
+					#print pos_asc
+					nbss_asc=len(pos_asc)
+				
+					if nbss_asc==len(snps):
+						flag_nb_asc_snps=1
+						break
+					
 					else:
-						pos_asc[i]=closestleft
+						flag_nb_asc_snps=0
+						
+			if (flag_nb_asc_snps==0): ##it means that the 1st index in pos_asc is 0; and the last is len(avail_sites)-1
 				
-					#print 'after checking for dupl', pos_asc[i]
-					###if I have duplicates at this point, it means that there were not anyt more snps to choose from
-					###closestleft+1 or pos_asc[i-1]+1 == len(avail_sites)
-
-		
-				#print 'before smoothing'	
-				#print pos_asc
-			
-				#####smoothing
-				##last index of the pos_asc 
-				i=len(pos_asc)-1
-				#print 'last i', i
-		
-				##check if there is another position that might work better
-				for j in xrange(0,i):
-					if(j==i-1 and pos_asc[j]+1<pos_asc[j+1] and pos_asc[j]<(len(avail_sites)-1) and (j+1)<len(avail_sites)):
-						d1=abs(snps[j]-avail_sites[pos_asc[j]])
-						d2=abs(snps[j]-avail_sites[pos_asc[j]+1])
-						if(d2<d1):
-							pos_asc[j]=pos_asc[j]+1
-			
-				#print 'after smoothing'				
-				#print pos_asc
-				##removes duplicates 
-				pos_asc=(list(set(pos_asc)))
+				#print 'asc snps still missing'
+				
+				diff=int(len(snps)-len(pos_asc))
+				#print 'diff', diff
+				
+				while (len(pos_asc)!=len(snps)):
+					rand_numb=randint(0,len(avail_sites)-1)
+					#print 'random',rand_numb
+				
+					if rand_numb not in pos_asc:
+						pos_asc.append(rand_numb)
+						
+				
+				#print 'pos_asc', pos_asc
 				pos_asc.sort()
-				#print 'check for duplicates ', pos_asc
-			
-				##might need to put this at the end of this part again
-				nbss_asc=len(pos_asc)
-				#print 'number of ascertained SNPs:',nbss_asc
-				#print 'position of ascertained SNPs:', pos_asc
-			
-				if (len(snps)==nbss_asc):
-					flag_nb_asc_snps=1
-					#print 'nb of asc snps equal to nb affy snps'
-				
-				if (len(snps)!=len(pos_asc)):
-					flag_nb_asc_snps=0
-					#print 'nb of asc snps not equal to nb affy snps'
-				
-					diff=int(len(snps)-len(pos_asc))
-					#print 'diff', diff
-				
-					for m in xrange(1,diff+1):
-						#print 'm', m
-					
-						pos_asc2=[]
-					
-						#print 'avail_sites', avail_sites
-						#print 'nb_avail_sites', nb_avail_sites
-					
-						pos_asc2=add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_affy_snps)
-				
-						pos_asc=pos_asc2
-					
-						#print 'new len of pos_asc', len(pos_asc)
-						#print pos_asc
-						nbss_asc=len(pos_asc)
-				
-						if nbss_asc==len(snps):
-							flag_nb_asc_snps=1
-							break
-						
-						else:
-							flag_nb_asc_snps=0
-						
-				if (flag_nb_asc_snps==0): ##it means that the 1st index in pos_asc is 0; and the last is len(avail_sites)-1
-				
-					#print 'asc snps still missing'
-				
-					diff=int(len(snps)-len(pos_asc))
-					#print 'diff', diff
-				
-					while (len(pos_asc)!=len(snps)):
-						rand_numb=randint(0,len(avail_sites)-1)
-						#print 'random',rand_numb
-				
-						if rand_numb not in pos_asc:
-							pos_asc.append(rand_numb)
-						
-				
-					#print 'pos_asc', pos_asc
-					pos_asc.sort()
-					#print 'pos_asc', pos_asc
-					nbss_asc=len(pos_asc)	
+				#print 'pos_asc', pos_asc
+				nbss_asc=len(pos_asc)	
 		
+		############
+		##Transpose the data
+		TseqAf=zip(*seqAfCGI)
+		#print 'len(TseqAf)', len(TseqAf)
+		TseqEu=zip(*seqEuCGI)
+		#print 'len(TseqEu)', len(TseqEu)
+		TseqAs=zip(*seqAsCGI)
+		#print 'len(TseqAs)', len(TseqAs)
+		
+		seqAJ=Talleles[total_naf+total_neu+total_nas:total_naf+total_neu+total_nas+n_aj]
+		#print 'len(seqAJ)', len(seqAJ)
+		TseqAJ=zip(*seqAJ)
+		#print 'len(TseqAJ)', len(TseqAJ)
+				
+
+		###get genotypes for pseudo array 
+		allelesAf_asc=[]
+		allelesEu_asc=[]
+		allelesAs_asc=[]
+		
+		allelesAJ_asc=[]
+				
+		##get the ascertained SNPs in the populations of interest
+		if (nbss_asc==len(index_avail_sites)):
+			for x in xrange(nbss_asc):
+				allelesAf_asc.append(TseqAf[pos_asc[x]])
+				allelesEu_asc.append(TseqEu[pos_asc[x]])
+				allelesAs_asc.append(TseqAs[pos_asc[x]])				
+				allelesAJ_asc.append(TseqAJ[pos_asc[x]])
+		
+		elif (len(index_avail_sites)>nbss_asc):
+			for x in xrange(len(pos_asc)):
+				allelesAf_asc.append(TseqAf[index_avail_sites[pos_asc[x]]])
+				allelesEu_asc.append(TseqEu[index_avail_sites[pos_asc[x]]])
+				allelesAs_asc.append(TseqAs[index_avail_sites[pos_asc[x]]])				
+				allelesAJ_asc.append(TseqAJ[index_avail_sites[pos_asc[x]]])
+			
+		#print 'len allelesAf_asc', len(allelesAf_asc)
+		#print 'len allelesAf_asc[0]', len(allelesAf_asc[0])
+
+		#print 'len allelesEu_asc', len(allelesEu_asc)
+		#print 'len allelesEu_asc[0]', len(allelesEu_asc[0])
+
+		#print 'len allelesAs_asc', len(allelesAs_asc)
+		#print 'len allelesAs_asc[0]', len(allelesAs_asc[0])
+
+		#print 'len allelesAJ_asc', len(allelesAJ_asc)
+		#print 'len allelesAJ_asc[0]', len(allelesAJ_asc[0])
+
+			
+		###Genotypes for the ascertained SNPs
+		seqAf_asc=zip(*allelesAf_asc)
+		#print 'len(seqAf_asc)', len(seqAf_asc)
+		#print seqAf_asc
+		seqEu_asc=zip(*allelesEu_asc)
+		#print 'len(seqEu_asc)', len(seqEu_asc)
+		seqAs_asc=zip(*allelesAs_asc)
+		#print 'len(seqAs_asc)', len(seqAs_asc)
+
+		seqAJ_asc=zip(*allelesAJ_asc)
+		#print 'len(seqAJ_asc)', len(seqAJ_asc)
+		#print seqAJ_asc
+
+				
+		#######
+		#########calculate summary stats from the ascertained SNPs
+		if nbss_asc>0:
+		
+			Af_asc=[]
+			ss_Af_asc=base_S_ss(seqAf_asc,nbss_asc)
+			if (ss_Af_asc[0]==0):
+				#print "zeros"
+				for i in xrange(5):
+					Af_asc.append(0)
+				pi_Af_asc=0
+			else:
+				Af_asc.extend(base_S_ss(seqAf_asc,nbss_asc))
+				#print Af_asc
+				pi_Af_asc=Pi2(Af_asc[3],len(seqAf_asc))
+				Af_asc.append(pi_Af_asc)
+				Af_asc.append(Tajimas(pi_Af_asc,Af_asc[0],len(seqAf_asc)))
+				del(Af_asc[3])
+			
+			res.extend(Af_asc)
+			#print 'len(res)', len(res)
 			############
-			##Transpose the data
-			TseqAf=zip(*seqAfCGI)
-			#print 'len(TseqAf)', len(TseqAf)
-			TseqEu=zip(*seqEuCGI)
-			#print 'len(TseqEu)', len(TseqEu)
-			TseqAs=zip(*seqAsCGI)
-			#print 'len(TseqAs)', len(TseqAs)
-		
-			seqAJ=Talleles[total_naf+total_neu+total_nas:total_naf+total_neu+total_nas+n_aj]
-			#print 'len(seqAJ)', len(seqAJ)
-			TseqAJ=zip(*seqAJ)
-			#print 'len(TseqAJ)', len(TseqAJ)
+			
+			Eu_asc=[]
+			ss_Eu_asc=base_S_ss(seqEu_asc,nbss_asc)
+			if (ss_Eu_asc[0]==0):
+				#print "zeros"
+				for i in xrange(5):
+					Eu_asc.append(0)
+				pi_Eu_asc=0
+			else:
+				Eu_asc.extend(base_S_ss(seqEu_asc,nbss_asc))
+				#print Eu_asc
+				pi_Eu_asc=Pi2(Eu_asc[3],len(seqEu_asc)) 
+				Eu_asc.append(pi_Eu_asc)
+				Eu_asc.append(Tajimas(pi_Eu_asc,Eu_asc[0],len(seqEu_asc)))
+				del(Eu_asc[3])
+			
+			res.extend(Eu_asc)
+			#print 'len(res)', len(res)
+			###########
+			
+			As_asc=[]
+			ss_As_asc=base_S_ss(seqAs_asc,nbss_asc)
+			if (ss_As_asc[0]==0):
+			       	#print "zeros"
+				for i in xrange(5):
+					As_asc.append(0)
+				pi_As_asc=0
+			else:
+			       	As_asc.extend(base_S_ss(seqAs_asc,nbss_asc))
+			       	#print As_asc
+				pi_As_asc=Pi2(As_asc[3],len(seqAs_asc))
+				As_asc.append(pi_As_asc)
+				As_asc.append(Tajimas(pi_As_asc,As_asc[0],len(seqAs_asc)))
+				del(As_asc[3])
+			
+			res.extend(As_asc)
+			#print 'len(res)', len(res)
+			############
+			
+			AJ_asc=[]
+			ss_AJ_asc=base_S_ss(seqAJ_asc,nbss_asc)
+			if (ss_AJ_asc[0]==0):
+			       	#print "zeros"
+				for i in xrange(5):
+					AJ_asc.append(0)
+				pi_AJ_asc=0
+			else:
+				AJ_asc.extend(base_S_ss(seqAJ_asc,nbss_asc))
+				pi_AJ_asc=Pi2(AJ_asc[3],len(seqAJ_asc))
+				AJ_asc.append(pi_AJ_asc)
+				AJ_asc.append(Tajimas(pi_AJ_asc,AJ_asc[0],len(seqAJ_asc)))
+				del(AJ_asc[3])
+			
+			res.extend(AJ_asc)
+			#print 'len(res)', len(res)
+			#############
+			
+			##fst between populations
+			res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqEu_asc,pi_Eu_asc,neu_CGI))
+			res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqAs_asc,pi_As_asc,nas_CGI))
+			res.append(FST2(seqEu_asc,pi_Eu_asc,neu_CGI,seqAs_asc,pi_As_asc,nas_CGI))
 				
-
-			###get genotypes for pseudo array 
-			allelesAf_asc=[]
-			allelesEu_asc=[]
-			allelesAs_asc=[]
-		
-			allelesAJ_asc=[]
-				
-			##get the ascertained SNPs in the populations of interest
-			if (nbss_asc==len(index_avail_sites)):
-				for x in xrange(nbss_asc):
-					allelesAf_asc.append(TseqAf[pos_asc[x]])
-					allelesEu_asc.append(TseqEu[pos_asc[x]])
-					allelesAs_asc.append(TseqAs[pos_asc[x]])				
-					allelesAJ_asc.append(TseqAJ[pos_asc[x]])
-		
-			elif (len(index_avail_sites)>nbss_asc):
-				for x in xrange(len(pos_asc)):
-					allelesAf_asc.append(TseqAf[index_avail_sites[pos_asc[x]]])
-					allelesEu_asc.append(TseqEu[index_avail_sites[pos_asc[x]]])
-					allelesAs_asc.append(TseqAs[index_avail_sites[pos_asc[x]]])				
-					allelesAJ_asc.append(TseqAJ[index_avail_sites[pos_asc[x]]])
-			
-			#print 'len allelesAf_asc', len(allelesAf_asc)
-			#print 'len allelesAf_asc[0]', len(allelesAf_asc[0])
-
-			#print 'len allelesEu_asc', len(allelesEu_asc)
-			#print 'len allelesEu_asc[0]', len(allelesEu_asc[0])
-
-			#print 'len allelesAs_asc', len(allelesAs_asc)
-			#print 'len allelesAs_asc[0]', len(allelesAs_asc[0])
-
-			#print 'len allelesAJ_asc', len(allelesAJ_asc)
-			#print 'len allelesAJ_asc[0]', len(allelesAJ_asc[0])
-
-			
-			###Genotypes for the ascertained SNPs
-			seqAf_asc=zip(*allelesAf_asc)
-			#print 'len(seqAf_asc)', len(seqAf_asc)
-			#print seqAf_asc
-			seqEu_asc=zip(*allelesEu_asc)
-			#print 'len(seqEu_asc)', len(seqEu_asc)
-			seqAs_asc=zip(*allelesAs_asc)
-			#print 'len(seqAs_asc)', len(seqAs_asc)
-
-			seqAJ_asc=zip(*allelesAJ_asc)
-			#print 'len(seqAJ_asc)', len(seqAJ_asc)
-			#print seqAJ_asc
-
-				
-			#######
-			#########calculate summary stats from the ascertained SNPs
-			if nbss_asc>0:
-		
-				Af_asc=[]
-				ss_Af_asc=base_S_ss(seqAf_asc,nbss_asc)
-				if (ss_Af_asc[0]==0):
-					#print "zeros"
-					for i in xrange(5):
-						Af_asc.append(0)
-					pi_Af_asc=0
-				else:
-					Af_asc.extend(base_S_ss(seqAf_asc,nbss_asc))
-					#print Af_asc
-					pi_Af_asc=Pi2(Af_asc[3],len(seqAf_asc))
-					Af_asc.append(pi_Af_asc)
-					Af_asc.append(Tajimas(pi_Af_asc,Af_asc[0],len(seqAf_asc)))
-					del(Af_asc[3])
-			
-				res.extend(Af_asc)
-				#print 'len(res)', len(res)
-				############
-			
-				Eu_asc=[]
-				ss_Eu_asc=base_S_ss(seqEu_asc,nbss_asc)
-				if (ss_Eu_asc[0]==0):
-					#print "zeros"
-					for i in xrange(5):
-						Eu_asc.append(0)
-					pi_Eu_asc=0
-				else:
-					Eu_asc.extend(base_S_ss(seqEu_asc,nbss_asc))
-					#print Eu_asc
-					pi_Eu_asc=Pi2(Eu_asc[3],len(seqEu_asc)) 
-					Eu_asc.append(pi_Eu_asc)
-					Eu_asc.append(Tajimas(pi_Eu_asc,Eu_asc[0],len(seqEu_asc)))
-					del(Eu_asc[3])
-			
-				res.extend(Eu_asc)
-				#print 'len(res)', len(res)
-				###########
-			
-				As_asc=[]
-				ss_As_asc=base_S_ss(seqAs_asc,nbss_asc)
-				if (ss_As_asc[0]==0):
-					#print "zeros"
-					for i in xrange(5):
-						As_asc.append(0)
-					pi_As_asc=0
-				else:
-					As_asc.extend(base_S_ss(seqAs_asc,nbss_asc))
-					#print As_asc
-					pi_As_asc=Pi2(As_asc[3],len(seqAs_asc))
-					As_asc.append(pi_As_asc)
-					As_asc.append(Tajimas(pi_As_asc,As_asc[0],len(seqAs_asc)))
-					del(As_asc[3])
-			
-				res.extend(As_asc)
-				#print 'len(res)', len(res)
-				############
-			
-				AJ_asc=[]
-				ss_AJ_asc=base_S_ss(seqAJ_asc,nbss_asc)
-				if (ss_AJ_asc[0]==0):
-					#print "zeros"
-					for i in xrange(5):
-						AJ_asc.append(0)
-					pi_AJ_asc=0
-				else:
-					AJ_asc.extend(base_S_ss(seqAJ_asc,nbss_asc))
-					pi_AJ_asc=Pi2(AJ_asc[3],len(seqAJ_asc))
-					AJ_asc.append(pi_AJ_asc)
-					AJ_asc.append(Tajimas(pi_AJ_asc,AJ_asc[0],len(seqAJ_asc)))
-					del(AJ_asc[3])
-			
-				res.extend(AJ_asc)
-				#print 'len(res)', len(res)
-				#############
-			
-				##fst between populations
-				res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqEu_asc,pi_Eu_asc,neu_CGI))
-				res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqAs_asc,pi_As_asc,nas_CGI))
-				res.append(FST2(seqEu_asc,pi_Eu_asc,neu_CGI,seqAs_asc,pi_As_asc,nas_CGI))
-				
-				res.append(FST2(seqAJ_asc,pi_AJ_asc,n_aj,seqEu_asc,pi_Eu_asc,neu_CGI))
-				#print 'len(res) FST', len(res)
+			res.append(FST2(seqAJ_asc,pi_AJ_asc,n_aj,seqEu_asc,pi_Eu_asc,neu_CGI))
+			#print 'len(res) FST', len(res)
 	
-				##get haplotype stats with data WITH SINGLETONS
-				res.extend(base_h_ss(seqAf_asc))
-				res.extend(base_h_ss(seqEu_asc))
-				res.extend(base_h_ss(seqAs_asc))
+			##get haplotype stats with data WITH SINGLETONS
+			res.extend(base_h_ss(seqAf_asc))
+			res.extend(base_h_ss(seqEu_asc))
+			res.extend(base_h_ss(seqAs_asc))
 				
-				res.extend(base_h_ss(seqAJ_asc))
-				#print 'len(res) hap', len(res)
+			res.extend(base_h_ss(seqAJ_asc))
+			#print 'len(res) hap', len(res)
 
-				##shared and private haplotypes with data WITH SINGLETONS
-				res.extend(pri_sha_h(seqAf_asc,seqEu_asc))
-				res.extend(pri_sha_h(seqAf_asc,seqAs_asc))
-				res.extend(pri_sha_h(seqEu_asc,seqAs_asc))
+			##shared and private haplotypes with data WITH SINGLETONS
+			res.extend(pri_sha_h(seqAf_asc,seqEu_asc))
+			res.extend(pri_sha_h(seqAf_asc,seqAs_asc))
+			res.extend(pri_sha_h(seqEu_asc,seqAs_asc))
 				
-				res.extend(pri_sha_h(seqAJ_asc,seqEu_asc))
-				#print 'len(res) private hap', len(res)
+			res.extend(pri_sha_h(seqAJ_asc,seqEu_asc))
+			#print 'len(res) private hap', len(res)
 			
-				cont=cont+1
-				#print 'AFS!!'
+			cont=cont+1
+			#print 'AFS!!'
 			
-				#print 'len(res) final'
-				#print len(res)	
-					
+			#print 'len(res) final'
+			#print len(res)
+		
+			
 		#######
 		####add summary stats results to numpy matrix for averaging across regions
 		if 'NA' not in res:
