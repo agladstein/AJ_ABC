@@ -1076,14 +1076,14 @@ def main():
 
 	
 		if flag_sim==False:
-			#print 'the sims did not work'
+			print 'the sims did not work'
 			pos_asc=[]
 			pos_asc=index_avail_sites
 			nbss_asc=len(pos_asc)
 			#print 'nbss_asc', nbss_asc
 		
 		if (len(avail_sites)==len(snps)):
-			#print "number of avail_sites is equal to the number of Array snps"
+			print "number of avail_sites is equal to the number of Array snps"
 			pos_asc=[]
 			pos_asc=index_avail_sites
 			nbss_asc=len(pos_asc)
@@ -1092,6 +1092,7 @@ def main():
 			
 		
 		elif (len(avail_sites)>len(snps)):
+			print "number of avail_sites greater than number of Array snps"
 			pos_asc=[None]*int(len(snps)) ##indexes of the SNPs that pass the frequency cut-off and position
 			for i in xrange(len(snps)): #each snp on the snp array on a chromosome
 				## y is the position of the SNPs in the array
@@ -1149,11 +1150,11 @@ def main():
 	
 			if (len(snps)==nbss_asc):
 				flag_nb_asc_snps=1
-				#print 'nb of asc snps equal to nb affy snps'
+				print 'nb of asc snps equal to nb array snps'
 		
 			if (len(snps)!=len(pos_asc)):
 				flag_nb_asc_snps=0
-				#print 'nb of asc snps not equal to nb affy snps'
+				print 'nb of asc snps not equal to nb array snps'
 		
 				diff=int(len(snps)-len(pos_asc))
 				#print 'diff', diff
@@ -1199,8 +1200,6 @@ def main():
 				nbss_asc=len(pos_asc)
 
 
-		return
-			
 		############
 		##Transpose the data
 		TseqAf=zip(*seqAfCGI)
@@ -1210,45 +1209,65 @@ def main():
 		TseqAs=zip(*seqAsCGI)
 		#print 'len(TseqAs)', len(TseqAs)
 		
-		seqAJ=Talleles[total_naf+total_neu+total_nas:total_naf+total_neu+total_nas+n_aj]
-		#print 'len(seqAJ)', len(seqAJ)
-		TseqAJ=zip(*seqAJ)
-		#print 'len(TseqAJ)', len(TseqAJ)
-				
+		seqJ=Talleles[total_naf+total_neu+total_nas:total_naf+total_neu+total_nas+nJ]
+		#print 'len(seqJ)', len(seqJ)
+		TseqJ=zip(*seqJ)
+		#print 'len(TseqJ)', len(TseqJ)
+		
+		seqM=Talleles[total_naf+total_neu+total_nas+nJ:total_naf+total_neu+total_nas+nJ+nM]
+		#print 'len(seqM)', len(seqM)
+		TseqM=zip(*seqM)
+		#print 'len(TseqM)', len(TseqM)
+
+		seqA=Talleles[total_naf+total_neu+total_nas+nJ+nM:total_naf+total_neu+total_nas+nJ+nM+nA]
+		#print 'len(seqA)', len(seqA)
+		TseqA=zip(*seqA)
+		#print 'len(TseqA)', len(TseqA)
+
+
 
 		###get genotypes for pseudo array 
 		allelesAf_asc=[]
 		allelesEu_asc=[]
 		allelesAs_asc=[]
 		
-		allelesAJ_asc=[]
-				
+		allelesJ_asc=[]
+		allelesM_asc=[]		
+		allelesA_asc=[]
+			
+
 		##get the ascertained SNPs in the populations of interest
 		if (nbss_asc==len(index_avail_sites)):
 			for x in xrange(nbss_asc):
 				allelesAf_asc.append(TseqAf[pos_asc[x]])
 				allelesEu_asc.append(TseqEu[pos_asc[x]])
 				allelesAs_asc.append(TseqAs[pos_asc[x]])				
-				allelesAJ_asc.append(TseqAJ[pos_asc[x]])
+				allelesJ_asc.append(TseqJ[pos_asc[x]])
+				allelesM_asc.append(TseqM[pos_asc[x]])
+				allelesA_asc.append(TseqA[pos_asc[x]])
 		
 		elif (len(index_avail_sites)>nbss_asc):
 			for x in xrange(len(pos_asc)):
 				allelesAf_asc.append(TseqAf[index_avail_sites[pos_asc[x]]])
 				allelesEu_asc.append(TseqEu[index_avail_sites[pos_asc[x]]])
 				allelesAs_asc.append(TseqAs[index_avail_sites[pos_asc[x]]])				
-				allelesAJ_asc.append(TseqAJ[index_avail_sites[pos_asc[x]]])
+				allelesJ_asc.append(TseqJ[index_avail_sites[pos_asc[x]]])
+				allelesM_asc.append(TseqM[index_avail_sites[pos_asc[x]]])
+				allelesA_asc.append(TseqA[index_avail_sites[pos_asc[x]]])
 			
+		
 		#print 'len allelesAf_asc', len(allelesAf_asc)
 		#print 'len allelesAf_asc[0]', len(allelesAf_asc[0])
-
+		
 		#print 'len allelesEu_asc', len(allelesEu_asc)
 		#print 'len allelesEu_asc[0]', len(allelesEu_asc[0])
 
 		#print 'len allelesAs_asc', len(allelesAs_asc)
 		#print 'len allelesAs_asc[0]', len(allelesAs_asc[0])
 
-		#print 'len allelesAJ_asc', len(allelesAJ_asc)
-		#print 'len allelesAJ_asc[0]', len(allelesAJ_asc[0])
+		#print 'len allelesJ_asc', len(allelesJ_asc)
+		#print 'len allelesJ_asc[0]', len(allelesJ_asc[0])
+
 
 			
 		###Genotypes for the ascertained SNPs
@@ -1260,11 +1279,19 @@ def main():
 		seqAs_asc=zip(*allelesAs_asc)
 		#print 'len(seqAs_asc)', len(seqAs_asc)
 
-		seqAJ_asc=zip(*allelesAJ_asc)
-		#print 'len(seqAJ_asc)', len(seqAJ_asc)
-		#print seqAJ_asc
+		seqJ_asc=zip(*allelesJ_asc)
+		#print 'len(seqJ_asc)', len(seqJ_asc)
+		#print seqJ_asc
 
-				
+		seqM_asc=zip(*allelesM_asc)
+                #print 'len(seqM_asc)', len(seqM_asc)
+                #print seqM_asc 
+			
+		seqA_asc=zip(*allelesA_asc)
+		#print 'len(seqA_asc)', len(seqA_asc)                
+		#print seqA_asc
+	
+
 		#######
 		#########calculate summary stats from the ascertained SNPs
 		if nbss_asc>0:
@@ -1286,6 +1313,7 @@ def main():
 			
 			res.extend(Af_asc)
 			#print 'len(res)', len(res)
+
 			############
 			
 			Eu_asc=[]
@@ -1326,38 +1354,82 @@ def main():
 			#print 'len(res)', len(res)
 			############
 			
-			AJ_asc=[]
-			ss_AJ_asc=base_S_ss(seqAJ_asc,nbss_asc)
-			if (ss_AJ_asc[0]==0):
+			J_asc=[]
+			ss_J_asc=base_S_ss(seqJ_asc,nbss_asc)
+			if (ss_J_asc[0]==0):
 			       	#print "zeros"
 				for i in xrange(5):
-					AJ_asc.append(0)
-				pi_AJ_asc=0
+					J_asc.append(0)
+				pi_J_asc=0
 			else:
-				AJ_asc.extend(base_S_ss(seqAJ_asc,nbss_asc))
-				pi_AJ_asc=Pi2(AJ_asc[3],len(seqAJ_asc))
-				AJ_asc.append(pi_AJ_asc)
-				AJ_asc.append(Tajimas(pi_AJ_asc,AJ_asc[0],len(seqAJ_asc)))
-				del(AJ_asc[3])
+				J_asc.extend(base_S_ss(seqJ_asc,nbss_asc))
+				pi_J_asc=Pi2(J_asc[3],len(seqJ_asc))
+				J_asc.append(pi_J_asc)
+				J_asc.append(Tajimas(pi_J_asc,J_asc[0],len(seqJ_asc)))
+				del(J_asc[3])
 			
-			res.extend(AJ_asc)
+			res.extend(J_asc)
+			#print 'len(res)', len(res)
+			############# 
+
+			M_asc=[]
+			ss_M_asc=base_S_ss(seqM_asc,nbss_asc)
+			if (ss_M_asc[0]==0):
+				#print "zeros"
+				for i in xrange(5):
+					M_asc.append(0)
+				pi_M_asc=0
+			else:
+				M_asc.extend(base_S_ss(seqM_asc,nbss_asc))
+				pi_M_asc=Pi2(M_asc[3],len(seqM_asc))
+				M_asc.append(pi_M_asc)
+				M_asc.append(Tajimas(pi_M_asc,M_asc[0],len(seqM_asc)))
+				del(M_asc[3])
+
+			res.extend(M_asc)
 			#print 'len(res)', len(res)
 			#############
 			
+			A_asc=[]
+			ss_A_asc=base_S_ss(seqA_asc,nbss_asc)
+			if (ss_A_asc[0]==0):
+				#print "zeros"
+				for i in xrange(5):
+					A_asc.append(0)
+				pi_A_asc=0
+			else:
+				A_asc.extend(base_S_ss(seqA_asc,nbss_asc))
+				pi_A_asc=Pi2(A_asc[3],len(seqA_asc))
+				A_asc.append(pi_A_asc)
+				A_asc.append(Tajimas(pi_A_asc,A_asc[0],len(seqA_asc)))
+				del(A_asc[3])
+
+			res.extend(A_asc)
+			#print 'len(res)', len(res)
+			#############
+
+
 			##fst between populations
 			res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqEu_asc,pi_Eu_asc,neu_CGI))
 			res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqAs_asc,pi_As_asc,nas_CGI))
 			res.append(FST2(seqEu_asc,pi_Eu_asc,neu_CGI,seqAs_asc,pi_As_asc,nas_CGI))
-				
-			res.append(FST2(seqAJ_asc,pi_AJ_asc,n_aj,seqEu_asc,pi_Eu_asc,neu_CGI))
+
+							
+			res.append(FST2(seqA_asc,pi_A_asc,nA,seqEu_asc,pi_Eu_asc,neu_CGI))
+			res.append(FST2(seqA_asc,pi_A_asc,nA,seqJ_asc,pi_J_asc,nJ))
+			res.append(FST2(seqA_asc,pi_A_asc,nA,seqM_asc,pi_M_asc,nM))
+			res.append(FST2(seqM_asc,pi_M_asc,nM,seqJ_asc,pi_J_asc,nJ))
 			#print 'len(res) FST', len(res)
-	
+
+
 			##get haplotype stats with data WITH SINGLETONS
 			res.extend(base_h_ss(seqAf_asc))
 			res.extend(base_h_ss(seqEu_asc))
 			res.extend(base_h_ss(seqAs_asc))
 				
-			res.extend(base_h_ss(seqAJ_asc))
+			res.extend(base_h_ss(seqJ_asc))
+			res.extend(base_h_ss(seqM_asc))
+			res.extend(base_h_ss(seqA_asc))
 			#print 'len(res) hap', len(res)
 
 			##shared and private haplotypes with data WITH SINGLETONS
@@ -1365,7 +1437,9 @@ def main():
 			res.extend(pri_sha_h(seqAf_asc,seqAs_asc))
 			res.extend(pri_sha_h(seqEu_asc,seqAs_asc))
 				
-			res.extend(pri_sha_h(seqAJ_asc,seqEu_asc))
+			res.extend(pri_sha_h(seqA_asc,seqJ_asc))
+			res.extend(pri_sha_h(seqA_asc,seqM_asc))
+			res.extend(pri_sha_h(seqJ_asc,seqM_asc))
 			#print 'len(res) private hap', len(res)
 			
 			cont=cont+1
@@ -1373,6 +1447,7 @@ def main():
 			
 			#print 'len(res) final'
 			#print len(res)
+
 		
 			
 		#######
@@ -1386,6 +1461,7 @@ def main():
 
 		reg_use=reg_use+1
 
+
 	print 'cont'
 	print cont
 
@@ -1393,13 +1469,14 @@ def main():
 	################
 	#####write parameter values to file 
 
-	#param_file='/xdisk/cdquinto/sim_values_marq/sim_'+str(job)+'_values.txt' #Consuelo's original files
 	param_file='/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/sim_values_testAJ/sim_'+str(job)+'_values.txt'
 	fileoutparam=open(param_file,'w')
 
 	##write parameter values
 	head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tTEU_AS\tTAF\tTgrowth\tLog10_NAJ\tTAJ\n'
 	fileoutparam.write(head_param)
+	
+	print para_out
 
 	for z in range(len(para_out)):
 		if z==(len(para_out)-1):
@@ -1412,7 +1489,6 @@ def main():
 	#####
 	#####
 
-	#filesummary='/xdisk/cdquinto/results_sims_marq/ms_output_'+str(job)+'.summary' #Consuleo's original files
 	filesummary='/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_testAJ/ms_output_'+str(job)+'.summary'
 	filesumm=open(filesummary,'w')
 
