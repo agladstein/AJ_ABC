@@ -717,7 +717,7 @@ def param_sim_asc(): ##get parameter values from the priors
 
 	return [parameters, para_out, case, daf]
 
-def run_sim(parameters,case,length,total,chr_number):
+def run_sim(parameters,case,length,chr_number):
 
 	mu=2.5e-8
 	rho=1e-8
@@ -768,32 +768,32 @@ def run_sim(parameters,case,length,total,chr_number):
 	#############	
 	if case==1:
 
-		macs_args = ['macs',str(total),str(1000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC)]
+		macs_args = ['macs',str(total),str(200000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC)]
 	
 		
 	if case==2:
 
-		macs_args = ['macs',str(total),str(1000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(200000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Taf),'2','1']
 
 	
 	if case==3:
 
-		macs_args = ['macs',str(total),str(1000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(200000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 		
 	if case==4:
 
-		macs_args = ['macs',str(total),str(1000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(200000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==5:
-		macs_args = ['macs',str(total),str(1000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(200000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==6:
 
-		macs_args = ['macs',str(total),str(1000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(200000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==7:
 
-		macs_args = ['macs',str(total),str(1000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(200000),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 
 
@@ -914,7 +914,7 @@ def main():
 		print 'nb Array snps', len(snps) 
 		nb_array_snps=len(snps)
 		#print snps
-
+		
 
 		##flag to check if the simulation work (generate the number of file
 		flag_sim=False
@@ -926,20 +926,21 @@ def main():
 		
 			#####Run simulations 
 			print 'running simulation'
-			sim=run_sim(parameters,case,length,total,chr_number)
+			sim=run_sim(parameters,case,length,chr_number)
 
-			return
 
 			##number of segregating sites
 			nbss=sim.getNumSites()
 			#print 'number sites in simulation', nbss
 
+
 	       		##get position of the simulated sites and scale it to the "real" position in the SNP chip 
 			pos=[]
 			for i in xrange(nbss):
-				position=round(sim.getPosition(i)*(float(length))+float(start))
+				position=round(sim.getPosition(i)*(length))#you have to give the number of the snp
 				pos.append(position)
-				
+
+
 			##alleles will have all the information of all the simulated sites for all the pops
 			#sites in each row 
 			alleles=[]
@@ -954,52 +955,40 @@ def main():
 
 			del sim
 
-			return
 
 			#########get data from the simulations
 			Talleles=zip(*alleles)
 	
 			###Get data from the simulations 
 			seqAf=Talleles[0:total_naf]
-			#print 'seqAf'
-			#print len(seqAf)
 			seqEu=Talleles[total_naf:total_naf+total_neu]
 			seqAs=Talleles[total_naf+total_neu:total_naf+total_neu+total_nas]
 			
+
 			####CGI data
 			seqAfCGI=seqAf[:naf_CGI]
-			#print 'seqAfCGI'
-			#print len(seqAfCGI)
 			seqEuCGI=seqEu[:neu_CGI]
-			#print 'seqEuCGI'
-			#print len(seqEuCGI)
 			seqAsCGI=seqAs[:nas_CGI]
-			#print 'seqAsCGI'
-			#print len(seqAsCGI)
 			
 			####Discovery subset 
 			seqAf_ds=seqAf[naf_CGI:total_naf]
-			#print 'seqAf_ds'
-			#print len(seqAf_ds)
 			seqEu_ds=seqEu[neu_CGI:total_neu]
-			#print 'seqEu_ds'
-			#print len(seqEu_ds)
 			seqAs_ds=seqAs[nas_CGI:total_nas]
-			#print 'seqAs_ds'
-			#print len(seqAs_ds)
 
 			#####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
 			asc_panel=[]
 			asc_panel.extend(seqAf_ds)
 			asc_panel.extend(seqEu_ds)
 			asc_panel.extend(seqAs_ds)
-	
+			
+			
 			#print asc_panel	
 			Tasc_panel=zip(*asc_panel)
 			print 'number of sites in Tasc_panel:',len(Tasc_panel)
 			print 'number of chromosomes in Tasc_panel:',len(Tasc_panel[0])
 			#print Tasc_panel
-	
+			
+
 			#######Array with the available sites given the frequency cut off
 			##array with the frequency of all the simulated snps
 			sites_freq=[]
@@ -1017,12 +1006,12 @@ def main():
 			#print sites_freq
 			#print 'nb avail sites', len(avail_sites)
 			#print index_avail_sites
-					
-			nb_avail_sites=len(avail_sites)
-			#print 'nb avail and seg sites', nb_avail_sites
 			
+			nb_avail_sites=len(avail_sites)
+			print 'nb avail and seg sites', nb_avail_sites
 			#print 'index_avail_sites', index_avail_sites		
-	
+
+
 			if (nb_avail_sites>=len(snps)):
 				flag_sim=True
 				
@@ -1031,10 +1020,9 @@ def main():
 				rep=rep+1
 				
 
-
 		#######################
 		#####Calculate summary statistics from the regions for the CGI data
-		#print 'calculating summary stats of regions'
+		print 'calculating summary stats of regions'
 
 		if nbss>0: ###no segregating sites in the simulations which is not possible
 		
@@ -1044,15 +1032,14 @@ def main():
 			Af_res.append(Tajimas(pi_AfCGI,Af_res[0],len(seqAfCGI)))
 			del(Af_res[3])
 			res.extend(Af_res)
-			#print 'len(res)', len(res)
-					
+			
+
 			Eu_res=[]
 			Eu_res.extend(base_S_ss(seqEuCGI,nbss))
 			pi_EuCGI=Pi2(Eu_res[3],len(seqEuCGI))
 			Eu_res.append(Tajimas(pi_EuCGI,Eu_res[0],len(seqEuCGI)))		
 			del(Eu_res[3])
 			res.extend(Eu_res)
-			#print 'len(res)', len(res)
 
 			As_res=[]
 			As_res.extend(base_S_ss(seqAsCGI,nbss))
@@ -1060,13 +1047,14 @@ def main():
 			As_res.append(Tajimas(pi_AsCGI,As_res[0],len(seqAsCGI)))
 			del(As_res[3])
 			res.extend(As_res)
-			#print 'len(res)', len(res)
 	
+			
 			##fst between populations
 			res.append(FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqEuCGI,pi_EuCGI,neu_CGI))
 			res.append(FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
 			res.append(FST2(seqEuCGI,pi_EuCGI,neu_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
 			#print 'len(res)', len(res)		
+
 
 			##get haplotype stats with data
 			res.extend(base_h_ss(seqAfCGI))
@@ -1074,11 +1062,14 @@ def main():
 			res.extend(base_h_ss(seqAsCGI))
 			#print 'len(res)', len(res)
 		
+
 			##shared and private haplotypes with data
 			res.extend(pri_sha_h(seqAfCGI,seqEuCGI))
 			res.extend(pri_sha_h(seqAfCGI,seqAsCGI))
 			res.extend(pri_sha_h(seqEuCGI,seqAsCGI))		
 			#print 'len(res)', len(res)
+
+
 
 		print 'Done calculating ss from chomosomes'
 		############
@@ -1099,44 +1090,43 @@ def main():
 			#print pos_asc
 			flag_nb_asc_snps=1
 			
+		
 		elif (len(avail_sites)>len(snps)):
-			
 			pos_asc=[None]*int(len(snps)) ##indexes of the SNPs that pass the frequency cut-off and position
 			for i in xrange(len(snps)): #each snp on the snp array on a chromosome
 				## y is the position of the SNPs in the array
 				y=snps[i]
-				## find the closest SNP in the array
+				##find the closest SNP in the array
 				closestleft=find2(avail_sites,y)
 				#print 'closestleft', closestleft, avail_sites[closestleft]
-		
+
 				if(i>0 and pos_asc[i-1]==closestleft and closestleft+1<len(avail_sites)): ##avoid duplicates
 					#print 'duplicate 1'
 					closestleft=closestleft+1 ##move one position to the right
 					#print 'new closestleft', closestleft, avail_sites[closestleft]
 					pos_asc[i]=closestleft
-					
+			
 				elif(i>0 and pos_asc[i-1]>closestleft and pos_asc[i-1]+1<len(avail_sites)):
 					#print 'duplicate 2'
 					closestleft=pos_asc[i-1]+1
 					#print 'new closestleft', closestleft, avail_sites[closestleft]
 					pos_asc[i]=closestleft
-					
+
 				else:
 					pos_asc[i]=closestleft
-				
+		
 				#print 'after checking for dupl', pos_asc[i]
 				###if I have duplicates at this point, it means that there were not anyt more snps to choose from
 				###closestleft+1 or pos_asc[i-1]+1 == len(avail_sites)
 
-		
-			#print 'before smoothing'	
+			#print 'before smoothing'
 			#print pos_asc
-			
-			#####smoothing
-			##last index of the pos_asc 
+
+			#####smoothing 
+			##last index of the pos_asc
 			i=len(pos_asc)-1
 			#print 'last i', i
-		
+
 			##check if there is another position that might work better
 			for j in xrange(0,i):
 				if(j==i-1 and pos_asc[j]+1<pos_asc[j+1] and pos_asc[j]<(len(avail_sites)-1) and (j+1)<len(avail_sites)):
@@ -1144,73 +1134,73 @@ def main():
 					d2=abs(snps[j]-avail_sites[pos_asc[j]+1])
 					if(d2<d1):
 						pos_asc[j]=pos_asc[j]+1
-			
-			#print 'after smoothing'				
+	
+			#print 'after smoothing'
 			#print pos_asc
-			##removes duplicates 
+			##removes duplicates
 			pos_asc=(list(set(pos_asc)))
 			pos_asc.sort()
 			#print 'check for duplicates ', pos_asc
-			
+
 			##might need to put this at the end of this part again
 			nbss_asc=len(pos_asc)
 			#print 'number of ascertained SNPs:',nbss_asc
 			#print 'position of ascertained SNPs:', pos_asc
-			
+	
 			if (len(snps)==nbss_asc):
 				flag_nb_asc_snps=1
-				#print 'nb of asc snps equal to nb array snps'
-				
+				#print 'nb of asc snps equal to nb affy snps'
+		
 			if (len(snps)!=len(pos_asc)):
 				flag_nb_asc_snps=0
-				#print 'nb of asc snps not equal to nb array snps'
-				
+				#print 'nb of asc snps not equal to nb affy snps'
+		
 				diff=int(len(snps)-len(pos_asc))
 				#print 'diff', diff
-				
+		
 				for m in xrange(1,diff+1):
 					#print 'm', m
-					
+			
 					pos_asc2=[]
-					
+			
 					#print 'avail_sites', avail_sites
 					#print 'nb_avail_sites', nb_avail_sites
-					
-					pos_asc2=add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps)
-					
+			
+					pos_asc2=add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_affy_snps)
 					pos_asc=pos_asc2
-					
+			
 					#print 'new len of pos_asc', len(pos_asc)
 					#print pos_asc
 					nbss_asc=len(pos_asc)
-				
+		
 					if nbss_asc==len(snps):
 						flag_nb_asc_snps=1
 						break
-					
+		
 					else:
 						flag_nb_asc_snps=0
-						
+
 			if (flag_nb_asc_snps==0): ##it means that the 1st index in pos_asc is 0; and the last is len(avail_sites)-1
-				
+		
 				#print 'asc snps still missing'
-				
+		
 				diff=int(len(snps)-len(pos_asc))
 				#print 'diff', diff
-				
+		
 				while (len(pos_asc)!=len(snps)):
 					rand_numb=randint(0,len(avail_sites)-1)
 					#print 'random',rand_numb
-				
 					if rand_numb not in pos_asc:
 						pos_asc.append(rand_numb)
-						
-				
+		
 				#print 'pos_asc', pos_asc
 				pos_asc.sort()
 				#print 'pos_asc', pos_asc
-				nbss_asc=len(pos_asc)	
-		
+				nbss_asc=len(pos_asc)
+
+
+		return
+			
 		############
 		##Transpose the data
 		TseqAf=zip(*seqAfCGI)
