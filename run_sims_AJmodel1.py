@@ -744,6 +744,7 @@ def run_sim(parameters,case,length,chr_number):
 	TMJ=float(parameters['TMJ'])
 	Tm=float(parameters['Tm'])
 
+
 	macs_theta=float(mu*4*NANC)
 	macs_rho=float(rho*4*NANC)
 	scaled_NAF=float(NAF/NANC)
@@ -764,6 +765,7 @@ def run_sim(parameters,case,length,chr_number):
 	scaled_TA=float(TA/(4*NANC))
 	scaled_TMJ=float(TMJ/(4*NANC))
 	scaled_Tm=float(Tm/(4*NANC))
+
 			
 	#############	
 	if case==1:
@@ -1256,20 +1258,34 @@ def main():
 				allelesA_asc.append(TseqA[index_avail_sites[pos_asc[x]]])
 			
 		
-		#print 'len allelesAf_asc', len(allelesAf_asc)
-		#print 'len allelesAf_asc[0]', len(allelesAf_asc[0])
+		print 'len allelesAf_asc', len(allelesAf_asc)
+		print 'len allelesAf_asc[0]', len(allelesAf_asc[0])
 		
-		#print 'len allelesEu_asc', len(allelesEu_asc)
-		#print 'len allelesEu_asc[0]', len(allelesEu_asc[0])
+		print 'len allelesEu_asc', len(allelesEu_asc)
+		print 'len allelesEu_asc[0]', len(allelesEu_asc[0])
 
-		#print 'len allelesAs_asc', len(allelesAs_asc)
-		#print 'len allelesAs_asc[0]', len(allelesAs_asc[0])
+		print 'len allelesAs_asc', len(allelesAs_asc)
+		print 'len allelesAs_asc[0]', len(allelesAs_asc[0])
 
-		#print 'len allelesJ_asc', len(allelesJ_asc)
-		#print 'len allelesJ_asc[0]', len(allelesJ_asc[0])
+		print 'len allelesJ_asc', len(allelesJ_asc)
+		print 'len allelesJ_asc[0]', len(allelesJ_asc[0])
 
-
+		print 'len allelesM_asc', len(allelesM_asc)
+		print 'len allelesM_asc[0]', len(allelesM_asc[0])
 			
+		print 'len allelesA_asc', len(allelesA_asc)
+		print 'len allelesA_asc[0]', len(allelesA_asc[0])
+
+
+		####This is not right
+		tped=''
+		for g in range(0,len(pos_asc)):
+			tped=str(chr_number)+' '+'chr'+str(chr_number)+'_'+str(pos_asc[g])+' '+str(int(pos_asc[g]-1))+' '+str(int(pos_asc[g]))
+			print tped
+												  
+															     
+			
+
 		###Genotypes for the ascertained SNPs
 		seqAf_asc=zip(*allelesAf_asc)
 		#print 'len(seqAf_asc)', len(seqAf_asc)
@@ -1282,11 +1298,9 @@ def main():
 		seqJ_asc=zip(*allelesJ_asc)
 		#print 'len(seqJ_asc)', len(seqJ_asc)
 		#print seqJ_asc
-
 		seqM_asc=zip(*allelesM_asc)
                 #print 'len(seqM_asc)', len(seqM_asc)
                 #print seqM_asc 
-			
 		seqA_asc=zip(*allelesA_asc)
 		#print 'len(seqA_asc)', len(seqA_asc)                
 		#print seqA_asc
@@ -1476,8 +1490,11 @@ def main():
 	head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tTEU_AS\tTAF\tTgrowth\tLog10_NAJ\tTAJ\n'
 	fileoutparam.write(head_param)
 	
+
 	print para_out
 
+
+	return
 	for z in range(len(para_out)):
 		if z==(len(para_out)-1):
 			fileoutparam.write("%s\n" % para_out[z])
