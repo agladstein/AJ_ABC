@@ -1294,7 +1294,6 @@ def main():
 				if g<len(pos_asc)-1:
 					ped=ped+' '
 			ped=ped+'\n'
-
 		for m in range(2,int(nM)+2,2):
 			ped=ped+'M '+str(m/2)+'_M 0 0 1 -9 '
 			for g in range(0,len(pos_asc)):
@@ -1312,6 +1311,15 @@ def main():
 		fileped.write(ped)
 		fileped.close()					
 			
+
+		##Make map file
+		filenamemap='macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
+		filemap=open(filenamemap,'a')
+		map=''
+		for g in range(0,len(pos_asc)):
+			map=str(chr_number)+' '+'chr'+str(chr_number)+'_'+str(g)+' '+str(int(pos_asc[g]-1))+' '+str(int(pos_asc[g]))+'\n'
+			filemap.write(map)
+		filemap.close()
 
 		###Genotypes for the ascertained SNPs
 		seqAf_asc=zip(*allelesAf_asc)
