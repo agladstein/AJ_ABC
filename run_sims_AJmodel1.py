@@ -869,23 +869,6 @@ total=total_CGI+total_asc
 def main():
 
 
-	##tfam file
-      	filenametfam='macs_asc_'+str(job)+'.tfam'
-	filetfam=open(filenametfam,'w')
-	tfam=''
-	for e in range(1,int(neu_CGI+2)/2):
-		tfam=tfam+'E '+str(e)+'_E 0 0 1 -9\n'
-	for j in range(1,int(nJ+2)/2):
-		tfam=tfam+'J '+str(j)+'_J 0 0 1 -9\n'
-	for m in range(1,int(nM+2)/2):
-		tfam=tfam+'M '+str(m)+'_M 0 0 1 -9\n'
-	for a in range(1,int(nA+2)/2):
-		tfam=tfam+'A '+str(a)+'_A 0 0 1 -9\n'
-	filetfam.write(tfam)
-       	filetfam.close()
-
-
-
 	###########  
 	#######Summary statistics 
 	chr=2
@@ -1293,34 +1276,41 @@ def main():
 		#print 'len allelesA_asc', len(allelesA_asc)
 		#print 'len allelesA_asc[0]', len(allelesA_asc[0])
 
-
-
-		##Rename tfam file with chromsome
-		if os.path.isfile(filenametfam):
-			os.rename(filenametfam,'macs_asc_'+str(job)+'_chr'+str(chr_number)+'.tfam')
-		filenametfam='macs_asc_'+str(job)+'_chr'+str(chr_number)+'.tfam'
-
-		##Make tped file
-		filenametped='macs_asc_'+str(job)+'_chr'+str(chr_number)+'.tped'
-		filetped=open(filenametped,'a')
-		tped=''
-		for g in range(0,len(pos_asc)):
-			tped=str(chr_number)+' '+'chr'+str(chr_number)+'_'+str(g)+' '+str(int(pos_asc[g]-1))+' '+str(int(pos_asc[g]))
-			for i in range(len(allelesEu_asc[g])):
-				tped=tped+' '+str(int(allelesEu_asc[g-1][i])+1)
-			for i in range(len(allelesJ_asc[g])):
-				tped=tped+' '+str(int(allelesJ_asc[g-1][i])+1)
-			for i in range(len(allelesM_asc[g])):
-				tped=tped+' '+str(int(allelesM_asc[g-1][i])+1)
-			for i in range(len(allelesA_asc[g])):
-				tped=tped+' '+str(int(allelesA_asc[g-1][i])+1)
-			tped=tped+'\n'
-			filetped.write(tped)
-
-		###Not working yet
 		##Make ped file
-		ped=Popen.wait(Popen('~/bin/plink2/plink --tfile macs_asc_'+str(job)+'_chr'+str(chr_number)+' --recode --out macs_asc_'+str(job)+'_chr'+str(chr_number),shell=True))
-															     
+		filenameped='macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
+		fileped=open(filenameped,'w')
+		ped=''
+		for e in range(2,int(neu_CGI)+2,2):
+			ped=ped+'E '+str(e/2)+'_E 0 0 1 -9 '
+			for g in range(0,len(pos_asc)):
+				ped=ped+str(int(allelesEu_asc[g-1][e-2])+1)+' '+str(int(allelesEu_asc[g-1][e-1])+1)
+				if g<len(pos_asc)-1:
+					ped=ped+' '
+			ped=ped+'\n'
+		for j in range(2,int(nJ)+2,2):
+			ped=ped+'J '+str(j/2)+'_J 0 0 1 -9 '
+			for g in range(0,len(pos_asc)):
+				ped=ped+str(int(allelesJ_asc[g-1][j-2])+1)+' '+str(int(allelesJ_asc[g-1][j-1])+1)
+				if g<len(pos_asc)-1:
+					ped=ped+' '
+			ped=ped+'\n'
+
+		for m in range(2,int(nM)+2,2):
+			ped=ped+'M '+str(m/2)+'_M 0 0 1 -9 '
+			for g in range(0,len(pos_asc)):
+				ped=ped+str(int(allelesM_asc[g-1][m-2])+1)+' '+str(int(allelesM_asc[g-1][m-1])+1)
+				if g<len(pos_asc)-1:
+					ped=ped+' '
+			ped=ped+'\n'
+		for a in range(2,int(nA)+2,2):
+			ped=ped+'A '+str(a/2)+'_A 0 0 1 -9 '
+			for g in range(0,len(pos_asc)):
+				ped=ped+str(int(allelesA_asc[g-1][a-2])+1)+' '+str(int(allelesA_asc[g-1][a-1])+1)
+				if g<len(pos_asc)-1:
+					ped=ped+' '
+			ped=ped+'\n'
+		fileped.write(ped)
+		fileped.close()					
 			
 
 		###Genotypes for the ascertained SNPs
