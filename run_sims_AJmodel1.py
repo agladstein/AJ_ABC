@@ -1323,23 +1323,21 @@ def main():
 
 		###Genotypes for the ascertained SNPs
 		seqAf_asc=zip(*allelesAf_asc)
-		#print 'len(seqAf_asc)', len(seqAf_asc)
-		#print seqAf_asc
 		seqEu_asc=zip(*allelesEu_asc)
-		#print 'len(seqEu_asc)', len(seqEu_asc)
 		seqAs_asc=zip(*allelesAs_asc)
-		#print 'len(seqAs_asc)', len(seqAs_asc)
 
 		seqJ_asc=zip(*allelesJ_asc)
-		#print 'len(seqJ_asc)', len(seqJ_asc)
-		#print seqJ_asc
 		seqM_asc=zip(*allelesM_asc)
-                #print 'len(seqM_asc)', len(seqM_asc)
-                #print seqM_asc 
 		seqA_asc=zip(*allelesA_asc)
-		#print 'len(seqA_asc)', len(seqA_asc)                
-		#print seqA_asc
-	
+
+
+		########Use Germline to find IBD on pseduo array ped and map files
+		print 'Running Germline on '+str(filenameped)+' '+str(filenamemap)
+		print 'bash /home/u15/agladstein/bin/phasing_pipeline/gline.sh /home/u15/agladstein/bin/germline-1-5-1/g\
+ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10"'
+
+		germline=Popen.wait(Popen('bash /home/u15/agladstein/bin/phasing_pipeline/gline.sh /home/u15/agladstein/bin/germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10"',shell=True))
+
 
 		#######
 		#########calculate summary stats from the ascertained SNPs
