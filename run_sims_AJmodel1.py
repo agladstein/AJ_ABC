@@ -1339,6 +1339,98 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 		germline=Popen.wait(Popen('bash /home/u15/agladstein/bin/phasing_pipeline/gline.sh /home/u15/agladstein/bin/germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10"',shell=True))
 
 
+		########Get IBD stats from Germline output
+		if os.path.isfile('macs_asc_'+str(job)+'_chr'+str(chr_number)+'.match'):
+			rmped=Popen.wait(Popen('rm '+str(filenameped),shell=True))
+			rmmap=Popen.wait(Popen('rm '+str(filenamemap),shell=True))
+			rmlog=Popen.wait(Popen('rm macs_asc_'+str(job)+'_chr'+str(chr_number)+'.log',shell=True))
+
+			print 'reading Germline IBD output'
+			filegermline=open('macs_asc_'+str(job)+'_chr'+str(chr_number)+'.match','r')
+			IBDlengths_AA=[]
+			IBDlengths_JJ=[]
+			IBDlengths_MM=[]
+			IBDlengths_EE=[]
+			IBDlengths_AE=[]
+			IBDlengths_AJ=[]
+			IBDlengths_AM=[]
+			IBDlengths_JM=[]
+			IBDlengths_JE=[]
+			IBDlengths_ME=[]
+			for line in filegermline:
+				pop1 = line.split()[0]
+				pop2 = line.split()[2]
+				length = float(line.split()[10])
+				pair = str(pop1)+'_'+str(pop2)
+				if pair=='A_A':
+					IBDlengths_AA.append(length)
+				if pair=='J_J':
+					IBDlengths_JJ.append(length)
+				if pair=='M_M':
+					IBDlengths_MM.append(length)
+				if pair=='E_E':
+					IBDlengths_EE.append(length)
+				if pair=='A_E' or pair=='E_A':
+					IBDlengths_AE.append(length)
+				if pair=='A_J' or pair=='J_A':
+					IBDlengths_AJ.append(length)
+				if pair=='A_M' or pair=='M_A':
+					IBDlengths_AM.append(length)
+				if pair=='J_M' or pair=='M_J':
+					IBDlengths_JM.append(length)
+				if pair=='J_E' or pair=='E_J':
+					IBDlengths_JE.append(length)
+				if pair=='M_E' or pair=='E_M':
+					IBDlengths_ME.append(length)
+			filegermline.close()
+			rmmatch=Popen.wait(Popen('rm macs_asc_'+str(job)+'_chr'+str(chr_number)+'.match',shell=True))
+			
+			IBDlengths_AA_mean=np.mean(IBDlengths_AA)
+			IBDlengths_JJ_mean=np.mean(IBDlengths_JJ)
+			IBDlengths_MM_mean=np.mean(IBDlengths_MM)
+			IBDlengths_EE_mean=np.mean(IBDlengths_EE)
+			IBDlengths_AE_mean=np.mean(IBDlengths_AE)
+			IBDlengths_AJ_mean=np.mean(IBDlengths_AJ)
+			IBDlengths_AM_mean=np.mean(IBDlengths_AM)
+			IBDlengths_JM_mean=np.mean(IBDlengths_JM)
+			IBDlengths_JE_mean=np.mean(IBDlengths_JE)
+			IBDlengths_ME_mean=np.mean(IBDlengths_ME)
+
+			IBDlengths_AA_median=np.median(IBDlengths_AA)
+                        IBDlengths_JJ_median=np.median(IBDlengths_JJ)
+                        IBDlengths_MM_median=np.median(IBDlengths_MM)
+                        IBDlengths_EE_median=np.median(IBDlengths_EE)
+                        IBDlengths_AE_median=np.median(IBDlengths_AE)
+                        IBDlengths_AJ_median=np.median(IBDlengths_AJ)
+                        IBDlengths_AM_median=np.median(IBDlengths_AM)
+                        IBDlengths_JM_median=np.median(IBDlengths_JM)
+                        IBDlengths_JE_median=np.median(IBDlengths_JE)
+			IBDlengths_ME_median=np.median(IBDlengths_ME)
+			
+			IBDlengths_AA_num=len(IBDlengths_AA)
+                        IBDlengths_JJ_num=len(IBDlengths_JJ)
+                        IBDlengths_MM_num=len(IBDlengths_MM)
+                        IBDlengths_EE_num=len(IBDlengths_EE)
+                        IBDlengths_AE_num=len(IBDlengths_AE)
+                        IBDlengths_AJ_num=len(IBDlengths_AJ)
+                        IBDlengths_AM_num=len(IBDlengths_AM)
+                        IBDlengths_JM_num=len(IBDlengths_JM)
+                        IBDlengths_JE_num=len(IBDlengths_JE)
+			IBDlengths_ME_num=len(IBDlengths_ME)
+
+			IBDlengths_AA_var=np.var(IBDlengths_AA)
+                        IBDlengths_JJ_var=np.var(IBDlengths_JJ)
+                        IBDlengths_MM_var=np.var(IBDlengths_MM)
+                        IBDlengths_EE_var=np.var(IBDlengths_EE)
+                        IBDlengths_AE_var=np.var(IBDlengths_AE)
+                        IBDlengths_AJ_var=np.var(IBDlengths_AJ)
+                        IBDlengths_AM_var=np.var(IBDlengths_AM)
+                        IBDlengths_JM_var=np.var(IBDlengths_JM)
+                        IBDlengths_JE_var=np.var(IBDlengths_JE)
+			IBDlengths_ME_var=np.var(IBDlengths_ME)
+
+
+
 		#######
 		#########calculate summary stats from the ascertained SNPs
 		if nbss_asc>0:
