@@ -712,8 +712,8 @@ def param_sim_asc(): ##get parameter values from the priors
 
 	################
 	#################
-	print 'params:', parameters	
-	print 'case:',case
+	#print 'params:', parameters	
+	#print 'case:',case
 
 	return [parameters, para_out, case, daf]
 
@@ -770,32 +770,32 @@ def run_sim(parameters,case,length,chr_number):
 	#############	
 	if case==1:
 
-		macs_args = ['macs',str(total),'1000000','-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC)]
+		macs_args = ['macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC)]
 	
 		
 	if case==2:
 
-		macs_args = ['macs',str(total),'1000000','-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Taf),'2','1']
 
 	
 	if case==3:
 
-		macs_args = ['macs',str(total),'1000000','-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 		
 	if case==4:
 
-		macs_args = ['macs',str(total),'1000000','-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==5:
-		macs_args = ['macs',str(total),'1000000','-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==6:
 
-		macs_args = ['macs',str(total),'1000000','-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==7:
 
-		macs_args = ['macs',str(total),'1000000','-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 
 
@@ -803,7 +803,7 @@ def run_sim(parameters,case,length,chr_number):
 		
 	##########	
 					
-	print macs_args
+	#print macs_args
 			
 	sim=macsSwig.swigMain(len(macs_args),macs_args)
 	
@@ -838,7 +838,7 @@ naf_CGI=18
 neu_CGI=18
 nas_CGI=8
 
-nA=528
+nA=76#528
 nJ=28
 nM=114
 
@@ -871,10 +871,10 @@ def main():
 
 	###########  
 	#######Summary statistics 
-	chr=2
+	chr=1
 
 	#####change the number of summary stats   
-	ss_cnt=115  ##how many summary statistics
+	ss_cnt=137  ##how many summary statistics
 	nbseq=chr #number of regions
 	###this is going to store all the results 
 	results=np.zeros((ss_cnt,nbseq),dtype='float')
@@ -1034,7 +1034,6 @@ def main():
 			Af_res.append(Tajimas(pi_AfCGI,Af_res[0],len(seqAfCGI)))
 			del(Af_res[3])
 			res.extend(Af_res)
-			
 
 			Eu_res=[]
 			Eu_res.extend(base_S_ss(seqEuCGI,nbss))
@@ -1070,7 +1069,6 @@ def main():
 			res.extend(pri_sha_h(seqAfCGI,seqAsCGI))
 			res.extend(pri_sha_h(seqEuCGI,seqAsCGI))		
 			#print 'len(res)', len(res)
-
 
 
 		print 'Done calculating ss from chomosomes'
@@ -1385,50 +1383,61 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 			filegermline.close()
 			rmmatch=Popen.wait(Popen('rm macs_asc_'+str(job)+'_chr'+str(chr_number)+'.match',shell=True))
 			
-			IBDlengths_AA_mean=np.mean(IBDlengths_AA)
-			IBDlengths_JJ_mean=np.mean(IBDlengths_JJ)
-			IBDlengths_MM_mean=np.mean(IBDlengths_MM)
-			IBDlengths_EE_mean=np.mean(IBDlengths_EE)
-			IBDlengths_AE_mean=np.mean(IBDlengths_AE)
-			IBDlengths_AJ_mean=np.mean(IBDlengths_AJ)
-			IBDlengths_AM_mean=np.mean(IBDlengths_AM)
-			IBDlengths_JM_mean=np.mean(IBDlengths_JM)
-			IBDlengths_JE_mean=np.mean(IBDlengths_JE)
-			IBDlengths_ME_mean=np.mean(IBDlengths_ME)
+			print 'calculating summary stats'
 
-			IBDlengths_AA_median=np.median(IBDlengths_AA)
-                        IBDlengths_JJ_median=np.median(IBDlengths_JJ)
-                        IBDlengths_MM_median=np.median(IBDlengths_MM)
-                        IBDlengths_EE_median=np.median(IBDlengths_EE)
-                        IBDlengths_AE_median=np.median(IBDlengths_AE)
-                        IBDlengths_AJ_median=np.median(IBDlengths_AJ)
-                        IBDlengths_AM_median=np.median(IBDlengths_AM)
-                        IBDlengths_JM_median=np.median(IBDlengths_JM)
-                        IBDlengths_JE_median=np.median(IBDlengths_JE)
-			IBDlengths_ME_median=np.median(IBDlengths_ME)
-			
-			IBDlengths_AA_num=len(IBDlengths_AA)
-                        IBDlengths_JJ_num=len(IBDlengths_JJ)
-                        IBDlengths_MM_num=len(IBDlengths_MM)
-                        IBDlengths_EE_num=len(IBDlengths_EE)
-                        IBDlengths_AE_num=len(IBDlengths_AE)
-                        IBDlengths_AJ_num=len(IBDlengths_AJ)
-                        IBDlengths_AM_num=len(IBDlengths_AM)
-                        IBDlengths_JM_num=len(IBDlengths_JM)
-                        IBDlengths_JE_num=len(IBDlengths_JE)
-			IBDlengths_ME_num=len(IBDlengths_ME)
+			IBDlengths_mean=[]
+			IBDlengths_median=[]
+			IBDlengths_num=[]
+			IBDlengths_var=[]
 
-			IBDlengths_AA_var=np.var(IBDlengths_AA)
-                        IBDlengths_JJ_var=np.var(IBDlengths_JJ)
-                        IBDlengths_MM_var=np.var(IBDlengths_MM)
-                        IBDlengths_EE_var=np.var(IBDlengths_EE)
-                        IBDlengths_AE_var=np.var(IBDlengths_AE)
-                        IBDlengths_AJ_var=np.var(IBDlengths_AJ)
-                        IBDlengths_AM_var=np.var(IBDlengths_AM)
-                        IBDlengths_JM_var=np.var(IBDlengths_JM)
-                        IBDlengths_JE_var=np.var(IBDlengths_JE)
-			IBDlengths_ME_var=np.var(IBDlengths_ME)
+			IBDlengths_mean.append(np.mean(IBDlengths_AA))
+			IBDlengths_mean.append(np.mean(IBDlengths_JJ))
+			IBDlengths_mean.append(np.mean(IBDlengths_MM))
+			IBDlengths_mean.append(np.mean(IBDlengths_EE))
+			IBDlengths_mean.append(np.mean(IBDlengths_AE))
+			IBDlengths_mean.append(np.mean(IBDlengths_AJ))
+			IBDlengths_mean.append(np.mean(IBDlengths_AM))
+			IBDlengths_mean.append(np.mean(IBDlengths_JM))
+			IBDlengths_mean.append(np.mean(IBDlengths_JE))
+			IBDlengths_mean.append(np.mean(IBDlengths_ME))
 
+			IBDlengths_median.append(np.median(IBDlengths_AA))
+			IBDlengths_median.append(np.median(IBDlengths_JJ))
+			IBDlengths_median.append(np.median(IBDlengths_MM))
+			IBDlengths_median.append(np.median(IBDlengths_EE))
+			IBDlengths_median.append(np.median(IBDlengths_AE))
+			IBDlengths_median.append(np.median(IBDlengths_AJ))
+			IBDlengths_median.append(np.median(IBDlengths_AM))
+			IBDlengths_median.append(np.median(IBDlengths_JM))
+			IBDlengths_median.append(np.median(IBDlengths_JE))
+			IBDlengths_median.append(np.median(IBDlengths_ME))
+
+			IBDlengths_num.append(len(IBDlengths_AA))
+                        IBDlengths_num.append(len(IBDlengths_JJ))
+                        IBDlengths_num.append(len(IBDlengths_MM))
+                        IBDlengths_num.append(len(IBDlengths_EE))
+                        IBDlengths_num.append(len(IBDlengths_AE))
+                        IBDlengths_num.append(len(IBDlengths_AJ))
+                        IBDlengths_num.append(len(IBDlengths_AM))
+                        IBDlengths_num.append(len(IBDlengths_JM))
+                        IBDlengths_num.append(len(IBDlengths_JE))
+			IBDlengths_num.append(len(IBDlengths_ME))
+
+			IBDlengths_var.append(np.var(IBDlengths_AA))
+                        IBDlengths_var.append(np.var(IBDlengths_JJ))
+                        IBDlengths_var.append(np.var(IBDlengths_MM))
+                        IBDlengths_var.append(np.var(IBDlengths_EE))
+                        IBDlengths_var.append(np.var(IBDlengths_AE))
+                        IBDlengths_var.append(np.var(IBDlengths_AJ))
+                        IBDlengths_var.append(np.var(IBDlengths_AM))
+                        IBDlengths_var.append(np.var(IBDlengths_JM))
+                        IBDlengths_var.append(np.var(IBDlengths_JE))
+			IBDlengths_var.append(np.var(IBDlengths_ME))
+
+			res.extend(IBDlengths_mean)
+			res.extend(IBDlengths_median)
+			res.extend(IBDlengths_num)
+			res.extend(IBDlengths_var)
 
 
 		#######
@@ -1584,13 +1593,13 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 			cont=cont+1
 			#print 'AFS!!'
 			
-			#print 'len(res) final'
-			#print len(res)
-
+			#print res
+			#print 'len(res) final '+str(len(res))
+			
 		
 			
 		#######
-		####add summary stats results to numpy matrix for averaging across regions
+		####add summary stats results to numpy matrix for averaging across chromosomes
 		if 'NA' not in res:
 			ss_add=0
 			for n in range(len(res)):
@@ -1600,9 +1609,8 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 
 		reg_use=reg_use+1
 
-
-	print 'cont'
-	print cont
+	#print 'cont'
+	#print cont
 
 
 	################
@@ -1616,8 +1624,6 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 	fileoutparam.write(head_param)
 	
 
-	print para_out
-
 
 	for z in range(len(para_out)):
 		if z==(len(para_out)-1):
@@ -1628,7 +1634,6 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 	fileoutparam.close()
 
 
-	return
 	#####
 	#####
 
@@ -1649,6 +1654,13 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 	head=head+'Nb_shared_hap_AfEu_CGI_m\tPriv_hap_Af1_CGI_m\tPriv_hap_Eu1_CGI_m\t'
 	head=head+'Nb_shared_hap_AfAs_CGI_m\tPriv_hap_Af2_CGI_m\tPriv_hap_As1_CGI_m\t'
 	head=head+'Nb_shared_hap_EuAs_CGI_m\tPriv_hap_Eu2_CGI_m\tPriv_hap_As2_CGI_m\t'
+
+	#################
+
+	head=head+'IBD_mean_AA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_AE\tIBD_mean_AJ\tIBD_mean_AM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
+	head=head+'IBD_median_AA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_AE\tIBD_median_AJ\tIBD_median_AM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
+	head=head+'IBD_num_AA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_AE\tIBD_num_AJ\tIBD_num_AM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
+	head=head+'IBD_var_AA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_AE\tIBD_var_AJ\tIBD_var_AM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
 
 	#################
 
@@ -1718,7 +1730,7 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 	head=head+'Nb_shared_hap_AfAs_ASC_sd\tPriv_hap_Af2_ASC_sd\tPriv_hap_As1_ASC_sd\t'
 	head=head+'Nb_shared_hap_EuAs_ASC_sd\tPriv_hap_Eu2_ASC_sd\tPriv_hap_As2_ASC_sd\t'
 
-	head=head+'Nb_shared_hap_AJEu_ASC_sd\tPriv_hap_AJ1_ASC_sd\tPriv_hap_Eu1_ASC_sd\t'
+	head=head+'Nb_shared_hap_AJEu_ASC_sd\tPriv_hap_AJ1_ASC_sd\tPriv_hap_Eu1_ASC_sd\n'
 
 	#################
 	#################
