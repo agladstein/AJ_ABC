@@ -1167,7 +1167,7 @@ def main():
 					#print 'avail_sites', avail_sites
 					#print 'nb_avail_sites', nb_avail_sites
 			
-					pos_asc2=add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_affy_snps)
+					pos_asc2=add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps)
 					pos_asc=pos_asc2
 			
 					#print 'new len of pos_asc', len(pos_asc)
@@ -1275,7 +1275,7 @@ def main():
 		#print 'len allelesA_asc[0]', len(allelesA_asc[0])
 
 		##Make ped file
-		filenameped='macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
+		filenameped='sim_data_testAJ/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
 		fileped=open(filenameped,'w')
 		ped=''
 		for e in range(2,int(neu_CGI)+2,2):
@@ -1311,7 +1311,7 @@ def main():
 			
 
 		##Make map file
-		filenamemap='macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
+		filenamemap='sim_data_testAJ/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
 		filemap=open(filenamemap,'a')
 		map=''
 		for g in range(0,len(pos_asc)):
@@ -1330,21 +1330,23 @@ def main():
 
 
 		########Use Germline to find IBD on pseduo array ped and map files
+		filenameout = 'germline_out_testAJ/macs_asc_'+str(job)+'_chr'+str(chr_number)
+		
 		print 'Running Germline on '+str(filenameped)+' '+str(filenamemap)
 		print 'bash /home/u15/agladstein/bin/phasing_pipeline/gline.sh /home/u15/agladstein/bin/germline-1-5-1/g\
-ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10"'
+ermline '+str(filenameped)+' '+str(filenamemap)+str(filenameout)+' "-bits 10"'
 
-		germline=Popen.wait(Popen('bash /home/u15/agladstein/bin/phasing_pipeline/gline.sh /home/u15/agladstein/bin/germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10"',shell=True))
+		germline=Popen.wait(Popen('bash /home/u15/agladstein/bin/phasing_pipeline/gline.sh /home/u15/agladstein/bin/germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+str(filenameout)+' "-bits 10"',shell=True))
 
 
 		########Get IBD stats from Germline output
-		if os.path.isfile('macs_asc_'+str(job)+'_chr'+str(chr_number)+'.match'):
+		if os.path.isfile(str(filenameout)+'.match'):
 			rmped=Popen.wait(Popen('rm '+str(filenameped),shell=True))
 			rmmap=Popen.wait(Popen('rm '+str(filenamemap),shell=True))
-			rmlog=Popen.wait(Popen('rm macs_asc_'+str(job)+'_chr'+str(chr_number)+'.log',shell=True))
+			rmlog=Popen.wait(Popen('rm '+str(filenameout)+'.log',shell=True))
 
 			print 'reading Germline IBD output'
-			filegermline=open('macs_asc_'+str(job)+'_chr'+str(chr_number)+'.match','r')
+			filegermline=open(str(filenameout)+'.match','r')
 			IBDlengths_AA=[]
 			IBDlengths_JJ=[]
 			IBDlengths_MM=[]
@@ -1381,7 +1383,7 @@ ermline '+str(filenameped)+' '+str(filenamemap)+' macs_asc_'+str(job)+'_chr'+str
 				if pair=='M_E' or pair=='E_M':
 					IBDlengths_ME.append(length)
 			filegermline.close()
-			rmmatch=Popen.wait(Popen('rm macs_asc_'+str(job)+'_chr'+str(chr_number)+'.match',shell=True))
+			rmmatch=Popen.wait(Popen('rm '+str(filenameout)+'.match',shell=True))
 			
 			print 'calculating summary stats'
 
