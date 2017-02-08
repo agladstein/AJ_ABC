@@ -1,0 +1,14 @@
+*~
+*.pyc
+*.pyo
+macss_env/
+*.log
+macschr1*
+mprofile_*
+outerror/
+resourceuse.txt
+resourceuseM2.txt
+macs_asc*.map
+macs_asc*.ped
+macs_asc*.match
+macs_asc*.log
