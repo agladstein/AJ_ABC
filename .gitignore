@@ -13,3 +13,4 @@ macs_asc*.ped
 macs_asc*.match
 macs_asc*.log
 .vagrant/
+.idea/
