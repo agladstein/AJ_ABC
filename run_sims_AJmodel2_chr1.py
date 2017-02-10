@@ -23,7 +23,7 @@ import re
 
 ###summary statistics####################################
 
-def hamming_distance(s1, s2): 
+def hamming_distance(s1, s2):
 	#Hamming distance between two strings of equal length is the number of positions at which the corresponding symbols are different
 	assert len(s1) == len(s2)
 	return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
@@ -550,10 +550,16 @@ def param_sim_asc(): ##get parameter values from the priors
 	#para_out.extend([NEU_AS])
 	#parameters['NEU_AS']=NEU_AS
 
-	#Population size of AJ
-	NA=float(round(10**random.uniform(4.0,6.7)))
-	para_out.extend([math.log10(NA)])
-	parameters['NA']=NA
+	#Population size of WAJ
+	NWA=float(round(10**random.uniform(3.0,6.7)))
+	para_out.extend([math.log10(NWA)])
+	parameters['NWA']=NWA
+
+	#Population size of EAJ
+	NEA=float(round(10**random.uniform(4.0,6.7)))
+	para_out.extend([math.log10(NEA)])
+	parameters['NEA']=NEA
+	
 
 	#Population size of Jews
 	NJ=float(round(10**random.uniform(3.0,6.0)))
@@ -565,13 +571,19 @@ def param_sim_asc(): ##get parameter values from the priors
 	para_out.extend([math.log10(NM)])
         parameters['NM']=NM
 
-	#Growth rate in AJ
-	rA=float(round(10**random.uniform(0,1))) #should it be -1?
-        para_out.extend([math.log10(rA)])
-        parameters['rA']=rA
+	#Growth rate in WAJ
+	rWA=float(round(10**random.uniform(0,1)))
+        para_out.extend([math.log10(rWA)])
+        parameters['rWA']=rWA
+
+	#Growth rate in EAJ
+	rEA=float(round(10**random.uniform(0,1)))
+        para_out.extend([math.log10(rEA)])
+        parameters['rEA']=rEA
+	
 
 	#Growth rate in Jews and Middle East
-	rMJ=float(round(10**random.uniform(0,1))) #should it be -1?
+	rMJ=float(round(10**random.uniform(0,1)))
 	para_out.extend([math.log10(rMJ)])
 	parameters['rMJ']=rMJ
 
@@ -624,9 +636,17 @@ def param_sim_asc(): ##get parameter values from the priors
         para_out.extend([TMJ])
         parameters['TMJ']=TMJ
 	
+	#Time of split between Eastern and Western AJ
+	TAEW_High=(TA)-2
+	TAEW_Low=1
+	TAEW=float(randint(TAEW_Low,TAEW_High))
+        para_out.extend([TAEW])
+        parameters['TAEW']=TAEW
+	
+
 	#Time of migration
 	Tm_High=int(TA)-1
-	Tm_Low=16
+	Tm_Low=int(TAEW)+1
 	Tm=float(randint(Tm_Low,Tm_High))
         para_out.extend([Tm])
         parameters['Tm']=Tm
@@ -708,6 +728,16 @@ def param_sim_asc(): ##get parameter values from the priors
 		Tgrowth_Af+=-0.00001
 		parameters['Tgrowth_Af']=Tgrowth_Af
 		case=7
+	
+	################
+
+	if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tm'] > parameters['TAEW'] > parameters['Tgrowth_Af']):
+		case=8
+
+	if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tm'] > parameters['TAEW'] == parameters['Tgrowth_Af']):
+		Tgrowth_Af+=-0.00001
+		parameters['Tgrowth_Af']=Tgrowth_Af
+		case=8
 
 
 
@@ -728,11 +758,13 @@ def run_sim(parameters,case,length,chr_number):
 	NCEU=float(parameters['NCEU'])
 	NCHB=float(parameters['NCHB'])
 	#NEU_AS=float(parameters['NEU_AS'])
-	NA=float(parameters['NA'])
+	NWA=float(parameters['NWA'])
+	NEA=float(parameters['NEA'])
 	NJ=float(parameters['NJ'])
 	NM=float(parameters['NM'])
 
-	rA=float(parameters['rA'])
+	rWA=float(parameters['rWA'])
+	rEA=float(parameters['rEA'])
 	rMJ=float(parameters['rMJ'])
 
 	m=float(parameters['m'])
@@ -741,6 +773,7 @@ def run_sim(parameters,case,length,chr_number):
 	Taf=float(parameters['Taf'])
 	TEM=float(parameters['TEM'])
 	Teu_as=float(parameters['Teu_as'])
+	TAEW=float(parameters['TAEW'])
 	TA=float(parameters['TA'])
 	TMJ=float(parameters['TMJ'])
 	Tm=float(parameters['Tm'])
@@ -753,7 +786,8 @@ def run_sim(parameters,case,length,chr_number):
 	scaled_NCEU=float(NCEU/NANC)
 	scaled_NCHB=float(NCHB/NANC)
 	#scaled_NEU_AS=float(NEU_AS/NANC)
-	scaled_NA=float(NA/NANC)
+	scaled_NWA=float(NWA/NANC)
+	scaled_NEA=float(NEA/NANC)
 	scaled_NJ=float(NJ/NANC)
 	scaled_NM=float(NM/NANC)
 
@@ -763,41 +797,47 @@ def run_sim(parameters,case,length,chr_number):
 	scaled_Taf=float(Taf/(4*NANC))
 	scaled_TEM=float(TEM/(4*NANC))
 	scaled_Teu_as=float(Teu_as/(4*NANC))
+	scaled_TAEW=float(TAEW/(4*NANC))
 	scaled_TA=float(TA/(4*NANC))
 	scaled_TMJ=float(TMJ/(4*NANC))
 	scaled_Tm=float(Tm/(4*NANC))
 
-			
+
+
 	#############	
 	if case==1:
 
-		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC)]
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-ej',str(scaled_TAEW),'6','7','-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-ej',str(scaled_TA),'7','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC)]
 	
 		
 	if case==2:
 
-		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Taf),'2','1']
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-ej',str(scaled_TAEW),'6','7','-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-ej',str(scaled_TA),'7','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Taf),'2','1']
 
-	
+
 	if case==3:
 
-		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
-		
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-ej',str(scaled_TAEW),'6','7','-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-ej',str(scaled_TA),'7','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+
 	if case==4:
 
-		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-ej',str(scaled_TAEW),'6','7','-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-ej',str(scaled_TA),'7','4','-ej',str(scaled_TMJ),'5','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==5:
-		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-ej',str(scaled_TAEW),'6','7','-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-ej',str(scaled_TA),'7','4','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==6:
 
-		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-ej',str(scaled_TAEW),'6','7','-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TA),'7','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 	if case==7:
 
-		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','6',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NA),'-eg','0','6',str(rA),'-eg','0.000001','4',str(rMJ),'-eg','0.000002','5',str(rMJ),'-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-em',str(scaled_Tm),'6','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'6','3','0','-ej',str(scaled_TA),'6','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-ej',str(scaled_TAEW),'6','7','-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-ej',str(scaled_TA),'7','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
+	if case==8:
+		
+		macs_args = ['./bin/macs',str(total),str(length),'-t',str(macs_theta),'-r',str(macs_rho),'-h','1e5','-R','genetic_map_b37/genetic_map_GRCh37_chr'+str(chr_number)+'.txt.macshs','-I','7',str(total_naf),str(total_nas),str(total_neu),str(nJ),str(nM),str(nEA),str(nWA),'-n','1',str(scaled_NAF),'-n','2',str(scaled_NCHB),'-n','3',str(scaled_NCEU),'-n','4',str(scaled_NJ),'-n','5',str(scaled_NM),'-n','6',str(scaled_NEA),'-n','7',str(scaled_NWA),'-eg','0','7',str(rWA),'-eg','0.000001','6',str(rEA),'-eg','0.000002','4',str(rMJ),'-eg','0.000003','5',str(rMJ),'-en',str(scaled_Tgrowth_Af),'1',str(scaled_NANC),'-ej',str(scaled_TAEW),'6','7','-em',str(scaled_Tm),'7','3',str(scaled_m),'-em',str(scaled_Tm+0.000001),'7','3','0','-ej',str(scaled_TA),'7','4','-ej',str(scaled_TMJ),'5','4','-ej',str(scaled_TEM),'4','3','-ej',str(scaled_Teu_as),'3','2','-ej',str(scaled_Taf),'2','1']
 
 
 
@@ -843,18 +883,20 @@ naf_CGI=18
 neu_CGI=18
 nas_CGI=8
 
-nA=76#528
+nWA=38
+nEA=38
 nJ=28
 nM=28#114
 
 print 'naf_CGI '+str(naf_CGI)
 print 'neu_CGI '+str(neu_CGI)
 print 'nas_CGI '+str(nas_CGI)
-print 'nA '+str(nA)
+print 'nWA '+str(nWA)
+print 'nEA '+str(nEA)
 print 'nJ '+str(nJ)
 print 'nM '+str(nM)
 
-total_CGI=naf_CGI+neu_CGI+nas_CGI+nA+nJ+nM
+total_CGI=naf_CGI+neu_CGI+nas_CGI+nWA+nEA+nJ+nM
 print 'total samples '+str(total_CGI)
 
 ###Discovery panel
@@ -947,7 +989,7 @@ def main():
 			#print 'number sites in simulation', nbss
 
 
-	       	##get position of the simulated sites and scale it to the "real" position in the SNP chip
+	       		##get position of the simulated sites and scale it to the "real" position in the SNP chip 
 			pos=[]
 			for i in xrange(nbss):
 				position=round(sim.getPosition(i)*(float(length)))#you have to give the number of the snp
@@ -1046,7 +1088,7 @@ def main():
 			Af_res.append(Tajimas(pi_AfCGI,Af_res[0],len(seqAfCGI)))
 			del(Af_res[3])
 			res.extend(Af_res)
-			head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
+			head='SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
 
 			Eu_res=[]
 			Eu_res.extend(base_S_ss(seqEuCGI,nbss))
@@ -1054,7 +1096,7 @@ def main():
 			Eu_res.append(Tajimas(pi_EuCGI,Eu_res[0],len(seqEuCGI)))		
 			del(Eu_res[3])
 			res.extend(Eu_res)
-			head = head + 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
+			head=head + 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
 
 			As_res=[]
 			As_res.extend(base_S_ss(seqAsCGI,nbss))
@@ -1062,15 +1104,16 @@ def main():
 			As_res.append(Tajimas(pi_AsCGI,As_res[0],len(seqAsCGI)))
 			del(As_res[3])
 			res.extend(As_res)
-			head = head + 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
-
+			head=head + 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
+			
 			
 			##fst between populations
 			res.append(FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqEuCGI,pi_EuCGI,neu_CGI))
 			res.append(FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
 			res.append(FST2(seqEuCGI,pi_EuCGI,neu_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
-			head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
-			#print 'len(res)', len(res)
+    		head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
+		    #print 'len(res)', len(res)
+
 
 
 		print 'Done calculating ss from chomosomes'
@@ -1230,11 +1273,17 @@ def main():
 		TseqM=zip(*seqM)
 		#print 'len(TseqM)', len(TseqM)
 
-		seqA=Talleles[total_naf+total_neu+total_nas+nJ+nM:total_naf+total_neu+total_nas+nJ+nM+nA]
-		#print 'len(seqA)', len(seqA)
-		TseqA=zip(*seqA)
-		#print 'len(TseqA)', len(TseqA)
+		seqEA=Talleles[total_naf+total_neu+total_nas+nJ+nM:total_naf+total_neu+total_nas+nJ+nM+nEA]
+		#print 'len(seqEA)', len(seqEA)
+		TseqEA=zip(*seqEA)
+		#print 'len(TseqEA)', len(TseqEA)
 
+		seqWA=Talleles[total_naf+total_neu+total_nas+nJ+nM:total_naf+total_neu+total_nas+nJ+nM+nEA+nWA]
+		#print 'len(seqWA)', len(seqWA)
+		TseqWA=zip(*seqWA)
+		#print 'len(TseqWA)', len(TseqWA)
+
+		
 
 
 		###get genotypes for pseudo array 
@@ -1244,8 +1293,8 @@ def main():
 		
 		allelesJ_asc=[]
 		allelesM_asc=[]		
-		allelesA_asc=[]
-			
+		allelesEA_asc=[]
+		allelesWA_asc=[]	
 
 		##get the ascertained SNPs in the populations of interest
 		if (nbss_asc==len(index_avail_sites)):
@@ -1255,7 +1304,8 @@ def main():
 				allelesAs_asc.append(TseqAs[pos_asc[x]])				
 				allelesJ_asc.append(TseqJ[pos_asc[x]])
 				allelesM_asc.append(TseqM[pos_asc[x]])
-				allelesA_asc.append(TseqA[pos_asc[x]])
+				allelesEA_asc.append(TseqEA[pos_asc[x]])
+				allelesWA_asc.append(TseqWA[pos_asc[x]])
 		
 		elif (len(index_avail_sites)>nbss_asc):
 			for x in xrange(len(pos_asc)):
@@ -1264,33 +1314,15 @@ def main():
 				allelesAs_asc.append(TseqAs[index_avail_sites[pos_asc[x]]])				
 				allelesJ_asc.append(TseqJ[index_avail_sites[pos_asc[x]]])
 				allelesM_asc.append(TseqM[index_avail_sites[pos_asc[x]]])
-				allelesA_asc.append(TseqA[index_avail_sites[pos_asc[x]]])
-			
+				allelesEA_asc.append(TseqEA[index_avail_sites[pos_asc[x]]])
+				allelesWA_asc.append(TseqWA[index_avail_sites[pos_asc[x]]])
 		
-		#print 'len allelesAf_asc', len(allelesAf_asc)
-		#print 'len allelesAf_asc[0]', len(allelesAf_asc[0])
-		
-		#print 'len allelesEu_asc', len(allelesEu_asc)
-		#print 'len allelesEu_asc[0]', len(allelesEu_asc[0])
-
-		#print 'len allelesAs_asc', len(allelesAs_asc)
-		#print 'len allelesAs_asc[0]', len(allelesAs_asc[0])
-
-		#print 'len allelesJ_asc', len(allelesJ_asc)
-		#print 'len allelesJ_asc[0]', len(allelesJ_asc[0])
-
-		#print 'len allelesM_asc', len(allelesM_asc)
-		#print 'len allelesM_asc[0]', len(allelesM_asc[0])
-			
-		#print 'len allelesA_asc', len(allelesA_asc)
-		#print 'len allelesA_asc[0]', len(allelesA_asc[0])
-
 		print 'Make ped and map files'
 		elapsed_time=time.time()-start_time
                 print '***********'+str(elapsed_time)+'***********'
 
 		##Make ped file
-		filenameped='sim_data_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
+		filenameped='sim_data_AJ_M2/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
 		fileped=open(filenameped,'w')
 		ped=''
 		for e in range(2,int(neu_CGI)+2,2):
@@ -1314,19 +1346,28 @@ def main():
 				if g<len(pos_asc)-1:
 					ped=ped+' '
 			ped=ped+'\n'
-		for a in range(2,int(nA)+2,2):
-			ped=ped+'A '+str(a/2)+'_A 0 0 1 -9 '
+		for a in range(2,int(nEA)+2,2):
+			ped=ped+'EA '+str(a/2)+'_EA 0 0 1 -9 '
 			for g in range(0,len(pos_asc)):
-				ped=ped+str(int(allelesA_asc[g-1][a-2])+1)+' '+str(int(allelesA_asc[g-1][a-1])+1)
+				ped=ped+str(int(allelesEA_asc[g-1][a-2])+1)+' '+str(int(allelesEA_asc[g-1][a-1])+1)
 				if g<len(pos_asc)-1:
 					ped=ped+' '
 			ped=ped+'\n'
+		for a in range(2,int(nWA)+2,2):
+			ped=ped+'WA '+str(a/2)+'_WA 0 0 1 -9 '
+			for g in range(0,len(pos_asc)):
+				ped=ped+str(int(allelesWA_asc[g-1][a-2])+1)+' '+str(int(allelesWA_asc[g-1][a-1])+1)
+				if g<len(pos_asc)-1:
+					ped=ped+' '
+			ped=ped+'\n'
+		
+
 		fileped.write(ped)
 		fileped.close()					
 			
 
 		##Make map file
-		filenamemap='./sim_data_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
+		filenamemap='./sim_data_AJ_M2/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
 		filemap=open(filenamemap,'a')
 		map=''
 		for g in range(0,len(pos_asc)):
@@ -1342,7 +1383,8 @@ def main():
 
 		seqJ_asc=zip(*allelesJ_asc)
 		seqM_asc=zip(*allelesM_asc)
-		seqA_asc=zip(*allelesA_asc)
+		seqEA_asc=zip(*allelesEA_asc)
+		seqWA_asc=zip(*allelesWA_asc)
 
 
 		########Use Germline to find IBD on pseduo array ped and map files
@@ -1350,12 +1392,12 @@ def main():
 		elapsed_time=time.time()-start_time
 		print '***********'+str(elapsed_time)+'***********'
 
-		filenameout = './germline_out_AJ_M1/macs_asc_' + str(job) + '_chr' + str(chr_number)
+		filenameout = './germline_out_AJ_M2/macs_asc_'+str(job)+'_chr'+str(chr_number)
 
 		###Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
-		print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  '+str(filenameped)+' '+str(filenamemap)+' germline_out_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10 -min_m 3000000"'
+		print 'bash ./phasing_pipeline/gline.sh ./germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+ ' '+str(filenameout)+' "-bits 10 -min_m 3000000"'
 
-#		germline=Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+' germline_out_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10 -min_m 3000000"',shell=True))
+#		germline=Popen.wait(Popen('bash ./phasing_pipeline/gline.sh ./germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+' '+str(filenameout)+' "-bits 10 -min_m 3000000"',shell=True))
 
 		print 'finished running germline'
 		elapsed_time=time.time()-start_time
@@ -1363,20 +1405,25 @@ def main():
 
 
 		########Get IBD stats from Germline output
-		if os.path.isfile(str(filenameout) + '.match'):
+		if os.path.isfile(str(filenameout)+'.match'):
 			rmped=Popen.wait(Popen('rm '+str(filenameped),shell=True))
 			rmmap=Popen.wait(Popen('rm '+str(filenamemap),shell=True))
-			rmlog = Popen.wait(Popen('rm ' + str(filenameout) + '.log', shell=True))
+			rmlog=Popen.wait(Popen('rm '+str(filenameout)+'.log',shell=True))
 
 			print 'reading Germline IBD output'
-			filegermline = open(str(filenameout) + '.match', 'r')
-			IBDlengths_AA=[]
+			filegermline=open(str(filenameout)+'.match','r')
+			IBDlengths_eAeA=[]
+			IBDlengths_wAwA=[]
 			IBDlengths_JJ=[]
 			IBDlengths_MM=[]
 			IBDlengths_EE=[]
-			IBDlengths_AE=[]
-			IBDlengths_AJ=[]
-			IBDlengths_AM=[]
+			IBDlengths_eAwA=[]
+			IBDlengths_eAE=[]
+			IBDlengths_wAE=[]
+			IBDlengths_eAJ=[]
+			IBDlengths_wAJ=[]
+			IBDlengths_eAM=[]
+			IBDlengths_wAM=[]
 			IBDlengths_JM=[]
 			IBDlengths_JE=[]
 			IBDlengths_ME=[]
@@ -1385,20 +1432,30 @@ def main():
 				pop2 = line.split()[2]
 				length = float(line.split()[10])
 				pair = str(pop1)+'_'+str(pop2)
-				if pair=='A_A':
-					IBDlengths_AA.append(length)
+				if pair=='EA_EA':
+					IBDlengths_eAeA.append(length)
+				if pair=='WA_WA':
+					IBDlengths_wAwA.append(length)					
 				if pair=='J_J':
 					IBDlengths_JJ.append(length)
 				if pair=='M_M':
 					IBDlengths_MM.append(length)
 				if pair=='E_E':
 					IBDlengths_EE.append(length)
-				if pair=='A_E' or pair=='E_A':
-					IBDlengths_AE.append(length)
-				if pair=='A_J' or pair=='J_A':
-					IBDlengths_AJ.append(length)
-				if pair=='A_M' or pair=='M_A':
-					IBDlengths_AM.append(length)
+				if pair=='EA_WA' or pair=='WA_EA':
+					IBDlengths_eAwA.append(length)				
+				if pair=='EA_E' or pair=='E_EA':
+					IBDlengths_eAE.append(length)
+				if pair=='WA_E' or pair=='E_WA':
+					IBDlengths_wAE.append(length)					
+				if pair=='EA_J' or pair=='J_EA':
+					IBDlengths_eAJ.append(length)
+				if pair=='WA_J' or pair=='J_WA':
+					IBDlengths_wAJ.append(length)
+				if pair=='EA_M' or pair=='M_EA':
+					IBDlengths_eAM.append(length)
+				if pair=='WA_M' or pair=='M_WA':
+					IBDlengths_eAM.append(length)
 				if pair=='J_M' or pair=='M_J':
 					IBDlengths_JM.append(length)
 				if pair=='J_E' or pair=='E_J':
@@ -1407,7 +1464,8 @@ def main():
 					IBDlengths_ME.append(length)
 			filegermline.close()
 #			rmmatch=Popen.wait(Popen('rm '+str(filenameout)+'.match',shell=True))
-			
+
+
 			elapsed_time=time.time()-start_time
 			print '***********'+str(elapsed_time)+'***********'
 			print 'calculating summary stats'
@@ -1417,7 +1475,7 @@ def main():
 			IBDlengths_num=[]
 			IBDlengths_var=[]
 
-			pairs=[IBDlengths_AA,IBDlengths_JJ,IBDlengths_MM,IBDlengths_EE,IBDlengths_AE,IBDlengths_AJ,IBDlengths_AM,IBDlengths_JM,IBDlengths_JE,IBDlengths_ME]
+			pairs = [IBDlengths_eAeA,IBDlengths_wAwA,IBDlengths_JJ,IBDlengths_MM,IBDlengths_EE,IBDlengths_eAwA,IBDlengths_eAE,IBDlengths_wAE,IBDlengths_eAJ,IBDlengths_wAJ,IBDlengths_eAM,IBDlengths_wAM,IBDlengths_JM,IBDlengths_JE,IBDlengths_ME]
 			for p in pairs:
 				IBDlengths_num.append(len(p))
 				if len(p)<1:
@@ -1425,15 +1483,16 @@ def main():
 				IBDlengths_mean.append(np.mean(p))
 				IBDlengths_median.append(np.median(p))
 				IBDlengths_var.append(np.var(p))
+			
 
 			res.extend(IBDlengths_mean)
-			head = head + 'IBD_mean_AA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_AE\tIBD_mean_AJ\tIBD_mean_AM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
+			head=head+'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
 			res.extend(IBDlengths_median)
-			head = head + 'IBD_median_AA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_AE\tIBD_median_AJ\tIBD_median_AM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
+			head=head+'IBD_median_eAeA\tIBD_median_wAwA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_eAwA\tIBD_median_eAE\tIBD_median_wAE\tIBD_median_eAJ\tIBD_median_wAJ\tIBD_median_eAM\tIBD_median_wAM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
 			res.extend(IBDlengths_num)
-			head = head + 'IBD_num_AA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_AE\tIBD_num_AJ\tIBD_num_AM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
+			head=head+'IBD_num_eAeA\tIBD_num_wAwA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_eAwA\tIBD_num_eAE\tIBD_num_wAE\tIBD_num_eAJ\tIBD_num_wAJ\tIBD_num_eAM\tIBD_num_wAM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
 			res.extend(IBDlengths_var)
-			head = head + 'IBD_var_AA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_AE\tIBD_var_AJ\tIBD_var_AM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
+			head=head+'IBD_var_eAeA\tIBD_var_wAwA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_eAwA\tIBD_var_eAE\tIBD_var_wAE\tIBD_var_eAJ\tIBD_var_wAJ\tIBD_var_eAM\tIBD_var_wAM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
 
 		#######
 		#########calculate summary stats from the ascertained SNPs
@@ -1448,14 +1507,13 @@ def main():
 				pi_Af_asc=0
 			else:
 				Af_asc.extend(base_S_ss(seqAf_asc,nbss_asc))
-				#print Af_asc
 				pi_Af_asc=Pi2(Af_asc[3],len(seqAf_asc))
 				Af_asc.append(pi_Af_asc)
 				Af_asc.append(Tajimas(pi_Af_asc,Af_asc[0],len(seqAf_asc)))
 				del(Af_asc[3])
-			
+				
 			res.extend(Af_asc)
-			head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
+			head=head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
 			#print 'len(res)', len(res)
 
 			############
@@ -1499,7 +1557,7 @@ def main():
 			head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
 			#print 'len(res)', len(res)
 			############
-			
+
 			J_asc=[]
 			ss_J_asc=base_S_ss(seqJ_asc,nbss_asc)
 			if (ss_J_asc[0]==0):
@@ -1517,7 +1575,7 @@ def main():
 			res.extend(J_asc)
 			head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
 			#print 'len(res)', len(res)
-			############# 
+			#############
 
 			M_asc=[]
 			ss_M_asc=base_S_ss(seqM_asc,nbss_asc)
@@ -1535,25 +1593,46 @@ def main():
 
 			res.extend(M_asc)
 			head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
+
 			#print 'len(res)', len(res)
 			#############
+
 			
-			A_asc=[]
-			ss_A_asc=base_S_ss(seqA_asc,nbss_asc)
-			if (ss_A_asc[0]==0):
+			EA_asc=[]
+			ss_EA_asc=base_S_ss(seqEA_asc,nbss_asc)
+			if (ss_EA_asc[0]==0):
 				#print "zeros"
 				for i in xrange(5):
-					A_asc.append(0)
-				pi_A_asc=0
+					EA_asc.append(0)
+				pi_EA_asc=0
 			else:
-				A_asc.extend(base_S_ss(seqA_asc,nbss_asc))
-				pi_A_asc=Pi2(A_asc[3],len(seqA_asc))
-				A_asc.append(pi_A_asc)
-				A_asc.append(Tajimas(pi_A_asc,A_asc[0],len(seqA_asc)))
-				del(A_asc[3])
+				EA_asc.extend(base_S_ss(seqEA_asc,nbss_asc))
+				pi_EA_asc=Pi2(EA_asc[3],len(seqEA_asc))
+				EA_asc.append(pi_EA_asc)
+				EA_asc.append(Tajimas(pi_EA_asc,EA_asc[0],len(seqEA_asc)))
+				del(EA_asc[3])
 
-			res.extend(A_asc)
-			head = head + 'SegS_A_ASC\tSing_A_ASC\tDupl_A_ASC\tPi_A_ASC\tTajD_A_ASC\t'
+			res.extend(EA_asc)
+			head = head + 'SegS_EAJ_ASC\tSing_EAJ_ASC\tDupl_EAJ_ASC\tPi_EAJ_ASC\tTajD_EAJ_ASC\t'
+			#print 'len(res)', len(res)
+			#############
+
+			WA_asc=[]
+			ss_WA_asc=base_S_ss(seqWA_asc,nbss_asc)
+			if (ss_WA_asc[0]==0):
+				#print "zeros"
+				for i in xrange(5):
+					WA_asc.append(0)
+				pi_WA_asc=0
+			else:
+				WA_asc.extend(base_S_ss(seqWA_asc,nbss_asc))
+				pi_WA_asc=Pi2(WA_asc[3],len(seqWA_asc))
+				WA_asc.append(pi_WA_asc)
+				WA_asc.append(Tajimas(pi_WA_asc,WA_asc[0],len(seqWA_asc)))
+				del(WA_asc[3])
+
+			res.extend(WA_asc)
+			head = head + 'SegS_WAJ_ASC\tSing_WAJ_ASC\tDupl_WAJ_ASC\tPi_WAJ_ASC\tTajD_WAJ_ASC\t'
 			#print 'len(res)', len(res)
 			#############
 
@@ -1562,16 +1641,19 @@ def main():
 			res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqEu_asc,pi_Eu_asc,neu_CGI))
 			res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqAs_asc,pi_As_asc,nas_CGI))
 			res.append(FST2(seqEu_asc,pi_Eu_asc,neu_CGI,seqAs_asc,pi_As_asc,nas_CGI))
-			head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC_m\tFST_EuAs_ASC\t'
-
-
-			res.append(FST2(seqA_asc,pi_A_asc,nA,seqEu_asc,pi_Eu_asc,neu_CGI))
-			res.append(FST2(seqA_asc,pi_A_asc,nA,seqJ_asc,pi_J_asc,nJ))
-			res.append(FST2(seqA_asc,pi_A_asc,nA,seqM_asc,pi_M_asc,nM))
+			head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC\tFST_EuAs_ASC\t'
+							
+			res.append(FST2(seqEA_asc,pi_EA_asc,nEA,seqWA_asc,pi_WA_asc,nWA))
+			res.append(FST2(seqEA_asc,pi_EA_asc,nEA,seqEu_asc,pi_Eu_asc,neu_CGI))
+			res.append(FST2(seqEA_asc,pi_EA_asc,nEA,seqJ_asc,pi_J_asc,nJ))
+			res.append(FST2(seqEA_asc,pi_EA_asc,nEA,seqM_asc,pi_M_asc,nM))
 			res.append(FST2(seqM_asc,pi_M_asc,nM,seqJ_asc,pi_J_asc,nJ))
-			head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
+			res.append(FST2(seqWA_asc,pi_WA_asc,nWA,seqEu_asc,pi_Eu_asc,neu_CGI))
+			res.append(FST2(seqWA_asc,pi_WA_asc,nWA,seqJ_asc,pi_J_asc,nJ))
+			res.append(FST2(seqWA_asc,pi_WA_asc,nWA,seqM_asc,pi_M_asc,nM))
+			head = head + 'FST_eAwA_ASC\tFST_eAEu_ASC\tFST_eAJ_ASC\tFST_eAM_ASC\tFST_MJ_ASC\tFST_wAEu_ASC\tFST_wAJ_ASC\tFST_wAM_ASC\n'
 			#print 'len(res) FST', len(res)
-			
+
 			cont=cont+1
 			#print 'AFS!!'
 			
@@ -1589,11 +1671,11 @@ def main():
 	################
 	#####write parameter values to file 
 
-	param_file='./sim_values_AJ_M1/sim_'+str(job)+'_values.txt'
+	param_file='./sim_values_AJ_M2/sim_'+str(job)+'_values.txt'
 	fileoutparam=open(param_file,'w')
 
 	##write parameter values
-	head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NA\tLog10_NJ\tLog10_NM\trA\trMJ\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTm\n'
+	head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NJ\tLog10_NM\trWA\trEA\trMJ\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\n'
 	fileoutparam.write(head_param)
 	
 
@@ -1606,10 +1688,11 @@ def main():
 	
 	fileoutparam.close()
 
+
 	#####
 	#####
 
-	filesummary='./results_sims_AJ_M1/ms_output_'+str(job)+'.summary'
+	filesummary='./results_sims_AJ_M2/ms_output_'+str(job)+'.summary'
 	filesumm=open(filesummary,'w')
 	filesumm.write(head)
 	
