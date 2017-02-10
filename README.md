@@ -6,9 +6,11 @@
 
 
 * Run as
-* python run_sims_AJmodel1_chr1.py jobID inputfile
+* python run_sims_AJmodel1_chr1.py jobID inputfile simsize
 * e.g.:
-* python run_sims_AJmodel1_chr1.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed
+``python run_sims_AJmodel1_chr1.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full``
+* Test simulation:
+``python run_sims_AJmodel1_chr1.py 1 ill_650_test.bed 1000000``
 
 * Uses c++ programs macs and germline. For more information on these programs, see:
 * https://github.com/gchen98/macs
@@ -33,5 +35,5 @@ virtualenv macss_env
 source macss_env/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-python run_sims_AJmodel1_chr1.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed
+python run_sims_AJmodel1_chr1.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full
 ```
