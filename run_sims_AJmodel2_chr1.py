@@ -917,12 +917,24 @@ total=total_CGI+total_asc
 
 def main():
 
-
-	###########  
-	#######Summary statistics 
 	chr=1
 
-	##############START SIMULATIONS 
+	#### Check if necessary directories exist.
+	sim_data_dir = './sim_data_AJ_M2'
+	germline_out_dir='./germline_out_AJ_M2'
+	sim_values_dir='./sim_values_AJ_M2'
+	results_sims_dir='./results_sims_AJ_M2'
+
+	if not os.path.exists(sim_data_dir):
+		os.makedirs(sim_data_dir)
+	if not os.path.exists(germline_out_dir):
+		os.makedirs(germline_out_dir)
+	if not os.path.exists(sim_values_dir):
+		os.makedirs(sim_values_dir)
+	if not os.path.exists(results_sims_dir):
+		os.makedirs(results_sims_dir)
+
+	##############START SIMULATIONS
 	##############
 
 	cont=0
@@ -1322,7 +1334,7 @@ def main():
                 print '***********'+str(elapsed_time)+'***********'
 
 		##Make ped file
-		filenameped='sim_data_AJ_M2/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
+		filenameped=str(sim_data_dir)+'/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
 		fileped=open(filenameped,'w')
 		ped=''
 		for e in range(2,int(neu_CGI)+2,2):
@@ -1367,7 +1379,7 @@ def main():
 			
 
 		##Make map file
-		filenamemap='./sim_data_AJ_M2/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
+		filenamemap=str(sim_data_dir)+'/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
 		filemap=open(filenamemap,'a')
 		map=''
 		for g in range(0,len(pos_asc)):
@@ -1392,16 +1404,15 @@ def main():
 		elapsed_time=time.time()-start_time
 		print '***********'+str(elapsed_time)+'***********'
 
-		filenameout = './germline_out_AJ_M2/macs_asc_'+str(job)+'_chr'+str(chr_number)
+		filenameout = str(germline_out_dir)+'/macs_asc_'+str(job)+'_chr'+str(chr_number)
 
 		###Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
-		print 'bash ./phasing_pipeline/gline.sh ./germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+ ' '+str(filenameout)+' "-bits 10 -min_m 3000000"'
-
-#		germline=Popen.wait(Popen('bash ./phasing_pipeline/gline.sh ./germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+' '+str(filenameout)+' "-bits 10 -min_m 3000000"',shell=True))
+		print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  '+str(filenameped)+' '+str(filenamemap)+' '+str(filenameout)+' "-bits 10 -min_m 3000000"'
+		germline=Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  '+str(filenameped)+' '+str(filenamemap)+' '+str(filenameout)+' "-bits 10 -min_m 3000000"',shell=True))
 
 		print 'finished running germline'
-		elapsed_time=time.time()-start_time
-		print '***********'+str(elapsed_time)+'***********'
+		elapsed_time = time.time() - start_time
+		print '***********' + str(elapsed_time) + '***********'
 
 
 		########Get IBD stats from Germline output
@@ -1671,7 +1682,7 @@ def main():
 	################
 	#####write parameter values to file 
 
-	param_file='./sim_values_AJ_M2/sim_'+str(job)+'_values.txt'
+	param_file=str(sim_values_dir)+'/sim_'+str(job)+'_values.txt'
 	fileoutparam=open(param_file,'w')
 
 	##write parameter values
@@ -1692,7 +1703,7 @@ def main():
 	#####
 	#####
 
-	filesummary='./results_sims_AJ_M2/ms_output_'+str(job)+'.summary'
+	filesummary=str(results_sims_dir)+'/ms_output_'+str(job)+'.summary'
 	filesumm=open(filesummary,'w')
 	filesumm.write(head)
 	

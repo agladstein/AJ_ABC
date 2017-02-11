@@ -875,10 +875,22 @@ total=total_CGI+total_asc
 
 def main():
 
-
-	###########  
-	#######Summary statistics 
 	chr=1
+
+	#### Check if necessary directories exist.
+	sim_data_dir = './sim_data_AJ_M1'
+	germline_out_dir='./germline_out_AJ_M1'
+	sim_values_dir='./sim_values_AJ_M1'
+	results_sims_dir='./results_sims_AJ_M1'
+
+	if not os.path.exists(sim_data_dir):
+		os.makedirs(sim_data_dir)
+	if not os.path.exists(germline_out_dir):
+		os.makedirs(germline_out_dir)
+	if not os.path.exists(sim_values_dir):
+		os.makedirs(sim_values_dir)
+	if not os.path.exists(results_sims_dir):
+		os.makedirs(results_sims_dir)
 
 	##############START SIMULATIONS 
 	##############
@@ -1265,32 +1277,13 @@ def main():
 				allelesJ_asc.append(TseqJ[index_avail_sites[pos_asc[x]]])
 				allelesM_asc.append(TseqM[index_avail_sites[pos_asc[x]]])
 				allelesA_asc.append(TseqA[index_avail_sites[pos_asc[x]]])
-			
-		
-		#print 'len allelesAf_asc', len(allelesAf_asc)
-		#print 'len allelesAf_asc[0]', len(allelesAf_asc[0])
-		
-		#print 'len allelesEu_asc', len(allelesEu_asc)
-		#print 'len allelesEu_asc[0]', len(allelesEu_asc[0])
-
-		#print 'len allelesAs_asc', len(allelesAs_asc)
-		#print 'len allelesAs_asc[0]', len(allelesAs_asc[0])
-
-		#print 'len allelesJ_asc', len(allelesJ_asc)
-		#print 'len allelesJ_asc[0]', len(allelesJ_asc[0])
-
-		#print 'len allelesM_asc', len(allelesM_asc)
-		#print 'len allelesM_asc[0]', len(allelesM_asc[0])
-			
-		#print 'len allelesA_asc', len(allelesA_asc)
-		#print 'len allelesA_asc[0]', len(allelesA_asc[0])
 
 		print 'Make ped and map files'
 		elapsed_time=time.time()-start_time
                 print '***********'+str(elapsed_time)+'***********'
 
 		##Make ped file
-		filenameped='sim_data_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
+		filenameped=str(sim_data_dir)+'/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
 		fileped=open(filenameped,'w')
 		ped=''
 		for e in range(2,int(neu_CGI)+2,2):
@@ -1326,7 +1319,7 @@ def main():
 			
 
 		##Make map file
-		filenamemap='./sim_data_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
+		filenamemap=str(sim_data_dir)+'/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.map'
 		filemap=open(filenamemap,'a')
 		map=''
 		for g in range(0,len(pos_asc)):
@@ -1350,12 +1343,11 @@ def main():
 		elapsed_time=time.time()-start_time
 		print '***********'+str(elapsed_time)+'***********'
 
-		filenameout = './germline_out_AJ_M1/macs_asc_' + str(job) + '_chr' + str(chr_number)
+		filenameout = str(germline_out_dir)+'/macs_asc_' + str(job) + '_chr' + str(chr_number)
 
 		###Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
-		print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  '+str(filenameped)+' '+str(filenamemap)+' germline_out_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10 -min_m 3000000"'
-
-#		germline=Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline '+str(filenameped)+' '+str(filenamemap)+' germline_out_AJ_M1/macs_asc_'+str(job)+'_chr'+str(chr_number)+' "-bits 10 -min_m 3000000"',shell=True))
+		print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  '+str(filenameped)+' '+str(filenamemap)+' '+str(filenameout)+' "-bits 10 -min_m 3000000"'
+		germline=Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  '+str(filenameped)+' '+str(filenamemap)+' '+str(filenameout)+' "-bits 10 -min_m 3000000"',shell=True))
 
 		print 'finished running germline'
 		elapsed_time=time.time()-start_time
@@ -1448,7 +1440,6 @@ def main():
 				pi_Af_asc=0
 			else:
 				Af_asc.extend(base_S_ss(seqAf_asc,nbss_asc))
-				#print Af_asc
 				pi_Af_asc=Pi2(Af_asc[3],len(seqAf_asc))
 				Af_asc.append(pi_Af_asc)
 				Af_asc.append(Tajimas(pi_Af_asc,Af_asc[0],len(seqAf_asc)))
@@ -1589,7 +1580,7 @@ def main():
 	################
 	#####write parameter values to file 
 
-	param_file='./sim_values_AJ_M1/sim_'+str(job)+'_values.txt'
+	param_file=str(sim_values_dir)+'/sim_'+str(job)+'_values.txt'
 	fileoutparam=open(param_file,'w')
 
 	##write parameter values
@@ -1609,7 +1600,7 @@ def main():
 	#####
 	#####
 
-	filesummary='./results_sims_AJ_M1/ms_output_'+str(job)+'.summary'
+	filesummary=str(results_sims_dir)+'/ms_output_'+str(job)+'.summary'
 	filesumm=open(filesummary,'w')
 	filesumm.write(head)
 	
