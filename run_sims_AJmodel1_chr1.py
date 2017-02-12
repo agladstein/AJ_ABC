@@ -1356,9 +1356,9 @@ def main():
 
 		########Get IBD stats from Germline output
 		if os.path.isfile(str(filenameout) + '.match'):
-			rmped=Popen.wait(Popen('rm '+str(filenameped),shell=True))
-			rmmap=Popen.wait(Popen('rm '+str(filenamemap),shell=True))
-			rmlog = Popen.wait(Popen('rm ' + str(filenameout) + '.log', shell=True))
+#			rmped=Popen.wait(Popen('rm '+str(filenameped),shell=True))
+#			rmmap=Popen.wait(Popen('rm '+str(filenamemap),shell=True))
+#			rmlog = Popen.wait(Popen('rm ' + str(filenameout) + '.log', shell=True))
 
 			print 'reading Germline IBD output'
 			filegermline = open(str(filenameout) + '.match', 'r')
@@ -1375,28 +1375,28 @@ def main():
 			for line in filegermline:
 				pop1 = line.split()[0]
 				pop2 = line.split()[2]
-				length = float(line.split()[10])
+				segment = float(line.split()[10])/1000000
 				pair = str(pop1)+'_'+str(pop2)
 				if pair=='A_A':
-					IBDlengths_AA.append(length)
+					IBDlengths_AA.append(segment)
 				if pair=='J_J':
-					IBDlengths_JJ.append(length)
+					IBDlengths_JJ.append(segment)
 				if pair=='M_M':
-					IBDlengths_MM.append(length)
+					IBDlengths_MM.append(segment)
 				if pair=='E_E':
-					IBDlengths_EE.append(length)
+					IBDlengths_EE.append(segment)
 				if pair=='A_E' or pair=='E_A':
-					IBDlengths_AE.append(length)
+					IBDlengths_AE.append(segment)
 				if pair=='A_J' or pair=='J_A':
-					IBDlengths_AJ.append(length)
+					IBDlengths_AJ.append(segment)
 				if pair=='A_M' or pair=='M_A':
-					IBDlengths_AM.append(length)
+					IBDlengths_AM.append(segment)
 				if pair=='J_M' or pair=='M_J':
-					IBDlengths_JM.append(length)
+					IBDlengths_JM.append(segment)
 				if pair=='J_E' or pair=='E_J':
-					IBDlengths_JE.append(length)
+					IBDlengths_JE.append(segment)
 				if pair=='M_E' or pair=='E_M':
-					IBDlengths_ME.append(length)
+					IBDlengths_ME.append(segment)
 			filegermline.close()
 #			rmmatch=Popen.wait(Popen('rm '+str(filenameout)+'.match',shell=True))
 			
@@ -1408,6 +1408,10 @@ def main():
 			IBDlengths_median=[]
 			IBDlengths_num=[]
 			IBDlengths_var=[]
+			IBDlengths_mean30 = []
+			IBDlengths_median30 = []
+			IBDlengths_num30 = []
+			IBDlengths_var30 = []
 
 			pairs=[IBDlengths_AA,IBDlengths_JJ,IBDlengths_MM,IBDlengths_EE,IBDlengths_AE,IBDlengths_AJ,IBDlengths_AM,IBDlengths_JM,IBDlengths_JE,IBDlengths_ME]
 			for p in pairs:
@@ -1417,6 +1421,20 @@ def main():
 				IBDlengths_mean.append(np.mean(p))
 				IBDlengths_median.append(np.median(p))
 				IBDlengths_var.append(np.var(p))
+				#### Get IBD greater than 30 Mb
+				for l in p:
+					n=0
+					IBDlengths30=[]
+					if l>30:
+						n=n+1
+						IBDlengths30.append(l)
+					else:
+						IBDlengths30.append(0)
+				IBDlengths_mean30.append(np.mean(IBDlengths30))
+				IBDlengths_median30.append(np.median(IBDlengths30))
+				IBDlengths_var30.append(np.var(IBDlengths30))
+				IBDlengths_num30.append(n)
+
 
 			res.extend(IBDlengths_mean)
 			head = head + 'IBD_mean_AA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_AE\tIBD_mean_AJ\tIBD_mean_AM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
@@ -1426,6 +1444,15 @@ def main():
 			head = head + 'IBD_num_AA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_AE\tIBD_num_AJ\tIBD_num_AM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
 			res.extend(IBDlengths_var)
 			head = head + 'IBD_var_AA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_AE\tIBD_var_AJ\tIBD_var_AM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
+
+			res.extend(IBDlengths_mean30)
+			head = head + 'IBD30_mean_AA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_AE\tIBD30_mean_AJ\tIBD30_mean_AM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
+			res.extend(IBDlengths_median30)
+			head = head + 'IBD30_median_AA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_AE\tIBD30_median_AJ\tIBD30_median_AM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
+			res.extend(IBDlengths_num30)
+			head = head + 'IBD30_num_AA\tIBD30_num_JJ\tIBD30_num_MM\tIBD_num_EE\tIBD30_num_AE\tIBD30_num_AJ\tIBD30_num_AM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
+			res.extend(IBDlengths_var30)
+			head = head + 'IBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD_var_EE\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
 
 		#######
 		#########calculate summary stats from the ascertained SNPs
