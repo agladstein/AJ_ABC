@@ -873,7 +873,7 @@ total_asc=asc_nb_af+asc_nb_eu+asc_nb_as
 total=total_CGI+total_asc
 
 
-
+@profile
 def main():
 
     chr=1
