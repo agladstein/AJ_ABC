@@ -971,10 +971,10 @@ def main():
 			for x in xrange(0,nbss):
 				loc=[]
 				for m in xrange(0,total):
-				       	loc.append(sim.getSite(x,m))
-			       	alleles.append(loc)
+					loc.append(sim.getSite(x,m))
+				alleles.append(loc)
 			print 'total number of sites:',len(alleles) #number of elements in alleles
-		       	print 'total number of chromosomes:',len(alleles[0])	
+			print 'total number of chromosomes:',len(alleles[0])
 	
 
 			del sim
