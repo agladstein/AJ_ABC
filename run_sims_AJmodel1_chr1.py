@@ -558,17 +558,17 @@ def param_sim_asc(): ##get parameter values from the priors
 	#Population size of Jews
 	NJ=float(round(10**random.uniform(3.0,6.0)))
 	para_out.extend([math.log10(NJ)])
-        parameters['NJ']=NJ
+	parameters['NJ']=NJ
 
 	#Population size of Middle Easterns
 	NM=float(round(10**random.uniform(3.0,6.0)))
 	para_out.extend([math.log10(NM)])
-        parameters['NM']=NM
+	parameters['NM']=NM
 
 	#Growth rate in AJ
 	rA=float(round(10**random.uniform(0,1))) #should it be -1?
-        para_out.extend([math.log10(rA)])
-        parameters['rA']=rA
+	para_out.extend([math.log10(rA)])
+	parameters['rA']=rA
 
 	#Growth rate in Jews and Middle East
 	rMJ=float(round(10**random.uniform(0,1))) #should it be -1?
@@ -598,9 +598,9 @@ def param_sim_asc(): ##get parameter values from the priors
 		
 	#Time of split between Europe and Middle East
 	TEM_High=1200
-        TEM_Low=400
-        TEM=float(randint(TEM_Low,TEM_High))
-        para_out.extend([TEM])
+	TEM_Low=400
+	TEM=float(randint(TEM_Low,TEM_High))
+	para_out.extend([TEM])
 	parameters['TEM']=TEM
 
 	#Time of split between CEU and CHB
@@ -612,24 +612,24 @@ def param_sim_asc(): ##get parameter values from the priors
 
 	#Time of split between Jews and AJ
 	TA_High=36
-        TA_Low=20
-        TA=float(randint(TA_Low,TA_High))
-        para_out.extend([TA])
-        parameters['TA']=TA
+	TA_Low=20
+	TA=float(randint(TA_Low,TA_High))
+	para_out.extend([TA])
+	parameters['TA']=TA
 
 	#Time of split between Jews and Middle East
 	TMJ_High=int(TEM)-1
-        TMJ_Low=int(TA)+1
-        TMJ=float(randint(TMJ_Low,TMJ_High))
-        para_out.extend([TMJ])
-        parameters['TMJ']=TMJ
+	TMJ_Low=int(TA)+1
+	TMJ=float(randint(TMJ_Low,TMJ_High))
+	para_out.extend([TMJ])
+	parameters['TMJ']=TMJ
 	
 	#Time of migration
 	Tm_High=int(TA)-1
 	Tm_Low=16
 	Tm=float(randint(Tm_Low,Tm_High))
-        para_out.extend([Tm])
-        parameters['Tm']=Tm
+	para_out.extend([Tm])
+	parameters['Tm']=Tm
 
 
 	
@@ -959,7 +959,7 @@ def main():
 			#print 'number sites in simulation', nbss
 
 
-	       	##get position of the simulated sites and scale it to the "real" position in the SNP chip
+		##get position of the simulated sites and scale it to the "real" position in the SNP chip
 			pos=[]
 			for i in xrange(nbss):
 				position=round(sim.getPosition(i)*(float(length)))#you have to give the number of the snp
@@ -1021,11 +1021,11 @@ def main():
 			index_avail_sites=[] ##this one has the indexes of the snps
 	
 			for n in xrange(len(Tasc_panel)):
-			       	freq_site=float(Tasc_panel[n][0:len(asc_panel)].count('1'))/float(len(asc_panel))
-			       	if freq_site>=daf and freq_site<=1-daf:
-			       		sites_freq.append(freq_site)
-			       		avail_sites.append(pos[n])
-			       		index_avail_sites.append(n)
+				freq_site=float(Tasc_panel[n][0:len(asc_panel)].count('1'))/float(len(asc_panel))
+				if freq_site>=daf and freq_site<=1-daf:
+					sites_freq.append(freq_site)
+					avail_sites.append(pos[n])
+					index_avail_sites.append(n)
 					
 			#print sites_freq
 			#print 'nb avail sites', len(avail_sites)
@@ -1280,7 +1280,7 @@ def main():
 
 		print 'Make ped and map files'
 		elapsed_time=time.time()-start_time
-                print '***********'+str(elapsed_time)+'***********'
+		print '***********'+str(elapsed_time)+'***********'
 
 		##Make ped file
 		filenameped=str(sim_data_dir)+'/macs_asc_'+str(job)+'_chr'+str(chr_number)+'.ped'
@@ -1501,13 +1501,13 @@ def main():
 			As_asc=[]
 			ss_As_asc=base_S_ss(seqAs_asc,nbss_asc)
 			if (ss_As_asc[0]==0):
-			       	#print "zeros"
+				#print "zeros"
 				for i in xrange(5):
 					As_asc.append(0)
 				pi_As_asc=0
 			else:
-			       	As_asc.extend(base_S_ss(seqAs_asc,nbss_asc))
-			       	#print As_asc
+				As_asc.extend(base_S_ss(seqAs_asc,nbss_asc))
+				#print As_asc
 				pi_As_asc=Pi2(As_asc[3],len(seqAs_asc))
 				As_asc.append(pi_As_asc)
 				As_asc.append(Tajimas(pi_As_asc,As_asc[0],len(seqAs_asc)))
@@ -1521,7 +1521,7 @@ def main():
 			J_asc=[]
 			ss_J_asc=base_S_ss(seqJ_asc,nbss_asc)
 			if (ss_J_asc[0]==0):
-			       	#print "zeros"
+				#print "zeros"
 				for i in xrange(5):
 					J_asc.append(0)
 				pi_J_asc=0
@@ -1631,11 +1631,11 @@ def main():
 	filesumm=open(filesummary,'w')
 	filesumm.write(head)
 	
-        out=''
+	out=''
 
-        for g in range(len(res)):
-                out=out+str(res[g])+'\t'
-        out=out[:-1]+'\n'
+	for g in range(len(res)):
+		out=out+str(res[g])+'\t'
+	out=out[:-1]+'\n'
 
 	filesumm.write(out)
 	filesumm.close()
