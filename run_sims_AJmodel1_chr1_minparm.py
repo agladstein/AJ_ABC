@@ -20,7 +20,10 @@ from bisect import bisect_left
 from bisect import bisect_right
 import numpy as np
 import re
-from memory_profiler import LogFile
+from memory_profiler import LogFile,profile
+import cProfile
+import re
+import pstats
 
 ###summary statistics####################################
 
@@ -873,7 +876,8 @@ total_asc=asc_nb_af+asc_nb_eu+asc_nb_as
 total=total_CGI+total_asc
 
 
-@profile
+#fp=open('memory_profiler'+str(job)+'.log','w+')
+#@profile(stream=fp)
 def main():
 
     chr=1
@@ -1641,7 +1645,8 @@ def main():
     filesumm.write(out)
     filesumm.close()
 
-    sys.stdout = LogFile('memory_profile_log'+str(job))
+    #sys.stdout = LogFile('memory_profiler'+str(job)+'.log')
+
 
 if __name__ == '__main__':
     main()
