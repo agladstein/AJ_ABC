@@ -20,6 +20,7 @@ from bisect import bisect_left
 from bisect import bisect_right
 import numpy as np
 import re
+#from memory_profiler import LogFile,profile
 import cProfile
 import re
 import psutil
@@ -513,9 +514,9 @@ def param_sim_asc(): ##get parameter values from the priors
     low=2
     high=20
 
-    asc_nb_af=low
-    asc_nb_eu=low
-    asc_nb_as=low
+    asc_nb_af=high
+    asc_nb_eu=high
+    asc_nb_as=high
 
     para_out.extend([asc_nb_af])
     para_out.extend([asc_nb_eu])
@@ -527,7 +528,7 @@ def param_sim_asc(): ##get parameter values from the priors
 
     ####Demographic model
     #population size in Africa
-    NAF=float(round(10**3.7))
+    NAF=float(round(10**5))
     para_out.extend([math.log10(NAF)])
     parameters['NAF']=NAF
     #print NAF
@@ -537,15 +538,15 @@ def param_sim_asc(): ##get parameter values from the priors
     #population growth
     Nrat_High=0.0   #Allow only growth for now
     Nrat_Low=-1.0
-    NANC=float(round(10**Nrat_Low*NAF))
+    NANC=float(round(10**Nrat_High*NAF))
     para_out.extend([math.log10(NANC)])
     parameters['NANC']=NANC
 
-    NCEU=float(round(10**3.0))
+    NCEU=float(round(10**5.0))
     para_out.extend([math.log10(NCEU)])
     parameters['NCEU']=NCEU
 
-    NCHB=float(round(10**3.0))
+    NCHB=float(round(10**5.0))
     para_out.extend([math.log10(NCHB)])
     parameters['NCHB']=NCHB
 
@@ -555,17 +556,17 @@ def param_sim_asc(): ##get parameter values from the priors
     #parameters['NEU_AS']=NEU_AS
 
     #Population size of AJ
-    NA=float(round(10**4.0))
+    NA=float(round(10**6.7))
     para_out.extend([math.log10(NA)])
     parameters['NA']=NA
 
     #Population size of Jews
-    NJ=float(round(10**3.0))
+    NJ=float(round(10**6.0))
     para_out.extend([math.log10(NJ)])
     parameters['NJ']=NJ
 
     #Population size of Middle Easterns
-    NM=float(round(10**3.0))
+    NM=float(round(10**6.0))
     para_out.extend([math.log10(NM)])
     parameters['NM']=NM
 
@@ -596,35 +597,35 @@ def param_sim_asc(): ##get parameter values from the priors
     #Time of split between YRI and CEU/CHB
     Taf_High=4100				  #102,500 years using 25 years per generation
     Taf_Low=1600				  #40,000 years using 25 years per generation.
-    Taf=float(Taf_Low)
+    Taf=float(Taf_High)
     para_out.extend([Taf])
     parameters['Taf']=Taf
 
     #Time of split between Europe and Middle East
     TEM_High=1200
     TEM_Low=400
-    TEM=float(TEM_Low)
+    TEM=float(TEM_High)
     para_out.extend([TEM])
     parameters['TEM']=TEM
 
     #Time of split between CEU and CHB
     Teu_as_High=int(Taf)-1
     Teu_as_Low=int(TEM)+1
-    Teu_as=float(Teu_as_Low)
+    Teu_as=float(Teu_as_High)
     para_out.extend([Teu_as])
     parameters['Teu_as']=Teu_as
 
     #Time of split between Jews and AJ
     TA_High=36
     TA_Low=20
-    TA=float(TA_Low)
+    TA=float(TA_High)
     para_out.extend([TA])
     parameters['TA']=TA
 
     #Time of split between Jews and Middle East
     TMJ_High=int(TEM)-1
     TMJ_Low=int(TA)+1
-    TMJ=float(TMJ_Low)
+    TMJ=float(TMJ_High)
     para_out.extend([TMJ])
     parameters['TMJ']=TMJ
 
