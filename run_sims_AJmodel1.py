@@ -20,6 +20,7 @@ from bisect import bisect_right
 import numpy as np
 import re
 
+
 ###summary statistics####################################
 
 def hamming_distance(s1, s2): 

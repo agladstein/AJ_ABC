@@ -14,3 +14,8 @@ macs_asc*.match
 macs_asc*.log
 .vagrant/
 .idea/
+.cache/
+*.run
+*.summary
+sim*_*_values.txt
+.DS_Store
