@@ -1,5 +1,6 @@
 from sys import argv
 import macsSwig
+from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 
 
 # python test_macs_swig_ag_ROH_asc.py job num_chr na nb T
@@ -60,13 +61,8 @@ def main():
             position = round(sim.getPosition(i) * (lengths[chr_number - 1]))  # you have to give the number of the snp
             pos.append(position)
 
-        # sites in each row
-        alleles = []
-        for x in xrange(0, nbss):
-            loc = []
-            for m in xrange(0, nsamples):
-                loc.append(sim.getSite(x, m))
-            alleles.append(loc)
+        alleles_macsswig = AllelesMacsSwig(nbss,sim,nsamples)
+        alleles = alleles_macsswig.make_lists()
         print 'number of sites:', len(alleles)  # number of elements in alleles
         print 'number of chromosomes:', len(alleles[0])
         print(alleles)
@@ -80,18 +76,6 @@ def main():
         # print len(seqA) #number of chromosomes from pop A
         seqB = Talleles[na:na + nb]
         # print len(seqB) #number of chromosomes from pop B
-
-        genoA = []
-        n = 0
-        while n < len(seqA):
-            genoA.append([seqA[n], seqA[n + 1]])
-            n = n + 2
-        genoB = []
-        n = 0
-        while n < len(seqB):
-            genoB.append([seqB[n], seqB[n + 1]])
-            n = n + 2
-
 
 if __name__ == '__main__':
     main()
