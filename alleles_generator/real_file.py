@@ -10,7 +10,7 @@ class AllelesReal(object):
         talleles = []
         real_file = open(self.real_file_name, 'r')
         for line in real_file:
-            talleles.append(line)
+            talleles.append(line.strip())
         real_file.close()
         alleles = zip(*talleles)
-        return alleles
+        return map(list,alleles)
