@@ -132,85 +132,9 @@ def param_sim_asc_rand():
     para_out.extend([Tm])
     parameters['Tm'] = Tm
 
-    ##choose model/topology
-    print "choosing case"
+    case, modified_Tgrowth_Af = choose_case(parameters)
 
-    #################
-    if (parameters['Tgrowth_Af'] > parameters['Taf']):
-        case = 1
-
-    if (parameters['Tgrowth_Af'] == parameters['Taf']):
-        Tgrowth_Af += 0.00001
-        parameters['Tgrowth_Af'] = Tgrowth_Af
-        case = 1
-
-    ################
-
-    if (parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as']):
-        case = 2
-
-    if (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as']):
-        Tgrowth_Af += 0.00001
-        parameters['Tgrowth_Af'] = Tgrowth_Af
-        case = 2
-
-    ################
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM']):
-        case = 3
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM']):
-        Tgrowth_Af += 0.00001
-        parameters['Tgrowth_Af'] = Tgrowth_Af
-        case = 3
-
-    ################
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] > parameters[
-        'TMJ']):
-        case = 4
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] == parameters[
-        'TMJ']):
-        Tgrowth_Af += 0.00001
-        parameters['Tgrowth_Af'] = Tgrowth_Af
-        case = 4
-
-    ################
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters[
-        'Tgrowth_Af'] > parameters['TA']):
-        case = 5
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters[
-        'Tgrowth_Af'] == parameters['TA']):
-        Tgrowth_Af += 0.00001
-        parameters['Tgrowth_Af'] = Tgrowth_Af
-        case = 5
-
-    ################
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tgrowth_Af'] > parameters['Tm']):
-        case = 6
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tgrowth_Af'] == parameters['Tm']):
-        Tgrowth_Af += 0.00001
-        parameters['Tgrowth_Af'] = Tgrowth_Af
-        case = 6
-
-    ################
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tm'] > parameters['Tgrowth_Af']):
-        case = 7
-
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tm'] == parameters['Tgrowth_Af']):
-        Tgrowth_Af += -0.00001
-        parameters['Tgrowth_Af'] = Tgrowth_Af
-        case = 7
+    parameters['Tgrowth_Af'] = modified_Tgrowth_Af
 
     return [parameters, para_out, case, daf]
 
@@ -340,85 +264,12 @@ def param_sim_asc_min():
     para_out.extend([Tm])
     parameters['Tm']=Tm
 
+    case, modified_Tgrowth_Af = choose_case(parameters)
 
-
-    ##choose model/topology
-    print "choosing case"
-
-
-    #################
-    if(parameters['Tgrowth_Af'] > parameters['Taf']):
-        case=1
-
-    if(parameters['Tgrowth_Af'] == parameters['Taf']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=1
-
-    ################
-
-    if(parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as']):
-        case=2
-
-    if(parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=2
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM']):
-        case=3
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=3
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ']):
-        case=4
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=4
-
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] > parameters['TA']):
-        case=5
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] == parameters['TA']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=5
-
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tgrowth_Af'] > parameters['Tm']):
-        case=6
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tgrowth_Af'] == parameters['Tm']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=6
-
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tm'] > parameters['Tgrowth_Af']):
-        case=7
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tm'] == parameters['Tgrowth_Af']):
-        Tgrowth_Af+=-0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=7
+    parameters['Tgrowth_Af'] = modified_Tgrowth_Af
 
     return [parameters, para_out, case, daf]
+
 
 def param_sim_asc_max():
     """Define the parameters for macs simulation.
@@ -546,80 +397,84 @@ def param_sim_asc_max():
     parameters['Tm']=Tm
 
 
-    print "choosing case"
+    case, modified_Tgrowth_Af = choose_case(parameters)
 
-
-    #################
-    if(parameters['Tgrowth_Af'] > parameters['Taf']):
-        case=1
-
-    if(parameters['Tgrowth_Af'] == parameters['Taf']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=1
-
-    ################
-
-    if(parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as']):
-        case=2
-
-    if(parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=2
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM']):
-        case=3
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=3
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ']):
-        case=4
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=4
-
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] > parameters['TA']):
-        case=5
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] == parameters['TA']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=5
-
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tgrowth_Af'] > parameters['Tm']):
-        case=6
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tgrowth_Af'] == parameters['Tm']):
-        Tgrowth_Af+=0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=6
-
-
-    ################
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tm'] > parameters['Tgrowth_Af']):
-        case=7
-
-    if(parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] > parameters['Tm'] == parameters['Tgrowth_Af']):
-        Tgrowth_Af+=-0.00001
-        parameters['Tgrowth_Af']=Tgrowth_Af
-        case=7
-
+    parameters['Tgrowth_Af'] = modified_Tgrowth_Af
 
     return [parameters, para_out, case, daf]
+
+
+def choose_case(parameters):
+    ##choose model/topology
+    print "choosing case"
+    Tgrowth_Af = parameters['Tgrowth_Af']
+
+    #################
+    if parameters['Tgrowth_Af'] > parameters['Taf']:
+        case = 1
+
+    if (parameters['Tgrowth_Af'] == parameters['Taf']):
+        Tgrowth_Af += 0.00001
+        case = 1
+
+    ################
+
+    if parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as']:
+        case = 2
+
+    if parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as']:
+        Tgrowth_Af += 0.00001
+        case = 2
+
+    ################
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM']):
+        case = 3
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM']):
+        Tgrowth_Af += 0.00001
+        case = 3
+
+    ################
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ']):
+        case = 4
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ']):
+        Tgrowth_Af += 0.00001
+        case = 4
+
+    ################
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] >
+            parameters['TA']):
+        case = 5
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] ==
+            parameters['TA']):
+        Tgrowth_Af += 0.00001
+        case = 5
+
+    ################
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+            parameters['Tgrowth_Af'] > parameters['Tm']):
+        case = 6
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+            parameters['Tgrowth_Af'] == parameters['Tm']):
+        Tgrowth_Af += 0.00001
+        case = 6
+
+    ################
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+            parameters['Tm'] > parameters['Tgrowth_Af']):
+        case = 7
+
+    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+            parameters['Tm'] == parameters['Tgrowth_Af']):
+        Tgrowth_Af += -0.00001
+        case = 7
+
+    return case, Tgrowth_Af
