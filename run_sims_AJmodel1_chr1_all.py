@@ -1,569 +1,88 @@
-import time
-import subprocess 
-from subprocess import Popen,PIPE,call
-import os
-import string
-from string import join
-import math
-import random
-from random import randint
-from math import sqrt
-import sys
 from sys import argv
-import datetime
-import macsSwig
-from bisect import bisect_left
-from bisect import bisect_right
+#from main_function import main
+
+import random
+import time
+from random import randint
+from subprocess import Popen
+
 import numpy as np
-import re
+import os
+
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
-from simulation import def_params
-from simulation import run_sim
-
-###summary statistics####################################
-
-def hamming_distance(s1, s2): 
-    #Hamming distance between two strings of equal length is the number of positions at which the corresponding symbols are different
-    assert len(s1) == len(s2)
-    return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
-
-
-def base_S_ss(seq,nbsites):
-
-    #print 'base_S_ss'
-    #print 'nbsites', nbsites
-
-    spec_zero=[]
-    for g in range(len(seq)-1):
-        spec_zero.append(0)
-
-    var_ss=0 #Segregating sites
-    #het_sum=0.0
-
-    alleles=zip(*seq)
-    for g in range(nbsites):
-        #print 'g', g
-        if 0<list(alleles[g]).count('1')<(list(alleles[g]).count('1')+list(alleles[g]).count('0')): ##this ignores sites that have all zeros, or all ones
-            var_ss=var_ss+1
-            #het_sum=het_sum+((float(list(alleles[g]).count('1'))/float((list(alleles[g]).count('1')+list(alleles[g]).count('0'))))**2)
-            spec_zero[list(alleles[g]).count('1')-1]=spec_zero[list(alleles[g]).count('1')-1]+1
-
-    if var_ss>0:
-        #het=1.0-((1/float(var_ss))*het_sum)
-        Ns=spec_zero[0]+spec_zero[-1] ##number of singletons
-        Nd=spec_zero[1]+spec_zero[-2] ##number of dupletons
-    else:
-        #het='NA'
-        Ns=0
-        Nd=0
-
-
-    ##Nds=spec_zero[0] ##number of derived singletons
-
-    return [var_ss,Ns,Nd,spec_zero]
-
-def base_h_ss(seq):
-    #print seq
-    #A set is an unordered collection with no duplicate elements
-    haps=list(set(seq)) #makes a list of the different haplotypes found in seq
-    #print haps
-    cnt=[]
-    hi=0 #hi is the mode of the haplotypes
-    for g in range(len(haps)):
-        cnt.append(seq.count(haps[g])) #count() returns the number of occurrences of substring sub (in this case, haplotypes) in seq
-        #print cnt[g]
-        if cnt[g]>hi: #you are keeping the highest occurrence of all the haplotypes, which the mode
-            hi=cnt[g]
-
-
-    #The average pairwise difference within a population can be calculated as the sum of the pairwise differences divided by the number of pairs.
-    pwd_dist=0 #parwise differences between haplotypes??
-    for g in range(len(cnt)-1): #count will have the same size as haps
-        m=g+1
-        while m<len(cnt):
-            pwd_dist=pwd_dist+(hamming_distance(haps[g], haps[m])*(cnt[g]*cnt[m]))
-            m=m+1
-
-    #p is the total sum of the pairwise differences
-    #p=pwd_dist*(2.0/(float(len(seq))*(float(len(seq))-1)))
-    #print p
-
-    #this function returns the number of different haplotypes and the mode
-    return [len(haps),hi]
-
-
-def base_h_ss_nosing(seq): #calculates the number of different haplotypes and the mode, but ignoring singleton haplotypes
-
-    d={}
-    d=dict((i,seq.count(i)) for i in seq)
-
-    d2=[] #d2 has the list of the haplotypes that occur more than once in the population
-
-    for k in d.keys():
-        #print k  #this gives you the values/haplotypes of the dictionary
-        #print d[k]
-        if d[k]!=1:
-            #print k
-            d2.append(k)
-
-    cnt=[]
-    hi=0 #hi is the mode of the haplotypes
-    for g in range(len(d2)):
-        cnt.append(seq.count(d2[g])) #count() returns the number of occurrences of substring sub (in this case, haplotypes) in seq
-        #print cnt[g]
-        if cnt[g]>hi: #you are keeping the highest occurrence of all the haplotypes, which the mode
-            hi=cnt[g]
-
-    #this function returns the number of different haplotypes and the mode
-    return [len(d2),hi]
-
-
-def pri_sha_h_nosing(seqs1,seqs2):
-
-    d1={}
-    d1=dict((i,seqs1.count(i)) for i in seqs1)
-
-    d1_2=[] #d2 has the list of the haplotypes that occur more than once in the population
-
-    for k in d1.keys():
-        if d1[k]!=1:
-            d1_2.append(k)
-
-    d2={}
-    d2=dict((i,seqs2.count(i)) for i in seqs2)
-
-    d2_2=[] #d2 has the list of the haplotypes that occur more than once in the population
-
-    for l in d2.keys():
-        if d2[l]!=1:
-            d2_2.append(l)
-
-    priA=0
-    priB=0
-    sha=0
-
-    #this puts the two sequences together in the same array
-    seqs=d1_2[:]
-    seqs.extend(d2_2)
-    haps=list(set(seqs)) #makes a list of the different haplotypes found in all populations
-
-    for g in range(len(haps)):
-        pop1_cnt=d1_2.count(haps[g]) #count() returns the number of occurrences of substring sub (in this case, haplotypes) in seqs1, which population 1
-        pop2_cnt=d2_2.count(haps[g])
-
-        if pop1_cnt>0 and pop2_cnt>0:
-            sha=sha+1
-        elif pop1_cnt>0 and pop2_cnt==0:
-            priA=priA+1
-        elif pop1_cnt==0 and pop2_cnt>0:
-            priB=priB+1
-
-    return [sha,priA,priB]
-
-
-def foldedAFS(array):
-
-    delta=0
-
-    n=len(array)
-    #print n
-
-    unfolded=[]
-    for g in range((n/2)+1):
-        unfolded.append(0)
-
-    #print len(unfolded)
-
-    for g in xrange((n/2)+1):
-
-        #print g
-
-        if g != (n-1-g):
-            delta=0
-        else:
-            delta=1
-
-        #print 'array[g]',array[g]
-        #print 'array[n]',array[(n-1)]
-        #print 'array[n-g]', array[(n-1)-g]
-
-        #print 'delta', delta
-        #print g
-        #print (n-1)-g
-
-        unfolded[g]=(array[g]+array[(n-1)-g])/(1+delta)
-        #print 'unfolded[g]', unfolded[g]
-
-    return unfolded
-
-def Pi2(spec,n): #standard pi, n = sample size (in chromosomes)
-    theta_pi=0.0
-
-    for g in range(len(spec)):
-        theta_pi=theta_pi+(2.0*float(spec[g])*(g+1.0)*(n-(g+1.0)))/(n*(n-1.0))
-
-    return theta_pi
-
-
-def Tajimas(p,S,n):
-    ### pi, number of segregating sites, and number of chromosomes
-
-    if (S==0):
-        #return 'NA'
-        return 0
-
-    else:
-
-        a1=0.0
-        for g in range(n-1):
-            a1=a1+(1.0/(g+1.0))
-
-        #print a1
-        a2=0.0
-        for g in range(n-1):
-            a2=a2+(1.0/((g+1.0)**2))
-
-        b1=(n+1.0)/(3.0*(n-1.0))
-
-        b2=(2*((n**2.0)+n+3))/((9*n)*(n-1))
-        c1=b1-(1.0/a1)
-        #print 'c1', c1
-        c2=b2-((n+2.0)/(a1*n))+(a2/(a1**2.0))
-        e1=c1/a1
-        #print 'e1', e1
-        e2=c2/((a1**2.0)+a2)
-        #print 'e2', e2
-        TajD=(p-(S/a1))/(sqrt((e1*S)+((e2*S)*(S-1.0))))
-
-        return TajD
-
-
-def FST(geno1,geno2,nbsites):
-    r=2.0
-    n1=float(len(geno1))#how many individuals
-    n2=float(len(geno2))
-    n_bar=(n1/r)+(n2/r)#average sample size
-    nc=((r*n_bar)-(((n1**2)/(r*n_bar))+((n2**2)/(r*n_bar))))/(r-1.0)
-
-    a_sum=0.0
-    abc_sum=0.0
-
-    nsit_us=0
-    for g in range(nbsites):
-        #print g
-        aa1=0 #how many homozygotes 0 in 1
-        ab1=0 #how many heterozygotes in 1
-        bb1=0 #how many homozygotes 1 in 1
-        aa2=0
-        ab2=0
-        bb2=0
-        for n in range(len(geno1)):
-            ball=geno1[n][0][g].count('1')+geno1[n][1][g].count('1')#to get the information from geno, count how many ones in one pair
-            if ball==0:
-                aa1=aa1+1
-            elif ball==1:
-                ab1=ab1+1
-            elif ball==2:
-                bb1=bb1+1
-        for n in range(len(geno2)):
-            ball=geno2[n][0][g].count('1')+geno2[n][1][g].count('1')
-            if ball==0:
-                aa2=aa2+1
-            elif ball==1:
-                ab2=ab2+1
-            elif ball==2:
-                bb2=bb2+1
-
-        if 0<aa1+aa2<(len(geno1)+len(geno2)):
-            #print 'if'
-
-            p1=float((bb1*2.0)+ab1)/(n1*2.0)#get frequency of the derived allele in the two populations
-            #print 'p1'
-            #print p1
-            p2=float((bb2*2.0)+ab2)/(n2*2.0)
-            #print 'p2'
-            #print p2
-            p_bar=((n1*p1)/(r*n_bar))+((n2*p2)/(r*n_bar)) #average allele frequency for that site
-            #print 'p_bar'
-            #print p_bar
-            s_sq=(n1*((p1-p_bar)**2.0))/((r-1.0)*n_bar)+(n2*((p2-p_bar)**2.0))/((r-1.0)*n_bar)
-            #print 's_sq'
-            #print s_sq
-            h1=float(ab1)/n1 #frequency of the heterozygotes in population 1
-            #print 'h1'
-            #print h1
-            h2=float(ab2)/n2
-            ##print 'h2'
-            #print h2
-            h_bar=((n1*h1)/(r*n_bar))+((n2*h2)/(r*n_bar))
-            #print 'h_bar'
-            #print h_bar
-
-            a=(n_bar/nc)*((s_sq)-(1.0/(n_bar-1.0))*((p_bar*(1.0-p_bar))-(((r-1.0)/r)*s_sq)-(h_bar/4.0)))
-            #print 'a'
-            #print a
-            b=(n_bar/(n_bar-1))*(((p_bar)*(1.0-p_bar))-(((r-1.0)/r)*s_sq)-((((2.0*n_bar)-1)/(4*n_bar))*h_bar))
-            #print 'b'
-            #print b
-            c=(1.0/2.0)*h_bar
-            #print 'c'
-            #print c
-
-            a_sum=a_sum+a
-            abc_sum=abc_sum+(a+b+c)
-            #print 'abc_sum'
-            #print abc_sum
-
-            nsit_us=nsit_us+1
-        else:
-            nsit_us=nsit_us
-
-    if abc_sum==0.0:
-        theta='NA'
-    else:
-        theta=a_sum/abc_sum
-
-    return theta
-
-def Pi(seq1,nseq1):
-    k1=0
-    for i in xrange(0,nseq1):
-        for j in xrange(i+1,nseq1):
-
-            k1=k1+hamming_distance(seq1[i],seq1[j])
-
-    p1=(2/(float(nseq1)*(float(nseq1)-1)))*k1
-
-    return p1
-
-
-def FST2(seq1,pi1,nseq1,seq2,pi2,nseq2): ###FST based on pi within populations and between populations
-###number of chromosomes
-
-    k3=0
-
-    ##Pi within populations
-    pw=(pi1+pi2)/2
-    #print 'pw', pw
-
-    for i in xrange(len(seq1)):
-        for j in xrange(len(seq2)):
-
-            k3=k3+hamming_distance(seq1[i],seq2[j])
-
-    pb=k3/(float(nseq1)*float(nseq2))
-    #print 'pb', pb
-
-    if (pb==0):
-        #return 'NA'
-        return '0'
-
-    else:
-        fst=float(1-(pw/pb))
-        return fst
-
-
-def pri_sha_h(seqs1,seqs2):
-#how many haplotypes are shared and how many are private to the populations	
-
-    priA=0
-    priB=0
-    sha=0
-
-    #this puts the two sequences together in the same array
-    seqs=seqs1[:]
-    seqs.extend(seqs2)
-    haps=list(set(seqs)) #makes a list of the different haplotypes found in all populations
-
-    for g in range(len(haps)):
-        pop1_cnt=seqs1.count(haps[g]) #count() returns the number of occurrences of substring sub (in this case, haplotypes) in seqs1, which population 1
-        pop2_cnt=seqs2.count(haps[g])
-
-        #print pop1_cnt
-        #print pop2_cnt
-
-        if pop1_cnt>0 and pop2_cnt>0:
-            sha=sha+1
-        elif pop1_cnt>0 and pop2_cnt==0:
-            priA=priA+1
-        elif pop1_cnt==0 and pop2_cnt>0:
-            priB=priB+1
-
-    return [sha,priA,priB]
-
-
-#find simulated snps closest to snps from chip in pop A with maf>0.05 in n indivs
-def find(a, x, alleles, na_samp, daf, sim):
-    if x <= a[0]: #x is smaller than first value in a
-        k=0
-        while float(alleles[k][0:na_samp].count('1')/float(na_samp))<daf or float(alleles[k][0:na_samp].count('1')/float(na_samp))>1-daf:
-            k=k+1
-        return k
-    if x >= a[len(a)-1]: #x is larger than last value in a
-        j=len(a)-1
-        while float(alleles[j][0:na_samp].count('1')/float(na_samp))<daf or float(alleles[j][0:na_samp].count('1')/float(na_samp))>1-daf:
-            j=j-1
-        return j
-    #Find leftmost item greater than or equal to x
-    else:
-        i = bisect_left(a, x)
-        k=i
-        j=i
-        #walk up simulated sites
-        while k<int(len(a)-1) and float(alleles[k][0:na_samp].count('1')/float(na_samp))<daf or float(alleles[k][0:na_samp].count('1')/float(na_samp))>1-daf:
-            k=k+1
-        #walk down simulated sites
-        while int(j)>0 and float(alleles[j][0:na_samp].count('1')/float(na_samp))<daf or float(alleles[j][0:na_samp].count('1')/float(na_samp))>1-daf:
-            j=j-1
-        if float(alleles[j][0:na_samp].count('1')/float(na_samp))<daf or float(alleles[j][0:na_samp].count('1')/float(na_samp))>1-daf:
-            if float(alleles[k][0:na_samp].count('1')/float(na_samp))<daf or float(alleles[k][0:na_samp].count('1')/float(na_samp))>1-daf: #no simulated sites meet daf cutoff
-                print 'poopjk!'
-            else: #all simulated sites to the left of i do not meet daf cutoff
-                return k
-        elif float(alleles[k][0:na_samp].count('1')/float(na_samp))<daf or float(alleles[k][0:na_samp].count('1')/float(na_samp))>1-daf: #all simulated sites to the right of i do not meet daf cutoff
-            return j
-        elif int(a[k]-x)<int(x-a[j]): #the position greater than x is closer
-            return k
-        else: #the position less than x is closer
-            return j
-
-
-##This function will receive the array with available sites (sites that passed the frequency cut-off)
-def find2(a, x):
-    #print a
-
-    if x <= a[0]: #x is smaller than first value in a
-        #print a[0]
-        return 0
-    elif x >= a[len(a)-1]: #x is larger than last value in a
-        #print a[len(a)-1]
-        return len(a)-1
-    #Find leftmost item greater than or equal to x
-    else:
-        #print 'entro al ese, bisect'
-        i = bisect_right(a, x)
-        #print 'i', i
-        #print a[i]
-        j = i-1
-        #print 'j', j
-        #print a[j]
-        d1=abs(a[i]-x)
-        d2=abs(a[j]-x)
-        if d2<d1:
-            #print 'return j'
-            return j
-        elif d1<d2:
-            #print 'return i'
-            return i
-        elif d1==d2:
-            return i
-
-
-        #print a[i-1]
-        #return i-1
-
-def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps):
-
-    first_index=pos_asc[0]
-    last_index=pos_asc[-1]
-
-    if(nb_avail_sites>nbss_asc): ###this should happen all the time
-
-        if (last_index<nb_avail_sites-1):
-
-            try:
-                avail_sites[last_index+1]
-            except:
-                print "well, it WASN'T defined after all!"
-
-                try:
-                    avail_sites[first_index-1]
-                except:
-                    print "well, it WASN'T defined after all!"
-                else:
-                    for i in xrange(len(pos_asc)):
-                        pos_asc[i]=pos_asc[i]-1
-
-            else:
-                print "sure, it was defined"
-                pos_asc.append(last_index+1)
-
-        elif (last_index==nb_avail_sites-1):
-
-            if(first_index-1)>=0:
-                pos_asc.insert(0,first_index-1)
-
-
-    return pos_asc
-
-
-#####set up simulations#####################################
-############################################################ 
-
-start_time=time.time()
-elapsed_time=time.time()-start_time
-
-
-##Length of chromosomes
-lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069, 135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222, 62887650, 37234222, 35178458]
-
-job=int(argv[1]) #must be a number
-print 'JOB', job 
-
-
-####Get parameter values from priors
-if argv[4] > int(0):
-    random.seed(argv[4])
-if argv[5] == 'rand':
-    param_model = def_params.param_sim_asc_rand()
-if argv[5] == 'min':
-    param_model = def_params.param_sim_asc_min()
-if argv[5] == 'max':
-    param_model = def_params.param_sim_asc_max()
-###parameters is a dictionary with the parameter values
-parameters=param_model[0]
-###case is an integer that indicates which topology/model is going to be simulated  
-para_out=param_model[1]
-case=param_model[2]
-daf=param_model[3]
-
-####Samples to be simulated
-
-naf_CGI=18
-neu_CGI=18
-nas_CGI=8
-
-nA=76#528
-nJ=28
-nM=28#114
-
-print 'naf_CGI '+str(naf_CGI)
-print 'neu_CGI '+str(neu_CGI)
-print 'nas_CGI '+str(nas_CGI)
-print 'nA '+str(nA)
-print 'nJ '+str(nJ)
-print 'nM '+str(nM)
-
-total_CGI=naf_CGI+neu_CGI+nas_CGI+nA+nJ+nM
-print 'total samples '+str(total_CGI)
-
-###Discovery panel
-asc_nb_af=para_out[0]	
-asc_nb_eu=para_out[1]
-asc_nb_as=para_out[2]
-
-total_naf=naf_CGI+asc_nb_af
-total_neu=neu_CGI+asc_nb_eu
-total_nas=nas_CGI+asc_nb_as
-
-
-###Total number of chromosomes
-total_asc=asc_nb_af+asc_nb_eu+asc_nb_as
-total=total_CGI+total_asc
-
-
-
-def main():
+from ascertainment.pseudo_array import find2, add_snps
+from simulation import def_params, run_sim
+from summary_statistics import afs_stats
+
+#def main():
+def main(arguments):
+
+    ###### START
+
+    #####set up simulations#####################################
+    ############################################################
+
+    start_time = time.time()
+    elapsed_time = time.time() - start_time
+
+    ##Length of chromosomes
+    lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069,
+               135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222,
+               62887650, 37234222, 35178458]
+
+    job = int(arguments[1])  # must be a number
+    print 'JOB', job
+
+    ####Get parameter values from priors
+    if arguments[4] > int(0):
+        random.seed(arguments[4])
+    if arguments[5] == 'rand':
+        param_model = def_params.param_sim_asc_rand()
+    if arguments[5] == 'min':
+        param_model = def_params.param_sim_asc_min()
+    if arguments[5] == 'max':
+        param_model = def_params.param_sim_asc_max()
+    ###parameters is a dictionary with the parameter values
+    parameters = param_model[0]
+    ###case is an integer that indicates which topology/model is going to be simulated
+    para_out = param_model[1]
+    case = param_model[2]
+    daf = param_model[3]
+
+    ####Samples to be simulated
+
+    naf_CGI = 18
+    neu_CGI = 18
+    nas_CGI = 8
+
+    nA = 76  # 528
+    nJ = 28
+    nM = 28  # 114
+
+    print 'naf_CGI ' + str(naf_CGI)
+    print 'neu_CGI ' + str(neu_CGI)
+    print 'nas_CGI ' + str(nas_CGI)
+    print 'nA ' + str(nA)
+    print 'nJ ' + str(nJ)
+    print 'nM ' + str(nM)
+
+    total_CGI = naf_CGI + neu_CGI + nas_CGI + nA + nJ + nM
+    print 'total samples ' + str(total_CGI)
+
+    ###Discovery panel
+    asc_nb_af = para_out[0]
+    asc_nb_eu = para_out[1]
+    asc_nb_as = para_out[2]
+
+    total_naf = naf_CGI + asc_nb_af
+    total_neu = neu_CGI + asc_nb_eu
+    total_nas = nas_CGI + asc_nb_as
+
+    ###Total number of chromosomes
+    total_asc = asc_nb_af + asc_nb_eu + asc_nb_as
+    total = total_CGI + total_asc
+
+    ###### END
 
     chr=1
 
@@ -601,7 +120,7 @@ def main():
         flag_nb_asc_snps=0
 
         ####Get the positions of the SNPs that are on the chip
-        snp_file=argv[2] #SNP file
+        snp_file=arguments[2] #SNP file
         fileSNP=open(snp_file,'r')
         #print "read SNP file"
         SNP=[]
@@ -621,7 +140,7 @@ def main():
         #print snps
 
         ###define simulation size
-        size=argv[3]
+        size=arguments[3]
         if size == "full":
             length=lengths[chr_number-1]
         else:
@@ -649,7 +168,7 @@ def main():
             #print 'number sites in simulation', nbss
 
 
-        ##get position of the simulated sites and scale it to the "real" position in the SNP chip
+            ##get position of the simulated sites and scale it to the "real" position in the SNP chip
             pos=[]
             for i in xrange(nbss):
                 position=round(sim.getPosition(i)*(float(length)))#you have to give the number of the snp
@@ -739,34 +258,34 @@ def main():
         if nbss>0: ###no segregating sites in the simulations which is not possible
 
             Af_res=[]
-            Af_res.extend(base_S_ss(seqAfCGI,nbss))
-            pi_AfCGI=Pi2(Af_res[3],len(seqAfCGI))
-            Af_res.append(Tajimas(pi_AfCGI,Af_res[0],len(seqAfCGI)))
+            Af_res.extend(afs_stats.base_S_ss(seqAfCGI,nbss))
+            pi_AfCGI=afs_stats.Pi2(Af_res[3],len(seqAfCGI))
+            Af_res.append(afs_stats.Tajimas(pi_AfCGI,Af_res[0],len(seqAfCGI)))
             del(Af_res[3])
             res.extend(Af_res)
             head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
 
             Eu_res=[]
-            Eu_res.extend(base_S_ss(seqEuCGI,nbss))
-            pi_EuCGI=Pi2(Eu_res[3],len(seqEuCGI))
-            Eu_res.append(Tajimas(pi_EuCGI,Eu_res[0],len(seqEuCGI)))
+            Eu_res.extend(afs_stats.base_S_ss(seqEuCGI,nbss))
+            pi_EuCGI=afs_stats.Pi2(Eu_res[3],len(seqEuCGI))
+            Eu_res.append(afs_stats.Tajimas(pi_EuCGI,Eu_res[0],len(seqEuCGI)))
             del(Eu_res[3])
             res.extend(Eu_res)
             head = head + 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
 
             As_res=[]
-            As_res.extend(base_S_ss(seqAsCGI,nbss))
-            pi_AsCGI=Pi2(As_res[3],len(seqAsCGI))
-            As_res.append(Tajimas(pi_AsCGI,As_res[0],len(seqAsCGI)))
+            As_res.extend(afs_stats.base_S_ss(seqAsCGI,nbss))
+            pi_AsCGI=afs_stats.Pi2(As_res[3],len(seqAsCGI))
+            As_res.append(afs_stats.Tajimas(pi_AsCGI,As_res[0],len(seqAsCGI)))
             del(As_res[3])
             res.extend(As_res)
             head = head + 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
 
 
             ##fst between populations
-            res.append(FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqEuCGI,pi_EuCGI,neu_CGI))
-            res.append(FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
-            res.append(FST2(seqEuCGI,pi_EuCGI,neu_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
+            res.append(afs_stats.FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqEuCGI,pi_EuCGI,neu_CGI))
+            res.append(afs_stats.FST2(seqAfCGI,pi_AfCGI,naf_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
+            res.append(afs_stats.FST2(seqEuCGI,pi_EuCGI,neu_CGI,seqAsCGI,pi_AsCGI,nas_CGI))
             head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
             #print 'len(res)', len(res)
 
@@ -1025,7 +544,7 @@ def main():
 
 
         ########Use Germline to find IBD on pseduo array ped and map files
-        run_germline = int(argv[6])
+        run_germline = int(arguments[6])
         filenameout = str(germline_out_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number)
 
         print run_germline
@@ -1149,147 +668,125 @@ def main():
         if nbss_asc>0:
 
             Af_asc=[]
-            ss_Af_asc=base_S_ss(seqAf_asc,nbss_asc)
+            ss_Af_asc=afs_stats.base_S_ss(seqAf_asc,nbss_asc)
             if (ss_Af_asc[0]==0):
-                #print "zeros"
                 for i in xrange(5):
                     Af_asc.append(0)
                 pi_Af_asc=0
             else:
-                Af_asc.extend(base_S_ss(seqAf_asc,nbss_asc))
-                pi_Af_asc=Pi2(Af_asc[3],len(seqAf_asc))
+                Af_asc.extend(afs_stats.base_S_ss(seqAf_asc,nbss_asc))
+                pi_Af_asc=afs_stats.Pi2(Af_asc[3],len(seqAf_asc))
                 Af_asc.append(pi_Af_asc)
-                Af_asc.append(Tajimas(pi_Af_asc,Af_asc[0],len(seqAf_asc)))
+                Af_asc.append(afs_stats.Tajimas(pi_Af_asc,Af_asc[0],len(seqAf_asc)))
                 del(Af_asc[3])
 
             res.extend(Af_asc)
             head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
-            #print 'len(res)', len(res)
 
             ############
 
             Eu_asc=[]
-            ss_Eu_asc=base_S_ss(seqEu_asc,nbss_asc)
+            ss_Eu_asc=afs_stats.base_S_ss(seqEu_asc,nbss_asc)
             if (ss_Eu_asc[0]==0):
-                #print "zeros"
                 for i in xrange(5):
                     Eu_asc.append(0)
                 pi_Eu_asc=0
             else:
-                Eu_asc.extend(base_S_ss(seqEu_asc,nbss_asc))
-                #print Eu_asc
-                pi_Eu_asc=Pi2(Eu_asc[3],len(seqEu_asc))
+                Eu_asc.extend(afs_stats.base_S_ss(seqEu_asc,nbss_asc))
+                pi_Eu_asc=afs_stats.Pi2(Eu_asc[3],len(seqEu_asc))
                 Eu_asc.append(pi_Eu_asc)
-                Eu_asc.append(Tajimas(pi_Eu_asc,Eu_asc[0],len(seqEu_asc)))
+                Eu_asc.append(afs_stats.Tajimas(pi_Eu_asc,Eu_asc[0],len(seqEu_asc)))
                 del(Eu_asc[3])
 
             res.extend(Eu_asc)
             head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
-            #print 'len(res)', len(res)
             ###########
 
             As_asc=[]
-            ss_As_asc=base_S_ss(seqAs_asc,nbss_asc)
+            ss_As_asc=afs_stats.base_S_ss(seqAs_asc,nbss_asc)
             if (ss_As_asc[0]==0):
-                #print "zeros"
                 for i in xrange(5):
                     As_asc.append(0)
                 pi_As_asc=0
             else:
-                As_asc.extend(base_S_ss(seqAs_asc,nbss_asc))
-                #print As_asc
-                pi_As_asc=Pi2(As_asc[3],len(seqAs_asc))
+                As_asc.extend(afs_stats.base_S_ss(seqAs_asc,nbss_asc))
+                pi_As_asc=afs_stats.Pi2(As_asc[3],len(seqAs_asc))
                 As_asc.append(pi_As_asc)
-                As_asc.append(Tajimas(pi_As_asc,As_asc[0],len(seqAs_asc)))
+                As_asc.append(afs_stats.Tajimas(pi_As_asc,As_asc[0],len(seqAs_asc)))
                 del(As_asc[3])
 
             res.extend(As_asc)
             head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
-            #print 'len(res)', len(res)
             ############
 
             J_asc=[]
-            ss_J_asc=base_S_ss(seqJ_asc,nbss_asc)
+            ss_J_asc=afs_stats.base_S_ss(seqJ_asc,nbss_asc)
             if (ss_J_asc[0]==0):
-                #print "zeros"
                 for i in xrange(5):
                     J_asc.append(0)
                 pi_J_asc=0
             else:
-                J_asc.extend(base_S_ss(seqJ_asc,nbss_asc))
-                pi_J_asc=Pi2(J_asc[3],len(seqJ_asc))
+                J_asc.extend(afs_stats.base_S_ss(seqJ_asc,nbss_asc))
+                pi_J_asc=afs_stats.Pi2(J_asc[3],len(seqJ_asc))
                 J_asc.append(pi_J_asc)
-                J_asc.append(Tajimas(pi_J_asc,J_asc[0],len(seqJ_asc)))
+                J_asc.append(afs_stats.Tajimas(pi_J_asc,J_asc[0],len(seqJ_asc)))
                 del(J_asc[3])
 
             res.extend(J_asc)
             head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
-            #print 'len(res)', len(res)
             #############
 
             M_asc=[]
-            ss_M_asc=base_S_ss(seqM_asc,nbss_asc)
+            ss_M_asc=afs_stats.base_S_ss(seqM_asc,nbss_asc)
             if (ss_M_asc[0]==0):
-                #print "zeros"
                 for i in xrange(5):
                     M_asc.append(0)
                 pi_M_asc=0
             else:
-                M_asc.extend(base_S_ss(seqM_asc,nbss_asc))
-                pi_M_asc=Pi2(M_asc[3],len(seqM_asc))
+                M_asc.extend(afs_stats.base_S_ss(seqM_asc,nbss_asc))
+                pi_M_asc=afs_stats.Pi2(M_asc[3],len(seqM_asc))
                 M_asc.append(pi_M_asc)
-                M_asc.append(Tajimas(pi_M_asc,M_asc[0],len(seqM_asc)))
+                M_asc.append(afs_stats.Tajimas(pi_M_asc,M_asc[0],len(seqM_asc)))
                 del(M_asc[3])
 
             res.extend(M_asc)
             head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
-            #print 'len(res)', len(res)
             #############
 
             A_asc=[]
-            ss_A_asc=base_S_ss(seqA_asc,nbss_asc)
+            ss_A_asc=afs_stats.base_S_ss(seqA_asc,nbss_asc)
             if (ss_A_asc[0]==0):
-                #print "zeros"
                 for i in xrange(5):
                     A_asc.append(0)
                 pi_A_asc=0
             else:
-                A_asc.extend(base_S_ss(seqA_asc,nbss_asc))
-                pi_A_asc=Pi2(A_asc[3],len(seqA_asc))
+                A_asc.extend(afs_stats.base_S_ss(seqA_asc,nbss_asc))
+                pi_A_asc=afs_stats.Pi2(A_asc[3],len(seqA_asc))
                 A_asc.append(pi_A_asc)
-                A_asc.append(Tajimas(pi_A_asc,A_asc[0],len(seqA_asc)))
+                A_asc.append(afs_stats.Tajimas(pi_A_asc,A_asc[0],len(seqA_asc)))
                 del(A_asc[3])
 
             res.extend(A_asc)
             head = head + 'SegS_A_ASC\tSing_A_ASC\tDupl_A_ASC\tPi_A_ASC\tTajD_A_ASC\t'
-            #print 'len(res)', len(res)
             #############
 
 
             ##fst between populations
-            res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqEu_asc,pi_Eu_asc,neu_CGI))
-            res.append(FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqAs_asc,pi_As_asc,nas_CGI))
-            res.append(FST2(seqEu_asc,pi_Eu_asc,neu_CGI,seqAs_asc,pi_As_asc,nas_CGI))
+            res.append(afs_stats.FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqEu_asc,pi_Eu_asc,neu_CGI))
+            res.append(afs_stats.FST2(seqAf_asc,pi_Af_asc,naf_CGI,seqAs_asc,pi_As_asc,nas_CGI))
+            res.append(afs_stats.FST2(seqEu_asc,pi_Eu_asc,neu_CGI,seqAs_asc,pi_As_asc,nas_CGI))
             head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC_m\tFST_EuAs_ASC\t'
 
 
-            res.append(FST2(seqA_asc,pi_A_asc,nA,seqEu_asc,pi_Eu_asc,neu_CGI))
-            res.append(FST2(seqA_asc,pi_A_asc,nA,seqJ_asc,pi_J_asc,nJ))
-            res.append(FST2(seqA_asc,pi_A_asc,nA,seqM_asc,pi_M_asc,nM))
-            res.append(FST2(seqM_asc,pi_M_asc,nM,seqJ_asc,pi_J_asc,nJ))
+            res.append(afs_stats.FST2(seqA_asc,pi_A_asc,nA,seqEu_asc,pi_Eu_asc,neu_CGI))
+            res.append(afs_stats.FST2(seqA_asc,pi_A_asc,nA,seqJ_asc,pi_J_asc,nJ))
+            res.append(afs_stats.FST2(seqA_asc,pi_A_asc,nA,seqM_asc,pi_M_asc,nM))
+            res.append(afs_stats.FST2(seqM_asc,pi_M_asc,nM,seqJ_asc,pi_J_asc,nJ))
             head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
-            #print 'len(res) FST', len(res)
 
             cont=cont+1
-            #print 'AFS!!'
-
-            #print res
-            #print 'len(res) final '+str(len(res))
 
 
-
-    #print 'cont'
-    #print cont
     print 'finished calculating ss'
     elapsed_time=time.time()-start_time
     print '***********'+str(elapsed_time)+'***********'
@@ -1332,4 +829,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(argv)
+    #main()
