@@ -28,8 +28,9 @@ def main(arguments):
     print 'JOB', job
 
     ####Get parameter values from priors
-    if arguments[4] > int(0):
-        random.seed(arguments[4])
+    seed_option = arguments[4]
+    if seed_option > int(0):
+        random.seed(seed_option)
     if arguments[5] == 'rand':
         param_model = def_params.param_sim_asc_rand()
     if arguments[5] == 'min':
@@ -76,7 +77,7 @@ def main(arguments):
     total = total_CGI + total_asc
 
 
-    chr=1
+    chr_number=1
 
     #### Check if necessary directories exist.
     sim_data_dir = './sim_data_AJ_M1'
@@ -140,8 +141,7 @@ def main(arguments):
 
         #####Run simulations
         print 'running simulation'
-        # sim=run_sim(parameters,case,length,chr_number)
-        sim = run_sim.run_sim(parameters, case, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nA)
+        sim = run_sim.run_sim(parameters, case, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nA, seed_option)
         print 'finished simulation'
 
         elapsed_time = time.time() - start_time
@@ -756,7 +756,6 @@ def main(arguments):
         res.append(afs_stats.FST2(seqM_asc, pi_M_asc, nM, seqJ_asc, pi_J_asc, nJ))
         head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
 
-
     print 'finished calculating ss'
     elapsed_time=time.time()-start_time
     print '***********'+str(elapsed_time)+'***********'
@@ -796,3 +795,5 @@ def main(arguments):
 
     filesumm.write(out)
     filesumm.close()
+
+    return [res,para_out]
