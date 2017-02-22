@@ -28,7 +28,9 @@ def main(arguments):
     print 'JOB', job
 
     ####Get parameter values from priors
-    seed_option = arguments[4]
+    seed_option = int(arguments[4])
+    print seed_option
+
     if seed_option > int(0):
         random.seed(seed_option)
     if arguments[5] == 'rand':
