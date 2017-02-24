@@ -2,6 +2,7 @@ from sys import argv
 from alleles_generator.macs_file import AllelesMacsFile
 from bitarray import bitarray
 from summary_statistics import afs_stats
+from summary_statistics import afs_stats_bitarray
 import itertools
 
 
@@ -131,8 +132,6 @@ def main():
         for first_index in xrange(0, len(seqAs_bits), total_nas):
             seqAsCGI_bits.extend(seqAs_bits[first_index:first_index + nas_CGI])
 
-
-
         ####Discovery subset
         seqAf_ds_bits = bitarray()
         seqAf_ds_length = total_naf - naf_CGI
@@ -150,7 +149,6 @@ def main():
         for first_index in xrange(nas_CGI, len(seqAs_bits), total_nas):
             seqAs_ds_bits.extend(seqAs_bits[first_index:first_index + seqAs_ds_length])
 
-
         #####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
         asc_panel_bits = bitarray()
         print 'asc_panel_bits'
@@ -161,16 +159,16 @@ def main():
         asc_panel_bits.extend(seqAs_ds_bits)
 
 
-        # res = []
-        # Af_res = []
-        # Af_res.extend(afs_stats.base_S_ss(seqAfCGI_bits, nbss))
-        # pi_AfCGI = afs_stats.Pi2(Af_res[3], len(seqAfCGI_bits))
-        # Af_res.append(afs_stats.Tajimas(pi_AfCGI, Af_res[0], len(seqAfCGI_bits)))
-        # del (Af_res[3])
-        # res.extend(Af_res)
-        # head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
-        #
-        # return res
+        res = []
+        Af_res = []
+        Af_res.extend(afs_stats_bitarray.base_S_ss(seqAfCGI_bits, naf_CGI))
+        pi_AfCGI = afs_stats.Pi2(Af_res[3], len(seqAfCGI_bits))
+        Af_res.append(afs_stats.Tajimas(pi_AfCGI, Af_res[0], len(seqAfCGI_bits)))
+        del (Af_res[3])
+        res.extend(Af_res)
+        head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
+
+        return res
 
 
 if __name__ == '__main__':
