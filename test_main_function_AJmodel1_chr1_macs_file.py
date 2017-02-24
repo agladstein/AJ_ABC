@@ -7,7 +7,7 @@ import itertools
 
 # from memory_profiler import profile
 
-# @profile()
+#@profile()
 def main():
     """This is for memory_profiling purposes of the differences between lists and bitarray.
     Must give list or bitarray as argument"""
@@ -120,50 +120,36 @@ def main():
 
         ####CGI data
         seqAfCGI_bits = bitarray()
-        print 'seqAfCGI_bits_list'
-        seqAfCGI_bits_list = [seqAF_bits[first_index:first_index + naf_CGI] for first_index in
-                              xrange(0, len(seqAF_bits), total_naf)]
-        print 'seqAfCGI_bits'
-        seqAfCGI_bits.extend(itertools.chain(*seqAfCGI_bits_list))
+        for first_index in xrange(0, len(seqAF_bits), total_naf):
+            seqAfCGI_bits.extend(seqAF_bits[first_index:first_index + naf_CGI])
 
         seqEuCGI_bits = bitarray()
-        print 'seqEuCGI_bits_list'
-        seqEuCGI_bits_list = [seqEu_bits[first_index:first_index + neu_CGI] for first_index in
-                              xrange(0, len(seqEu_bits), total_neu)]
-        print 'seqEuCGI_bits'
-        seqEuCGI_bits.extend(itertools.chain(*seqEuCGI_bits_list))
+        for first_index in xrange(0, len(seqEu_bits), total_neu):
+            seqEuCGI_bits.extend(seqEu_bits[first_index:first_index + neu_CGI])
 
         seqAsCGI_bits = bitarray()
-        print 'seqAsCGI_bits_list'
-        seqAsCGI_bits_list = [seqAs_bits[first_index:first_index + nas_CGI] for first_index in
-                              xrange(0, len(seqAs_bits), total_nas)]
-        print 'seqAsCGI_bits'
-        seqAsCGI_bits.extend(itertools.chain(*seqAsCGI_bits_list))
+        for first_index in xrange(0, len(seqAs_bits), total_nas):
+            seqAsCGI_bits.extend(seqAs_bits[first_index:first_index + nas_CGI])
+
+
 
         ####Discovery subset
         seqAf_ds_bits = bitarray()
-        seqAs_ds_length = total_naf - naf_CGI
-        print 'seqAf_ds_bits_list'
-        seqAf_ds_bits_list = [seqAF_bits[first_index:first_index + seqAs_ds_length] for first_index in
-                              xrange(naf_CGI, len(seqAF_bits), total_naf)]
-        print 'seqAf_ds_bits'
-        seqAf_ds_bits.extend(itertools.chain(*seqAf_ds_bits_list))
+        seqAf_ds_length = total_naf - naf_CGI
+        for first_index in xrange(naf_CGI, len(seqAF_bits), total_naf):
+            seqAf_ds_bits.extend(seqAF_bits[first_index:first_index + seqAf_ds_length])
 
         seqEu_ds_bits = bitarray()
         seqEu_ds_length = total_neu - neu_CGI
-        print 'seqEu_ds_bits_list'
-        seqEu_ds_bits_list = [seqEu_bits[first_index:first_index + seqEu_ds_length] for first_index in
-                              xrange(neu_CGI, len(seqEu_bits), total_neu)]
-        print 'seqEu_ds_bits'
-        seqEu_ds_bits.extend(itertools.chain(*seqEu_ds_bits_list))
+        for first_index in xrange(neu_CGI, len(seqEu_bits), total_neu):
+            seqEu_ds_bits.extend(seqEu_bits[first_index:first_index + seqEu_ds_length])
+
 
         seqAs_ds_bits = bitarray()
         seqAs_ds_length = total_nas - nas_CGI
-        print 'seqAs_ds_bits_list'
-        seqAs_ds_bits_list = [seqAs_bits[first_index:first_index + seqAs_ds_length] for first_index in
-                              xrange(nas_CGI, len(seqAs_bits), total_nas)]
-        print 'seqAs_ds_bits'
-        seqAs_ds_bits.extend(itertools.chain(*seqAs_ds_bits_list))
+        for first_index in xrange(nas_CGI, len(seqAs_bits), total_nas):
+            seqAs_ds_bits.extend(seqAs_bits[first_index:first_index + seqAs_ds_length])
+
 
         #####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
         asc_panel_bits = bitarray()
