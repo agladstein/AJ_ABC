@@ -151,22 +151,41 @@ def main():
 
         #####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
         asc_panel_bits = bitarray()
-        print 'asc_panel_bits'
         asc_panel_bits.extend(seqAf_ds_bits)
-        print 'asc_panel_bits'
         asc_panel_bits.extend(seqEu_ds_bits)
-        print 'asc_panel_bits'
         asc_panel_bits.extend(seqAs_ds_bits)
 
 
         res = []
         Af_res = []
         Af_res.extend(afs_stats_bitarray.base_S_ss(seqAfCGI_bits, naf_CGI))
-        pi_AfCGI = afs_stats.Pi2(Af_res[3], len(seqAfCGI_bits))
-        Af_res.append(afs_stats.Tajimas(pi_AfCGI, Af_res[0], len(seqAfCGI_bits)))
+        pi_AfCGI = afs_stats_bitarray.Pi2(Af_res[3], naf_CGI)
+        Af_res.append(afs_stats_bitarray.Tajimas(pi_AfCGI, Af_res[0], naf_CGI))
         del (Af_res[3])
         res.extend(Af_res)
         head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
+
+        Eu_res = []
+        Eu_res.extend(afs_stats_bitarray.base_S_ss(seqEuCGI_bits, neu_CGI))
+        pi_EuCGI = afs_stats_bitarray.Pi2(Eu_res[3], neu_CGI)
+        Eu_res.append(afs_stats_bitarray.Tajimas(pi_EuCGI, Eu_res[0], neu_CGI))
+        del (Eu_res[3])
+        res.extend(Eu_res)
+        head = 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
+
+        As_res = []
+        As_res.extend(afs_stats_bitarray.base_S_ss(seqAsCGI_bits, nas_CGI))
+        pi_AsCGI = afs_stats_bitarray.Pi2(As_res[3], nas_CGI)
+        As_res.append(afs_stats_bitarray.Tajimas(pi_AsCGI, As_res[0], nas_CGI))
+        del (As_res[3])
+        res.extend(As_res)
+        head = 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
+
+        ##fst between populations
+        res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqEuCGI_bits, pi_EuCGI, neu_CGI))
+        res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
+        res.append(afs_stats_bitarray.FST2(seqEuCGI_bits, pi_EuCGI, neu_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
+        head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
         return res
 
