@@ -58,8 +58,8 @@ def FST2(seq1_bits,pi1,nseq1,seq2_bits,pi2,nseq2):
     pw=(pi1+pi2)/2
     for i in xrange(0, seq1_bits.length(), seq1_bits.length()/nseq1):
         for j in xrange(0, seq2_bits.length(), seq2_bits.length()/nseq2):
-            k3 = k3 + (~(~seq1_bits[i:i + seq1_bits.length()/nseq1] ^ seq2_bits[j:j + seq2_bits.length()/nseq2])).count(True)
-            #k3 = k3 + hamming_distance(seq1_bits[i:i + seq1_bits.length()/nseq1], seq2_bits[j:j + seq1_bits.length()/nseq2])
+            #k3 = k3 + (~(~seq1_bits[i:i + seq1_bits.length()/nseq1] ^ seq2_bits[j:j + seq2_bits.length()/nseq2])).count(True)
+            k3 = k3 + hamming_distance(seq1_bits[i:i + seq1_bits.length()/nseq1], seq2_bits[j:j + seq2_bits.length()/nseq2])
     pb=k3/(float(nseq1)*float(nseq2))
     if (pb==0):
         return '0'
