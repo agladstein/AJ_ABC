@@ -58,17 +58,13 @@ def FST2(seq1_bits,pi1,n1,seq2_bits,pi2,n2):
     #Pi within populations
     pw=(pi1+pi2)/2
     #for i in xrange(0, seq1_bits.length(), seq1_bits.length()/n1):
-    for indiv1 in xrange(0,n1):
-        s1 = bitarray()
-        for i in xrange(0, seq1_bits.length(), n1):
-            s1.append(seq1_bits[i+indiv1])
-        for indiv2 in xrange(0,n2):
-            s2 = bitarray()
-            for j in xrange(0, seq2_bits.length(), n2):
-                s2.append(seq2_bits[j+indiv2])
+    for i in xrange(0, seq1_bits.length(), n1):
+        s1 = (seq1_bits[i:seq1_bits.length():n1])
+        for j in xrange(0, seq2_bits.length(), n2):
+            s2 = (seq2_bits[j:seq2_bits.length():n2])
         #     k3 = k3 + (~(~seq1_bits[i:i + seq1_bits.length()/n1] ^ seq2_bits[j:j + seq2_bits.length()/n2])).count(True)
         #     k3 = k3 + hamming_distance(seq1_bits[i:i + seq1_bits.length()/n1], seq2_bits[j:j + seq2_bits.length()/n2])
-        k3 = k3 + hamming_distance(s1,s2)
+            k3 = k3 + hamming_distance(s1,s2)
     pb=k3/(float(n1)*float(n2))
     if (pb==0):
         return '0'
