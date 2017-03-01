@@ -171,7 +171,7 @@ def main():
         Eu_res.append(afs_stats_bitarray.Tajimas(pi_EuCGI, Eu_res[0], neu_CGI))
         del (Eu_res[3])
         res.extend(Eu_res)
-        head = 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
+        head = head + 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
 
         As_res = []
         As_res.extend(afs_stats_bitarray.base_S_ss(seqAsCGI_bits, nas_CGI))
@@ -179,7 +179,7 @@ def main():
         As_res.append(afs_stats_bitarray.Tajimas(pi_AsCGI, As_res[0], nas_CGI))
         del (As_res[3])
         res.extend(As_res)
-        head = 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
+        head = head + 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
 
         ##fst between populations
         res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqEuCGI_bits, pi_EuCGI, neu_CGI))

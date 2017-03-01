@@ -62,9 +62,8 @@ def FST2(seq1_bits,pi1,n1,seq2_bits,pi2,n2):
         s1 = seq1_bits[i::n1]
         for j in xrange(0, n2):
             s2 = seq2_bits[j::n2]
-        #     k3 = k3 + (~(~seq1_bits[i:i + seq1_bits.length()/n1] ^ seq2_bits[j:j + seq2_bits.length()/n2])).count(True)
-        #     k3 = k3 + hamming_distance(seq1_bits[i:i + seq1_bits.length()/n1], seq2_bits[j:j + seq2_bits.length()/n2])
-            k3 = k3 + hamming_distance(s1,s2)
+            k3 = k3 + (~(~s1 ^ s2)).count(True)
+            #k3 = k3 + hamming_distance(s1,s2)
     pb=k3/(float(n1)*float(n2))
     if (pb==0):
         return '0'
