@@ -1,8 +1,7 @@
 from sys import argv
 from alleles_generator.macs_file import AllelesMacsFile
 from bitarray import bitarray
-from summary_statistics import afs_stats
-from summary_statistics import afs_stats_bitarray
+from summary_statistics import afs_stats, afs_stats_bitarray
 from ascertainment.pseudo_array import pseudo_array, pseudo_array_bits
 import itertools
 
@@ -21,7 +20,7 @@ def main():
     naf_CGI = 18
     neu_CGI = 18
     nas_CGI = 8
-    nA = 76  # 528
+    nA = 66 #76  # 528
     nJ = 28
     nM = 28  # 114
 
@@ -98,7 +97,54 @@ def main():
         asc_panel.extend(seqEu_ds)
         asc_panel.extend(seqAs_ds)
 
-        pseudo_array(asc_panel, daf, pos, snps)
+        pos_asc, nbss_asc, index_avail_sites = pseudo_array(asc_panel, daf, pos, snps)
+
+        ############
+        ##Transpose the data
+        TseqAf = zip(*seqAfCGI)
+        TseqEu = zip(*seqEuCGI)
+        TseqAs = zip(*seqAsCGI)
+        seqJ = Talleles[total_naf + total_neu + total_nas:total_naf + total_neu + total_nas + nJ]
+        TseqJ = zip(*seqJ)
+        seqM = Talleles[total_naf + total_neu + total_nas + nJ:total_naf + total_neu + total_nas + nJ + nM]
+        TseqM = zip(*seqM)
+        seqA = Talleles[total_naf + total_neu + total_nas + nJ + nM:total_naf + total_neu + total_nas + nJ + nM + nA]
+        TseqA = zip(*seqA)
+
+        ###get genotypes for pseudo array
+        allelesAf_asc = []
+        allelesEu_asc = []
+        allelesAs_asc = []
+        allelesJ_asc = []
+        allelesM_asc = []
+        allelesA_asc = []
+
+        ##get the ascertained SNPs in the populations of interest
+        if (nbss_asc == len(index_avail_sites)):
+            for x in xrange(nbss_asc):
+                allelesAf_asc.append(TseqAf[pos_asc[x]])
+                allelesEu_asc.append(TseqEu[pos_asc[x]])
+                allelesAs_asc.append(TseqAs[pos_asc[x]])
+                allelesJ_asc.append(TseqJ[pos_asc[x]])
+                allelesM_asc.append(TseqM[pos_asc[x]])
+                allelesA_asc.append(TseqA[pos_asc[x]])
+
+        elif (len(index_avail_sites) > nbss_asc):
+            for x in xrange(len(pos_asc)):
+                allelesAf_asc.append(TseqAf[index_avail_sites[pos_asc[x]]])
+                allelesEu_asc.append(TseqEu[index_avail_sites[pos_asc[x]]])
+                allelesAs_asc.append(TseqAs[index_avail_sites[pos_asc[x]]])
+                allelesJ_asc.append(TseqJ[index_avail_sites[pos_asc[x]]])
+                allelesM_asc.append(TseqM[index_avail_sites[pos_asc[x]]])
+                allelesA_asc.append(TseqA[index_avail_sites[pos_asc[x]]])
+
+        ###Genotypes for the ascertained SNPs
+        seqAf_asc = zip(*allelesAf_asc)
+        seqEu_asc = zip(*allelesEu_asc)
+        seqAs_asc = zip(*allelesAs_asc)
+        seqJ_asc = zip(*allelesJ_asc)
+        seqM_asc = zip(*allelesM_asc)
+        seqA_asc = zip(*allelesA_asc)
 
         res = []
         Af_res = []
@@ -133,14 +179,22 @@ def main():
 
         return res
 
+        seqJ = Talleles[total_naf + total_neu + total_nas:total_naf + total_neu + total_nas + nJ]
+        TseqJ = zip(*seqJ)
+        seqM = Talleles[total_naf + total_neu + total_nas + nJ:total_naf + total_neu + total_nas + nJ + nM]
+        TseqM = zip(*seqM)
+        seqA = Talleles[total_naf + total_neu + total_nas + nJ + nM:total_naf + total_neu + total_nas + nJ + nM + nA]
+        TseqA = zip(*seqA)
+
+
     elif option == 'bitarray':
         seq_macs_file = AllelesMacsFile('tests/test_data/sites1000000.txt')
-        print 'seqAF_bits'
         seqAF_bits = seq_macs_file.make_bitarray_seq(0, total_naf)
-        print 'seqEu_bits'
         seqEu_bits = seq_macs_file.make_bitarray_seq(total_naf, total_naf + total_neu)
-        print 'seqAs_bits'
         seqAs_bits = seq_macs_file.make_bitarray_seq(total_naf + total_neu, total_naf + total_neu + total_nas)
+        seqJ_bits = seq_macs_file.make_bitarray_seq(total_naf + total_neu + total_nas, total_naf + total_neu + total_nas + nJ)
+        seqM_bits = seq_macs_file.make_bitarray_seq(total_naf + total_neu + total_nas + nJ, total_naf + total_neu + total_nas + nJ + nM)
+        seqA_bits = seq_macs_file.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM, total_naf + total_neu + total_nas + nJ + nM + nA)
 
         nbss = len(seqAF_bits) / total_naf
 
@@ -163,36 +217,36 @@ def main():
         for first_index in xrange(0, len(seqAs_bits), total_nas):
             seqAsCGI_bits.extend(seqAs_bits[first_index:first_index + nas_CGI])
 
-        # ####Discovery subset
-        # seqAf_ds_bits = bitarray()
-        # seqAf_ds_length = total_naf - naf_CGI
-        # for first_index in xrange(naf_CGI, len(seqAF_bits), total_naf):
-        #     seqAf_ds_bits.extend(seqAF_bits[first_index:first_index + seqAf_ds_length])
-        #
-        # seqEu_ds_bits = bitarray()
-        # seqEu_ds_length = total_neu - neu_CGI
-        # for first_index in xrange(neu_CGI, len(seqEu_bits), total_neu):
-        #     seqEu_ds_bits.extend(seqEu_bits[first_index:first_index + seqEu_ds_length])
-        #
-        #
-        # seqAs_ds_bits = bitarray()
-        # seqAs_ds_length = total_nas - nas_CGI
-        # for first_index in xrange(nas_CGI, len(seqAs_bits), total_nas):
-        #     seqAs_ds_bits.extend(seqAs_bits[first_index:first_index + seqAs_ds_length])
-        #
-        # #####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
-        # asc_panel_bits = bitarray()
-        # asc_panel_bits.extend(seqAf_ds_bits)
-        # asc_panel_bits.extend(seqEu_ds_bits)
-        # asc_panel_bits.extend(seqAs_ds_bits)
-
         asc_panel_bits = bitarray()
         for site in xrange(0, nbss):
             asc_panel_bits.extend(seqAF_bits[site*total_naf+naf_CGI:site*total_naf+total_naf])
             asc_panel_bits.extend(seqEu_bits[site * total_neu + neu_CGI:site * total_neu + total_neu])
             asc_panel_bits.extend(seqAs_bits[site * total_nas + nas_CGI:site * total_nas + total_nas])
 
-        pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        pos_asc, nbss_asc, index_avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+
+        seqAf_asc_bits = bitarray()
+        seqEu_asc_bits = bitarray()
+        seqAs_asc_bits = bitarray()
+        seqJ_asc_bits = bitarray()
+        seqM_asc_bits = bitarray()
+        seqA_asc_bits = bitarray()
+        if (nbss_asc == len(index_avail_sites)):
+            for x in xrange(0,nbss_asc):
+                seqAf_asc_bits.extend(seqAfCGI_bits[pos_asc[x]*naf_CGI:pos_asc[x]*naf_CGI+naf_CGI])
+                seqEu_asc_bits.extend(seqEuCGI_bits[pos_asc[x] * neu_CGI:pos_asc[x] * neu_CGI + neu_CGI])
+                seqAs_asc_bits.extend(seqAsCGI_bits[pos_asc[x] * nas_CGI:pos_asc[x] * nas_CGI + nas_CGI])
+                seqJ_asc_bits.extend(seqJ_bits[pos_asc[x] * nJ:pos_asc[x] * nJ + nJ])
+                seqM_asc_bits.extend(seqM_bits[pos_asc[x] * nM:pos_asc[x] * nM + nM])
+                seqA_asc_bits.extend(seqA_bits[pos_asc[x] * nA:pos_asc[x] * nA + nA])
+        elif (len(index_avail_sites) > nbss_asc):
+            for x in xrange(0, len(pos_asc)):
+                seqAf_asc_bits.extend(seqAfCGI_bits[index_avail_sites[pos_asc[x]] * naf_CGI:index_avail_sites[pos_asc[x]] * naf_CGI + naf_CGI])
+                seqEu_asc_bits.extend(seqEuCGI_bits[index_avail_sites[pos_asc[x]] * neu_CGI:index_avail_sites[pos_asc[x]] * neu_CGI + neu_CGI])
+                seqAs_asc_bits.extend(seqAsCGI_bits[index_avail_sites[pos_asc[x]] * nas_CGI:index_avail_sites[pos_asc[x]] * nas_CGI + nas_CGI])
+                seqJ_asc_bits.extend(seqJ_bits[index_avail_sites[pos_asc[x]] * nJ:index_avail_sites[pos_asc[x]] * nJ + nJ])
+                seqM_asc_bits.extend(seqM_bits[index_avail_sites[pos_asc[x]] * nM:index_avail_sites[pos_asc[x]] * nM + nM])
+                seqA_asc_bits.extend(seqA_bits[index_avail_sites[pos_asc[x]] * nA:index_avail_sites[pos_asc[x]] * nA + nA])
 
         res = []
         Af_res = []
