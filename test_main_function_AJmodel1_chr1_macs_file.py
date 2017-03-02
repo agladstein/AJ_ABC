@@ -131,7 +131,6 @@ def main():
         res.append(afs_stats.FST2(seqEuCGI, pi_EuCGI, neu_CGI, seqAsCGI, pi_AsCGI, nas_CGI))
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
-
         return res
 
     elif option == 'bitarray':
