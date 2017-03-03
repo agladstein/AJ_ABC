@@ -201,6 +201,7 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
         pos_asc.sort()
 
         nbss_asc = len(pos_asc)
+        nb_array_snps = len(snps)
 
         if (len(snps) == nbss_asc):
             flag_nb_asc_snps = 1

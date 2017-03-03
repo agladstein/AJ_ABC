@@ -127,8 +127,6 @@ def main(arguments):
         snps.append(int(columns[2]))
 
     print 'nb Array snps', len(snps)
-    nb_array_snps = len(snps)
-    # print snps
 
     ###define simulation size
     size = arguments[3]
@@ -196,32 +194,12 @@ def main(arguments):
 
         print 'number of chromosomes in asc_panel:', asc_panel_bits.length()/nbss
 
-        #######Array with the available sites given the frequency cut off
-        ##array with the frequency of all the simulated snps
-        sites_freq = []
-        ##array with the available sites, that pass the frequency cut-off
-        avail_sites = []  ##this one has the positions of the snps
-        index_avail_sites = []  ##this one has the indexes of the snps
-
-        for n in xrange(len(Tasc_panel)):
-            freq_site = float(Tasc_panel[n][0:len(asc_panel)].count('1')) / float(len(asc_panel))
-            if freq_site >= daf and freq_site <= 1 - daf:
-                sites_freq.append(freq_site)
-                avail_sites.append(pos[n])
-                index_avail_sites.append(n)
-
-        # print sites_freq
-        # print 'nb avail sites', len(avail_sites)
-        # print index_avail_sites
+        ####Get pseudo array sites
+        pos_asc, nbss_asc, index_avail_sites, avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
 
         nb_avail_sites = len(avail_sites)
-        # print 'nb avail and seg sites', nb_avail_sites
-        # print 'index_avail_sites', index_avail_sites
-
-
         if (nb_avail_sites >= len(snps)):
             flag_sim = True
-
         else:
             flag_sim = False
             rep = rep + 1
