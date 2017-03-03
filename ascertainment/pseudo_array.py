@@ -136,7 +136,7 @@ def pseudo_array(asc_panel, daf, pos, snps):
             pos_asc.sort()
             nbss_asc = len(pos_asc)
     print 'finished making pseudo array'
-    return pos_asc, nbss_asc, index_avail_sites
+    return pos_asc, nbss_asc, index_avail_sites, avail_sites
 
 def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
     n = asc_panel_bits.length()/len(pos)
@@ -231,4 +231,4 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
             pos_asc.sort()
             nbss_asc = len(pos_asc)
     print 'finished making pseudo array'
-    return pos_asc,nbss_asc,index_avail_sites
+    return pos_asc, nbss_asc, index_avail_sites, avail_sites

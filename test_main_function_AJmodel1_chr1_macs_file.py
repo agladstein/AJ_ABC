@@ -3,6 +3,7 @@ from alleles_generator.macs_file import AllelesMacsFile
 from bitarray import bitarray
 from summary_statistics import afs_stats, afs_stats_bitarray
 from ascertainment.pseudo_array import pseudo_array, pseudo_array_bits
+import os
 import itertools
 
 
@@ -14,6 +15,8 @@ def main():
     Must give list or bitarray as argument"""
 
     option = argv[1]
+    job = 1
+    chr_number = 1
 
     length = 249163442
 
@@ -62,6 +65,21 @@ def main():
         columns = line_snp.split('\t')
         snps.append(int(columns[2]))
 
+    #### Check if necessary directories exist.
+    sim_data_dir = './sim_data_AJ_M1'
+    germline_out_dir='./germline_out_AJ_M1'
+    sim_values_dir='./sim_values_AJ_M1'
+    results_sims_dir='./results_sims_AJ_M1'
+
+    if not os.path.exists(sim_data_dir):
+        os.makedirs(sim_data_dir)
+    if not os.path.exists(germline_out_dir):
+        os.makedirs(germline_out_dir)
+    if not os.path.exists(sim_values_dir):
+        os.makedirs(sim_values_dir)
+    if not os.path.exists(results_sims_dir):
+        os.makedirs(results_sims_dir)
+
     if option == 'list':
         alleles_macs_file = AllelesMacsFile('tests/test_data/sites1000000.txt')
         alleles = alleles_macs_file.make_lists()[0]
@@ -97,7 +115,7 @@ def main():
         asc_panel.extend(seqEu_ds)
         asc_panel.extend(seqAs_ds)
 
-        pos_asc, nbss_asc, index_avail_sites = pseudo_array(asc_panel, daf, pos, snps)
+        pos_asc, nbss_asc, index_avail_sites, avail_sites = pseudo_array(asc_panel, daf, pos, snps)
 
         ############
         ##Transpose the data
@@ -146,6 +164,51 @@ def main():
         seqM_asc = zip(*allelesM_asc)
         seqA_asc = zip(*allelesA_asc)
 
+        ##Make ped file
+        filenameped = str(sim_data_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number) + '.ped'
+        fileped = open(filenameped, 'w')
+        ped = ''
+        for e in range(2, int(neu_CGI) + 2, 2):
+            ped = ped + 'E ' + str(e / 2) + '_E 0 0 1 -9 '
+            for g in range(0, len(pos_asc)):
+                ped = ped + str(int(allelesEu_asc[g - 1][e - 2]) + 1) + ' ' + str(int(allelesEu_asc[g - 1][e - 1]) + 1)
+                if g < len(pos_asc) - 1:
+                    ped = ped + ' '
+            ped = ped + '\n'
+        for j in range(2, int(nJ) + 2, 2):
+            ped = ped + 'J ' + str(j / 2) + '_J 0 0 1 -9 '
+            for g in range(0, len(pos_asc)):
+                ped = ped + str(int(allelesJ_asc[g - 1][j - 2]) + 1) + ' ' + str(int(allelesJ_asc[g - 1][j - 1]) + 1)
+                if g < len(pos_asc) - 1:
+                    ped = ped + ' '
+            ped = ped + '\n'
+        for m in range(2, int(nM) + 2, 2):
+            ped = ped + 'M ' + str(m / 2) + '_M 0 0 1 -9 '
+            for g in range(0, len(pos_asc)):
+                ped = ped + str(int(allelesM_asc[g - 1][m - 2]) + 1) + ' ' + str(int(allelesM_asc[g - 1][m - 1]) + 1)
+                if g < len(pos_asc) - 1:
+                    ped = ped + ' '
+            ped = ped + '\n'
+        for a in range(2, int(nA) + 2, 2):
+            ped = ped + 'A ' + str(a / 2) + '_A 0 0 1 -9 '
+            for g in range(0, len(pos_asc)):
+                ped = ped + str(int(allelesA_asc[g - 1][a - 2]) + 1) + ' ' + str(int(allelesA_asc[g - 1][a - 1]) + 1)
+                if g < len(pos_asc) - 1:
+                    ped = ped + ' '
+            ped = ped + '\n'
+        fileped.write(ped)
+        fileped.close()
+
+        ##Make map file
+        filenamemap = str(sim_data_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number) + '.map'
+        filemap = open(filenamemap, 'a')
+        map = ''
+        for g in range(0, len(pos_asc)):
+            map = str(chr_number) + ' ' + 'chr' + str(chr_number) + '_' + str(pos_asc[g]) + ' ' + str(
+                int(avail_sites[pos_asc[g]] - 1)) + ' ' + str(int(avail_sites[pos_asc[g]])) + '\n'
+            filemap.write(map)
+        filemap.close()
+
         res = []
         Af_res = []
         Af_res.extend(afs_stats.base_S_ss(seqAfCGI, nbss))
@@ -178,13 +241,6 @@ def main():
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
         return res
-
-        seqJ = Talleles[total_naf + total_neu + total_nas:total_naf + total_neu + total_nas + nJ]
-        TseqJ = zip(*seqJ)
-        seqM = Talleles[total_naf + total_neu + total_nas + nJ:total_naf + total_neu + total_nas + nJ + nM]
-        TseqM = zip(*seqM)
-        seqA = Talleles[total_naf + total_neu + total_nas + nJ + nM:total_naf + total_neu + total_nas + nJ + nM + nA]
-        TseqA = zip(*seqA)
 
 
     elif option == 'bitarray':
@@ -223,7 +279,7 @@ def main():
             asc_panel_bits.extend(seqEu_bits[site * total_neu + neu_CGI:site * total_neu + total_neu])
             asc_panel_bits.extend(seqAs_bits[site * total_nas + nas_CGI:site * total_nas + total_nas])
 
-        pos_asc, nbss_asc, index_avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        pos_asc, nbss_asc, index_avail_sites, avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
 
         seqAf_asc_bits = bitarray()
         seqEu_asc_bits = bitarray()
@@ -247,6 +303,54 @@ def main():
                 seqJ_asc_bits.extend(seqJ_bits[index_avail_sites[pos_asc[x]] * nJ:index_avail_sites[pos_asc[x]] * nJ + nJ])
                 seqM_asc_bits.extend(seqM_bits[index_avail_sites[pos_asc[x]] * nM:index_avail_sites[pos_asc[x]] * nM + nM])
                 seqA_asc_bits.extend(seqA_bits[index_avail_sites[pos_asc[x]] * nA:index_avail_sites[pos_asc[x]] * nA + nA])
+
+        ##Make ped file
+        filenameped = str(sim_data_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number) + '.ped'
+        fileped = open(filenameped, 'w')
+        for indiv in xrange(0, neu_CGI, 2):
+            fileped.write('E ' + str(indiv / 2 + 1) + '_E 0 0 1 -9 ')
+            for bit in itertools.chain.from_iterable([seqEu_asc_bits[i:i+2] for i in xrange(indiv, seqEu_asc_bits.length(), neu_CGI)]):
+                if bit:
+                    fileped.write('2 ')
+                else:
+                    fileped.write('1 ')
+            fileped.write('\n')
+        for indiv in xrange(0, nJ, 2):
+            fileped.write('J ' + str(indiv / 2 + 1) + '_J 0 0 1 -9 ')
+            for bit in itertools.chain.from_iterable([seqJ_asc_bits[i:i+2] for i in xrange(indiv, seqJ_asc_bits.length(), nJ)]):
+                if bit:
+                    fileped.write('2 ')
+                else:
+                    fileped.write('1 ')
+            fileped.write('\n')
+        for indiv in xrange(0, nM, 2):
+            fileped.write('M ' + str(indiv / 2 + 1) + '_M 0 0 1 -9 ')
+            for bit in itertools.chain.from_iterable([seqM_asc_bits[i:i+2] for i in xrange(indiv, seqM_asc_bits.length(), nM)]):
+                if bit:
+                    fileped.write('2 ')
+                else:
+                    fileped.write('1 ')
+            fileped.write('\n')
+        for indiv in xrange(0, nA, 2):
+            fileped.write('A ' + str(indiv / 2 + 1) + '_A 0 0 1 -9 ')
+            for bit in itertools.chain.from_iterable([seqA_asc_bits[i:i+2] for i in xrange(indiv, seqA_asc_bits.length(), nA)]):
+                if bit:
+                    fileped.write('2 ')
+                else:
+                    fileped.write('1 ')
+            fileped.write('\n')
+        fileped.close()
+
+        ##Make map file
+        filenamemap = str(sim_data_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number) + '.map'
+        filemap = open(filenamemap, 'a')
+        map = ''
+        for g in range(0, len(pos_asc)):
+            map = str(chr_number) + ' ' + 'chr' + str(chr_number) + '_' + str(pos_asc[g]) + ' ' + str(
+                int(avail_sites[pos_asc[g]] - 1)) + ' ' + str(int(avail_sites[pos_asc[g]])) + '\n'
+            filemap.write(map)
+        filemap.close()
+
 
         res = []
         Af_res = []
