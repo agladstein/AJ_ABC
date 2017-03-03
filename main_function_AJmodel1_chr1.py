@@ -101,10 +101,6 @@ def main(arguments):
     ##############START SIMULATIONS
     ##############
 
-    elapsed_time = time.time() - start_time
-    print '***********' + str(elapsed_time) + '***********'
-    print 'running chr' + str(chr_number)
-
     res = []
 
     # flag to check if the nb of asc SNPs is the same as the nb of Array SNPs
@@ -145,9 +141,6 @@ def main(arguments):
         print 'running simulation'
         sim = run_sim.run_sim(parameters, case, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nA, seed_option)
         print 'finished simulation'
-
-        elapsed_time = time.time() - start_time
-        print '***********' + str(elapsed_time) + '***********'
 
         ##number of segregating sites
         nbss = sim.getNumSites()
@@ -195,6 +188,7 @@ def main(arguments):
         print 'number of chromosomes in asc_panel:', asc_panel_bits.length()/nbss
 
         ####Get pseudo array sites
+        print 'Make pseudo array'
         pos_asc, nbss_asc, index_avail_sites, avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
 
         nb_avail_sites = len(avail_sites)
@@ -206,262 +200,105 @@ def main(arguments):
 
     #######################
     #####Calculate summary statistics from the regions for the CGI data
-    print 'calculating summary stats for CGI data'
-    elapsed_time = time.time() - start_time
-    print '***********' + str(elapsed_time) + '***********'
-
     if nbss > 0:  ###no segregating sites in the simulations which is not possible
 
+        res = []
         Af_res = []
-        Af_res.extend(afs_stats.base_S_ss(seqAfCGI, nbss))
-        pi_AfCGI = afs_stats.Pi2(Af_res[3], len(seqAfCGI))
-        Af_res.append(afs_stats.Tajimas(pi_AfCGI, Af_res[0], len(seqAfCGI)))
+        Af_res.extend(afs_stats_bitarray.base_S_ss(seqAfCGI_bits, naf_CGI))
+        pi_AfCGI = afs_stats_bitarray.Pi2(Af_res[3], naf_CGI)
+        Af_res.append(afs_stats_bitarray.Tajimas(pi_AfCGI, Af_res[0], naf_CGI))
         del (Af_res[3])
         res.extend(Af_res)
         head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
 
         Eu_res = []
-        Eu_res.extend(afs_stats.base_S_ss(seqEuCGI, nbss))
-        pi_EuCGI = afs_stats.Pi2(Eu_res[3], len(seqEuCGI))
-        Eu_res.append(afs_stats.Tajimas(pi_EuCGI, Eu_res[0], len(seqEuCGI)))
+        Eu_res.extend(afs_stats_bitarray.base_S_ss(seqEuCGI_bits, neu_CGI))
+        pi_EuCGI = afs_stats_bitarray.Pi2(Eu_res[3], neu_CGI)
+        Eu_res.append(afs_stats_bitarray.Tajimas(pi_EuCGI, Eu_res[0], neu_CGI))
         del (Eu_res[3])
         res.extend(Eu_res)
         head = head + 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
 
         As_res = []
-        As_res.extend(afs_stats.base_S_ss(seqAsCGI, nbss))
-        pi_AsCGI = afs_stats.Pi2(As_res[3], len(seqAsCGI))
-        As_res.append(afs_stats.Tajimas(pi_AsCGI, As_res[0], len(seqAsCGI)))
+        As_res.extend(afs_stats_bitarray.base_S_ss(seqAsCGI_bits, nas_CGI))
+        pi_AsCGI = afs_stats_bitarray.Pi2(As_res[3], nas_CGI)
+        As_res.append(afs_stats_bitarray.Tajimas(pi_AsCGI, As_res[0], nas_CGI))
         del (As_res[3])
         res.extend(As_res)
         head = head + 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
 
         ##fst between populations
-        res.append(afs_stats.FST2(seqAfCGI, pi_AfCGI, naf_CGI, seqEuCGI, pi_EuCGI, neu_CGI))
-        res.append(afs_stats.FST2(seqAfCGI, pi_AfCGI, naf_CGI, seqAsCGI, pi_AsCGI, nas_CGI))
-        res.append(afs_stats.FST2(seqEuCGI, pi_EuCGI, neu_CGI, seqAsCGI, pi_AsCGI, nas_CGI))
+        res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqEuCGI_bits, pi_EuCGI, neu_CGI))
+        res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
+        res.append(afs_stats_bitarray.FST2(seqEuCGI_bits, pi_EuCGI, neu_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
-        # print 'len(res)', len(res)
 
-    print 'Done calculating ss from chomosomes'
-    elapsed_time = time.time() - start_time
-    print '***********' + str(elapsed_time) + '***********'
-    ############
-
-
-    print 'Make pseudo array'
-
-    if flag_sim == False:
-        print 'the sims did not work'
-        pos_asc = []
-        pos_asc = index_avail_sites
-        nbss_asc = len(pos_asc)
-        # print 'nbss_asc', nbss_asc
-
-    if (len(avail_sites) == len(snps)):
-        print "number of avail_sites is equal to the number of Array snps"
-        pos_asc = []
-        pos_asc = index_avail_sites
-        nbss_asc = len(pos_asc)
-        # print pos_asc
-        flag_nb_asc_snps = 1
-
-
-    elif (len(avail_sites) > len(snps)):
-        print "number of avail_sites greater than number of Array snps"
-        pos_asc = [None] * int(len(snps))  ##indexes of the SNPs that pass the frequency cut-off and position
-        for i in xrange(len(snps)):  # each snp on the snp array on a chromosome
-            ## y is the position of the SNPs in the array
-            y = snps[i]
-            ##find the closest SNP in the array
-            closestleft = find2(avail_sites, y)
-            # print 'closestleft', closestleft, avail_sites[closestleft]
-
-            if (i > 0 and pos_asc[i - 1] == closestleft and closestleft + 1 < len(avail_sites)):  ##avoid duplicates
-                # print 'duplicate 1'
-                closestleft = closestleft + 1  ##move one position to the right
-                # print 'new closestleft', closestleft, avail_sites[closestleft]
-                pos_asc[i] = closestleft
-
-            elif (i > 0 and pos_asc[i - 1] > closestleft and pos_asc[i - 1] + 1 < len(avail_sites)):
-                # print 'duplicate 2'
-                closestleft = pos_asc[i - 1] + 1
-                # print 'new closestleft', closestleft, avail_sites[closestleft]
-                pos_asc[i] = closestleft
-
-            else:
-                pos_asc[i] = closestleft
-
-                # print 'after checking for dupl', pos_asc[i]
-                ###if I have duplicates at this point, it means that there were not anyt more snps to choose from
-                ###closestleft+1 or pos_asc[i-1]+1 == len(avail_sites)
-
-        # print 'before smoothing'
-        # print pos_asc
-
-        #####smoothing
-        ##last index of the pos_asc
-        i = len(pos_asc) - 1
-        # print 'last i', i
-
-        ##check if there is another position that might work better
-        for j in xrange(0, i):
-            if (j == i - 1 and pos_asc[j] + 1 < pos_asc[j + 1] and pos_asc[j] < (len(avail_sites) - 1) and (
-                j + 1) < len(avail_sites)):
-                d1 = abs(snps[j] - avail_sites[pos_asc[j]])
-                d2 = abs(snps[j] - avail_sites[pos_asc[j] + 1])
-                if (d2 < d1):
-                    pos_asc[j] = pos_asc[j] + 1
-
-        # print 'after smoothing'
-        # print pos_asc
-        ##removes duplicates
-        pos_asc = (list(set(pos_asc)))
-        pos_asc.sort()
-        # print 'check for duplicates ', pos_asc
-
-
-        ##might need to put this at the end of this part again
-        nbss_asc = len(pos_asc)
-        # print 'number of ascertained SNPs:',nbss_asc
-        # print 'position of ascertained SNPs:', pos_asc
-
-
-        if (len(snps) == nbss_asc):
-            flag_nb_asc_snps = 1
-            print 'nb of asc snps equal to nb array snps'
-
-        if (len(snps) != len(pos_asc)):
-            flag_nb_asc_snps = 0
-            print 'nb of asc snps not equal to nb array snps'
-
-            diff = int(len(snps) - len(pos_asc))
-            # print 'diff', diff
-
-            for m in xrange(1, diff + 1):
-                # print 'm', m
-
-                pos_asc2 = []
-
-                # print 'avail_sites', avail_sites
-                # print 'nb_avail_sites', nb_avail_sites
-
-                pos_asc2 = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps)
-                pos_asc = pos_asc2
-
-                # print 'new len of pos_asc', len(pos_asc)
-                # print pos_asc
-                nbss_asc = len(pos_asc)
-
-                if nbss_asc == len(snps):
-                    flag_nb_asc_snps = 1
-                    break
-
-                else:
-                    flag_nb_asc_snps = 0
-
-        if (flag_nb_asc_snps == 0):  ##it means that the 1st index in pos_asc is 0; and the last is len(avail_sites)-1
-
-            # print 'asc snps still missing'
-
-            diff = int(len(snps) - len(pos_asc))
-            # print 'diff', diff
-
-            while (len(pos_asc) != len(snps)):
-                rand_numb = randint(0, len(avail_sites) - 1)
-                # print 'random',rand_numb
-                if rand_numb not in pos_asc:
-                    pos_asc.append(rand_numb)
-
-            # print 'pos_asc', pos_asc
-            pos_asc.sort()
-            # print 'pos_asc', pos_asc
-            nbss_asc = len(pos_asc)
-
-    print 'finished making pseudo array'
-    elapsed_time = time.time() - start_time
-    print '***********' + str(elapsed_time) + '***********'
-
-    ############
-    ##Transpose the data
-    TseqAf = zip(*seqAfCGI)
-    TseqEu = zip(*seqEuCGI)
-    TseqAs = zip(*seqAsCGI)
-
-    seqJ = Talleles[total_naf + total_neu + total_nas:total_naf + total_neu + total_nas + nJ]
-    TseqJ = zip(*seqJ)
-
-    seqM = Talleles[total_naf + total_neu + total_nas + nJ:total_naf + total_neu + total_nas + nJ + nM]
-    TseqM = zip(*seqM)
-
-    seqA = Talleles[total_naf + total_neu + total_nas + nJ + nM:total_naf + total_neu + total_nas + nJ + nM + nA]
-    TseqA = zip(*seqA)
-
-    ###get genotypes for pseudo array
-    allelesAf_asc = []
-    allelesEu_asc = []
-    allelesAs_asc = []
-
-    allelesJ_asc = []
-    allelesM_asc = []
-    allelesA_asc = []
-
-    ##get the ascertained SNPs in the populations of interest
+    seqAf_asc_bits = bitarray()
+    seqEu_asc_bits = bitarray()
+    seqAs_asc_bits = bitarray()
+    seqJ_asc_bits = bitarray()
+    seqM_asc_bits = bitarray()
+    seqA_asc_bits = bitarray()
     if (nbss_asc == len(index_avail_sites)):
-        for x in xrange(nbss_asc):
-            allelesAf_asc.append(TseqAf[pos_asc[x]])
-            allelesEu_asc.append(TseqEu[pos_asc[x]])
-            allelesAs_asc.append(TseqAs[pos_asc[x]])
-            allelesJ_asc.append(TseqJ[pos_asc[x]])
-            allelesM_asc.append(TseqM[pos_asc[x]])
-            allelesA_asc.append(TseqA[pos_asc[x]])
-
+        for x in xrange(0, nbss_asc):
+            seqAf_asc_bits.extend(seqAfCGI_bits[pos_asc[x] * naf_CGI:pos_asc[x] * naf_CGI + naf_CGI])
+            seqEu_asc_bits.extend(seqEuCGI_bits[pos_asc[x] * neu_CGI:pos_asc[x] * neu_CGI + neu_CGI])
+            seqAs_asc_bits.extend(seqAsCGI_bits[pos_asc[x] * nas_CGI:pos_asc[x] * nas_CGI + nas_CGI])
+            seqJ_asc_bits.extend(seqJ_bits[pos_asc[x] * nJ:pos_asc[x] * nJ + nJ])
+            seqM_asc_bits.extend(seqM_bits[pos_asc[x] * nM:pos_asc[x] * nM + nM])
+            seqA_asc_bits.extend(seqA_bits[pos_asc[x] * nA:pos_asc[x] * nA + nA])
     elif (len(index_avail_sites) > nbss_asc):
-        for x in xrange(len(pos_asc)):
-            allelesAf_asc.append(TseqAf[index_avail_sites[pos_asc[x]]])
-            allelesEu_asc.append(TseqEu[index_avail_sites[pos_asc[x]]])
-            allelesAs_asc.append(TseqAs[index_avail_sites[pos_asc[x]]])
-            allelesJ_asc.append(TseqJ[index_avail_sites[pos_asc[x]]])
-            allelesM_asc.append(TseqM[index_avail_sites[pos_asc[x]]])
-            allelesA_asc.append(TseqA[index_avail_sites[pos_asc[x]]])
+        for x in xrange(0, len(pos_asc)):
+            seqAf_asc_bits.extend(seqAfCGI_bits[index_avail_sites[pos_asc[x]] * naf_CGI:index_avail_sites[pos_asc[
+                x]] * naf_CGI + naf_CGI])
+            seqEu_asc_bits.extend(seqEuCGI_bits[index_avail_sites[pos_asc[x]] * neu_CGI:index_avail_sites[pos_asc[
+                x]] * neu_CGI + neu_CGI])
+            seqAs_asc_bits.extend(seqAsCGI_bits[index_avail_sites[pos_asc[x]] * nas_CGI:index_avail_sites[pos_asc[
+                x]] * nas_CGI + nas_CGI])
+            seqJ_asc_bits.extend(seqJ_bits[index_avail_sites[pos_asc[x]] * nJ:index_avail_sites[pos_asc[x]] * nJ + nJ])
+            seqM_asc_bits.extend(seqM_bits[index_avail_sites[pos_asc[x]] * nM:index_avail_sites[pos_asc[x]] * nM + nM])
+            seqA_asc_bits.extend(seqA_bits[index_avail_sites[pos_asc[x]] * nA:index_avail_sites[pos_asc[x]] * nA + nA])
 
     print 'Make ped and map files'
-    elapsed_time = time.time() - start_time
-    print '***********' + str(elapsed_time) + '***********'
-
     ##Make ped file
     filenameped = str(sim_data_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number) + '.ped'
     fileped = open(filenameped, 'w')
-    ped = ''
-    for e in range(2, int(neu_CGI) + 2, 2):
-        ped = ped + 'E ' + str(e / 2) + '_E 0 0 1 -9 '
-        for g in range(0, len(pos_asc)):
-            ped = ped + str(int(allelesEu_asc[g - 1][e - 2]) + 1) + ' ' + str(int(allelesEu_asc[g - 1][e - 1]) + 1)
-            if g < len(pos_asc) - 1:
-                ped = ped + ' '
-        ped = ped + '\n'
-    for j in range(2, int(nJ) + 2, 2):
-        ped = ped + 'J ' + str(j / 2) + '_J 0 0 1 -9 '
-        for g in range(0, len(pos_asc)):
-            ped = ped + str(int(allelesJ_asc[g - 1][j - 2]) + 1) + ' ' + str(int(allelesJ_asc[g - 1][j - 1]) + 1)
-            if g < len(pos_asc) - 1:
-                ped = ped + ' '
-        ped = ped + '\n'
-    for m in range(2, int(nM) + 2, 2):
-        ped = ped + 'M ' + str(m / 2) + '_M 0 0 1 -9 '
-        for g in range(0, len(pos_asc)):
-            ped = ped + str(int(allelesM_asc[g - 1][m - 2]) + 1) + ' ' + str(int(allelesM_asc[g - 1][m - 1]) + 1)
-            if g < len(pos_asc) - 1:
-                ped = ped + ' '
-        ped = ped + '\n'
-    for a in range(2, int(nA) + 2, 2):
-        ped = ped + 'A ' + str(a / 2) + '_A 0 0 1 -9 '
-        for g in range(0, len(pos_asc)):
-            ped = ped + str(int(allelesA_asc[g - 1][a - 2]) + 1) + ' ' + str(int(allelesA_asc[g - 1][a - 1]) + 1)
-            if g < len(pos_asc) - 1:
-                ped = ped + ' '
-        ped = ped + '\n'
-    fileped.write(ped)
+    for indiv in xrange(0, neu_CGI, 2):
+        fileped.write('E ' + str(indiv / 2 + 1) + '_E 0 0 1 -9 ')
+        for bit in itertools.chain.from_iterable(
+                [seqEu_asc_bits[i:i + 2] for i in xrange(indiv, seqEu_asc_bits.length(), neu_CGI)]):
+            if bit:
+                fileped.write('2 ')
+            else:
+                fileped.write('1 ')
+        fileped.write('\n')
+    for indiv in xrange(0, nJ, 2):
+        fileped.write('J ' + str(indiv / 2 + 1) + '_J 0 0 1 -9 ')
+        for bit in itertools.chain.from_iterable(
+                [seqJ_asc_bits[i:i + 2] for i in xrange(indiv, seqJ_asc_bits.length(), nJ)]):
+            if bit:
+                fileped.write('2 ')
+            else:
+                fileped.write('1 ')
+        fileped.write('\n')
+    for indiv in xrange(0, nM, 2):
+        fileped.write('M ' + str(indiv / 2 + 1) + '_M 0 0 1 -9 ')
+        for bit in itertools.chain.from_iterable(
+                [seqM_asc_bits[i:i + 2] for i in xrange(indiv, seqM_asc_bits.length(), nM)]):
+            if bit:
+                fileped.write('2 ')
+            else:
+                fileped.write('1 ')
+        fileped.write('\n')
+    for indiv in xrange(0, nA, 2):
+        fileped.write('A ' + str(indiv / 2 + 1) + '_A 0 0 1 -9 ')
+        for bit in itertools.chain.from_iterable(
+                [seqA_asc_bits[i:i + 2] for i in xrange(indiv, seqA_asc_bits.length(), nA)]):
+            if bit:
+                fileped.write('2 ')
+            else:
+                fileped.write('1 ')
+        fileped.write('\n')
     fileped.close()
 
     ##Make map file
@@ -473,15 +310,6 @@ def main(arguments):
             int(avail_sites[pos_asc[g]] - 1)) + ' ' + str(int(avail_sites[pos_asc[g]])) + '\n'
         filemap.write(map)
     filemap.close()
-
-    ###Genotypes for the ascertained SNPs
-    seqAf_asc = zip(*allelesAf_asc)
-    seqEu_asc = zip(*allelesEu_asc)
-    seqAs_asc = zip(*allelesAs_asc)
-
-    seqJ_asc = zip(*allelesJ_asc)
-    seqM_asc = zip(*allelesM_asc)
-    seqA_asc = zip(*allelesA_asc)
 
     ########Use Germline to find IBD on pseduo array ped and map files
     run_germline = int(arguments[6])
