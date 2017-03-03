@@ -1,25 +1,20 @@
 import random
 import time
-from random import randint
 from subprocess import Popen
 import numpy as np
 import os
 from bitarray import bitarray
 import itertools
-
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
-from ascertainment.pseudo_array import pseudo_array, pseudo_array_bits
+from ascertainment.pseudo_array import pseudo_array_bits
 from simulation import def_params, run_sim
-from summary_statistics import afs_stats, afs_stats_bitarray
+from summary_statistics import afs_stats_bitarray
 
 
 def main(arguments):
 
     #####set up simulations#####################################
     ############################################################
-
-    start_time = time.time()
-    elapsed_time = time.time() - start_time
 
     ##Length of chromosomes
     lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069,
@@ -80,7 +75,6 @@ def main(arguments):
     total_asc = asc_nb_af + asc_nb_eu + asc_nb_as
     total = total_CGI + total_asc
 
-
     chr_number=1
 
     #### Check if necessary directories exist.
@@ -134,7 +128,6 @@ def main(arguments):
     ##flag to check if the simulation work (generate the number of file
     flag_sim = False
     rep = 1
-
     while flag_sim == False:
 
         #####Run simulations
@@ -163,7 +156,6 @@ def main(arguments):
         seqA_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM, total_naf + total_neu + total_nas + nJ + nM + nA)
 
         del sim
-
 
         ####CGI data
         seqAfCGI_bits = bitarray()
@@ -259,8 +251,8 @@ def main(arguments):
             seqM_asc_bits.extend(seqM_bits[index_avail_sites[pos_asc[x]] * nM:index_avail_sites[pos_asc[x]] * nM + nM])
             seqA_asc_bits.extend(seqA_bits[index_avail_sites[pos_asc[x]] * nA:index_avail_sites[pos_asc[x]] * nA + nA])
 
-    print 'Make ped and map files'
     ##Make ped file
+    print 'Make ped and map files'
     filenameped = str(sim_data_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number) + '.ped'
     fileped = open(filenameped, 'w')
     for indiv in xrange(0, neu_CGI, 2):
@@ -315,27 +307,18 @@ def main(arguments):
     run_germline = int(arguments[6])
     filenameout = str(germline_out_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number)
 
-    print run_germline
-
+    print 'run germline? '+str(run_germline)
     if (run_germline == 0):
         print 'Running Germline on ' + str(filenameped) + ' ' + str(filenamemap)
-        elapsed_time = time.time() - start_time
-        print '***********' + str(elapsed_time) + '***********'
 
         ###Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
-        print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(
-            filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"'
-        germline = Popen.wait(Popen(
-            'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(
-                filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"', shell=True))
+        print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"'
+        germline = Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"', shell=True))
 
         print 'finished running germline'
-        elapsed_time = time.time() - start_time
-        print '***********' + str(elapsed_time) + '***********'
 
     ########Get IBD stats from Germline output
     if os.path.isfile(str(filenameout) + '.match'):
-
         print 'reading Germline IBD output'
         filegermline = open(str(filenameout) + '.match', 'r')
         IBDlengths_AA = []
@@ -375,8 +358,6 @@ def main(arguments):
                 IBDlengths_ME.append(segment)
         filegermline.close()
 
-        elapsed_time = time.time() - start_time
-        print '***********' + str(elapsed_time) + '***********'
         print 'calculating summary stats'
 
         IBDlengths_mean = []
@@ -429,129 +410,112 @@ def main(arguments):
         res.extend(IBDlengths_var30)
         head = head + 'IBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD_var_EE\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
 
-    #######
-    #########calculate summary stats from the ascertained SNPs
-    if nbss_asc > 0:
 
+    #########calculate summary stats from the ascertained SNPs
+
+    if nbss_asc > 0:
         Af_asc = []
-        ss_Af_asc = afs_stats.base_S_ss(seqAf_asc, nbss_asc)
+        ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, nbss_asc)
         if (ss_Af_asc[0] == 0):
             for i in xrange(5):
                 Af_asc.append(0)
             pi_Af_asc = 0
         else:
-            Af_asc.extend(afs_stats.base_S_ss(seqAf_asc, nbss_asc))
-            pi_Af_asc = afs_stats.Pi2(Af_asc[3], len(seqAf_asc))
+            Af_asc.extend(afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI))
+            pi_Af_asc = afs_stats_bitarray.Pi2(Af_asc[3], naf_CGI)
             Af_asc.append(pi_Af_asc)
-            Af_asc.append(afs_stats.Tajimas(pi_Af_asc, Af_asc[0], len(seqAf_asc)))
+            Af_asc.append(afs_stats_bitarray.Tajimas(pi_Af_asc, Af_asc[0], naf_CGI))
             del (Af_asc[3])
-
         res.extend(Af_asc)
         head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
 
-        ############
-
         Eu_asc = []
-        ss_Eu_asc = afs_stats.base_S_ss(seqEu_asc, nbss_asc)
+        ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, nbss_asc)
         if (ss_Eu_asc[0] == 0):
             for i in xrange(5):
                 Eu_asc.append(0)
             pi_Eu_asc = 0
         else:
-            Eu_asc.extend(afs_stats.base_S_ss(seqEu_asc, nbss_asc))
-            pi_Eu_asc = afs_stats.Pi2(Eu_asc[3], len(seqEu_asc))
+            Eu_asc.extend(afs_stats_bitarray.base_S_ss(seqEu_asc_bits, neu_CGI))
+            pi_Eu_asc = afs_stats_bitarray.Pi2(Eu_asc[3], neu_CGI)
             Eu_asc.append(pi_Eu_asc)
-            Eu_asc.append(afs_stats.Tajimas(pi_Eu_asc, Eu_asc[0], len(seqEu_asc)))
+            Eu_asc.append(afs_stats_bitarray.Tajimas(pi_Eu_asc, Eu_asc[0], neu_CGI))
             del (Eu_asc[3])
-
         res.extend(Eu_asc)
         head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
-        ###########
 
         As_asc = []
-        ss_As_asc = afs_stats.base_S_ss(seqAs_asc, nbss_asc)
+        ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nbss_asc)
         if (ss_As_asc[0] == 0):
             for i in xrange(5):
                 As_asc.append(0)
             pi_As_asc = 0
         else:
-            As_asc.extend(afs_stats.base_S_ss(seqAs_asc, nbss_asc))
-            pi_As_asc = afs_stats.Pi2(As_asc[3], len(seqAs_asc))
+            As_asc.extend(afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nas_CGI))
+            pi_As_asc = afs_stats_bitarray.Pi2(As_asc[3], nas_CGI)
             As_asc.append(pi_As_asc)
-            As_asc.append(afs_stats.Tajimas(pi_As_asc, As_asc[0], len(seqAs_asc)))
+            As_asc.append(afs_stats_bitarray.Tajimas(pi_As_asc, As_asc[0], nas_CGI))
             del (As_asc[3])
-
         res.extend(As_asc)
         head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
-        ############
 
         J_asc = []
-        ss_J_asc = afs_stats.base_S_ss(seqJ_asc, nbss_asc)
+        ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nbss_asc)
         if (ss_J_asc[0] == 0):
             for i in xrange(5):
                 J_asc.append(0)
             pi_J_asc = 0
         else:
-            J_asc.extend(afs_stats.base_S_ss(seqJ_asc, nbss_asc))
-            pi_J_asc = afs_stats.Pi2(J_asc[3], len(seqJ_asc))
+            J_asc.extend(afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nJ))
+            pi_J_asc = afs_stats_bitarray.Pi2(J_asc[3], nJ)
             J_asc.append(pi_J_asc)
-            J_asc.append(afs_stats.Tajimas(pi_J_asc, J_asc[0], len(seqJ_asc)))
+            J_asc.append(afs_stats_bitarray.Tajimas(pi_J_asc, J_asc[0], nJ))
             del (J_asc[3])
-
         res.extend(J_asc)
         head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
-        #############
 
         M_asc = []
-        ss_M_asc = afs_stats.base_S_ss(seqM_asc, nbss_asc)
+        ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nbss_asc)
         if (ss_M_asc[0] == 0):
             for i in xrange(5):
                 M_asc.append(0)
             pi_M_asc = 0
         else:
-            M_asc.extend(afs_stats.base_S_ss(seqM_asc, nbss_asc))
-            pi_M_asc = afs_stats.Pi2(M_asc[3], len(seqM_asc))
+            M_asc.extend(afs_stats_bitarray.base_S_ss(seqM_asc_bits, nM))
+            pi_M_asc = afs_stats_bitarray.Pi2(M_asc[3], nM)
             M_asc.append(pi_M_asc)
-            M_asc.append(afs_stats.Tajimas(pi_M_asc, M_asc[0], len(seqM_asc)))
+            M_asc.append(afs_stats_bitarray.Tajimas(pi_M_asc, M_asc[0], nM))
             del (M_asc[3])
-
         res.extend(M_asc)
         head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
-        #############
 
         A_asc = []
-        ss_A_asc = afs_stats.base_S_ss(seqA_asc, nbss_asc)
+        ss_A_asc = afs_stats_bitarray.base_S_ss(seqA_asc_bits, nbss_asc)
         if (ss_A_asc[0] == 0):
             for i in xrange(5):
                 A_asc.append(0)
             pi_A_asc = 0
         else:
-            A_asc.extend(afs_stats.base_S_ss(seqA_asc, nbss_asc))
-            pi_A_asc = afs_stats.Pi2(A_asc[3], len(seqA_asc))
+            A_asc.extend(afs_stats_bitarray.base_S_ss(seqA_asc_bits, nA))
+            pi_A_asc = afs_stats_bitarray.Pi2(A_asc[3], nA)
             A_asc.append(pi_A_asc)
-            A_asc.append(afs_stats.Tajimas(pi_A_asc, A_asc[0], len(seqA_asc)))
+            A_asc.append(afs_stats_bitarray.Tajimas(pi_A_asc, A_asc[0], nA))
             del (A_asc[3])
-
         res.extend(A_asc)
         head = head + 'SegS_A_ASC\tSing_A_ASC\tDupl_A_ASC\tPi_A_ASC\tTajD_A_ASC\t'
-        #############
 
-
-        ##fst between populations
-        res.append(afs_stats.FST2(seqAf_asc, pi_Af_asc, naf_CGI, seqEu_asc, pi_Eu_asc, neu_CGI))
-        res.append(afs_stats.FST2(seqAf_asc, pi_Af_asc, naf_CGI, seqAs_asc, pi_As_asc, nas_CGI))
-        res.append(afs_stats.FST2(seqEu_asc, pi_Eu_asc, neu_CGI, seqAs_asc, pi_As_asc, nas_CGI))
+        res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
+        res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
+        res.append(afs_stats_bitarray.FST2(seqEu_asc_bits, pi_Eu_asc, neu_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
         head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC_m\tFST_EuAs_ASC\t'
 
-        res.append(afs_stats.FST2(seqA_asc, pi_A_asc, nA, seqEu_asc, pi_Eu_asc, neu_CGI))
-        res.append(afs_stats.FST2(seqA_asc, pi_A_asc, nA, seqJ_asc, pi_J_asc, nJ))
-        res.append(afs_stats.FST2(seqA_asc, pi_A_asc, nA, seqM_asc, pi_M_asc, nM))
-        res.append(afs_stats.FST2(seqM_asc, pi_M_asc, nM, seqJ_asc, pi_J_asc, nJ))
+        res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
+        res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqJ_asc_bits, pi_J_asc, nJ))
+        res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqM_asc_bits, pi_M_asc, nM))
+        res.append(afs_stats_bitarray.FST2(seqM_asc_bits, pi_M_asc, nM, seqJ_asc_bits, pi_J_asc, nJ))
         head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
 
     print 'finished calculating ss'
-    elapsed_time=time.time()-start_time
-    print '***********'+str(elapsed_time)+'***********'
 
     ################
     #####write parameter values to file
@@ -563,8 +527,6 @@ def main(arguments):
     head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NA\tLog10_NJ\tLog10_NM\trA\trMJ\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTm\n'
     fileoutparam.write(head_param)
 
-
-
     for z in range(len(para_out)):
         if z==(len(para_out)-1):
             fileoutparam.write("%s\n" % para_out[z])
@@ -573,15 +535,11 @@ def main(arguments):
 
     fileoutparam.close()
 
-    #####
-    #####
-
     filesummary=str(results_sims_dir)+'/ms_output_'+str(job)+'.summary'
     filesumm=open(filesummary,'w')
     filesumm.write(head)
 
     out=''
-
     for g in range(len(res)):
         out=out+str(res[g])+'\t'
     out=out[:-1]+'\n'
