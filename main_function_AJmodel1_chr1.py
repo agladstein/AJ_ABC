@@ -4,11 +4,13 @@ from random import randint
 from subprocess import Popen
 import numpy as np
 import os
+from bitarray import bitarray
+import itertools
 
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
-from ascertainment.pseudo_array import find2, add_snps
+from ascertainment.pseudo_array import pseudo_array, pseudo_array_bits
 from simulation import def_params, run_sim
-from summary_statistics import afs_stats
+from summary_statistics import afs_stats, afs_stats_bitarray
 
 
 def main(arguments):
@@ -33,7 +35,7 @@ def main(arguments):
 
     if seed_option > int(0):
         random.seed(seed_option)
-    if arguments[5] == 'rand':
+    if arguments[5] == 'prior':
         param_model = def_params.param_sim_asc_rand()
     if arguments[5] == 'min':
         param_model = def_params.param_sim_asc_min()
@@ -151,8 +153,8 @@ def main(arguments):
 
         ##number of segregating sites
         nbss = sim.getNumSites()
-        # print 'number sites in simulation', nbss
-
+        print 'number sites in simulation', nbss
+        print 'number of chromosomes', total
 
         ##get position of the simulated sites and scale it to the "real" position in the SNP chip
         pos = []
@@ -160,45 +162,39 @@ def main(arguments):
             position = round(sim.getPosition(i) * (float(length)))  # you have to give the number of the snp
             pos.append(position)
 
-        ##alleles will have all the information of all the simulated sites for all the pops
-        # sites in each row
-        alleles_macsswig = AllelesMacsSwig(nbss, sim, total)
-        alleles = alleles_macsswig.make_lists()
-        print 'total number of sites:', len(alleles)  # number of elements in alleles
-        print 'total number of chromosomes:', len(alleles[0])
+        ###Get data from the simulations
+        seq_macsswig = AllelesMacsSwig(nbss, sim, total)
+        seqAF_bits = seq_macsswig.make_bitarray_seq(0, total_naf)
+        seqEu_bits = seq_macsswig.make_bitarray_seq(total_naf, total_naf + total_neu)
+        seqAs_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu, total_naf + total_neu + total_nas)
+        seqJ_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas, total_naf + total_neu + total_nas + nJ)
+        seqM_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ, total_naf + total_neu + total_nas + nJ + nM)
+        seqA_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM, total_naf + total_neu + total_nas + nJ + nM + nA)
 
         del sim
 
-        #########get data from the simulations
-        Talleles = zip(*alleles)
-
-        ###Get data from the simulations
-        seqAf = Talleles[0:total_naf]
-        seqEu = Talleles[total_naf:total_naf + total_neu]
-        seqAs = Talleles[total_naf + total_neu:total_naf + total_neu + total_nas]
 
         ####CGI data
-        seqAfCGI = seqAf[:naf_CGI]
-        seqEuCGI = seqEu[:neu_CGI]
-        seqAsCGI = seqAs[:nas_CGI]
+        seqAfCGI_bits = bitarray()
+        for first_index in xrange(0, len(seqAF_bits), total_naf):
+            seqAfCGI_bits.extend(seqAF_bits[first_index:first_index + naf_CGI])
 
-        ####Discovery subset
-        seqAf_ds = seqAf[naf_CGI:total_naf]
-        seqEu_ds = seqEu[neu_CGI:total_neu]
-        seqAs_ds = seqAs[nas_CGI:total_nas]
+        seqEuCGI_bits = bitarray()
+        for first_index in xrange(0, len(seqEu_bits), total_neu):
+            seqEuCGI_bits.extend(seqEu_bits[first_index:first_index + neu_CGI])
 
-        #####put all the samples together to calculate the daf and select SNPs (matching distance as the array)
-        asc_panel = []
-        asc_panel.extend(seqAf_ds)
-        asc_panel.extend(seqEu_ds)
-        asc_panel.extend(seqAs_ds)
+        seqAsCGI_bits = bitarray()
+        for first_index in xrange(0, len(seqAs_bits), total_nas):
+            seqAsCGI_bits.extend(seqAs_bits[first_index:first_index + nas_CGI])
 
-        # print asc_panel
-        Tasc_panel = zip(*asc_panel)
-        print 'number of sites in Tasc_panel:', len(Tasc_panel)
-        print 'number of chromosomes in Tasc_panel:', len(Tasc_panel[0])
-        # print Tasc_panel
+        ####Discovery subset. Put all the samples together to calculate the daf and select SNPs (matching distance as the array)
+        asc_panel_bits = bitarray()
+        for site in xrange(0, nbss):
+            asc_panel_bits.extend(seqAF_bits[site*total_naf+naf_CGI:site*total_naf+total_naf])
+            asc_panel_bits.extend(seqEu_bits[site * total_neu + neu_CGI:site * total_neu + total_neu])
+            asc_panel_bits.extend(seqAs_bits[site * total_nas + nas_CGI:site * total_nas + total_nas])
 
+        print 'number of chromosomes in asc_panel:', asc_panel_bits.length()/nbss
 
         #######Array with the available sites given the frequency cut off
         ##array with the frequency of all the simulated snps
@@ -411,28 +407,17 @@ def main(arguments):
     ############
     ##Transpose the data
     TseqAf = zip(*seqAfCGI)
-    # print 'len(TseqAf)', len(TseqAf)
     TseqEu = zip(*seqEuCGI)
-    # print 'len(TseqEu)', len(TseqEu)
     TseqAs = zip(*seqAsCGI)
-    # print 'len(TseqAs)', len(TseqAs)
 
     seqJ = Talleles[total_naf + total_neu + total_nas:total_naf + total_neu + total_nas + nJ]
-    # print 'len(seqJ)', len(seqJ)
     TseqJ = zip(*seqJ)
-    # print 'len(TseqJ)', len(TseqJ)
 
     seqM = Talleles[total_naf + total_neu + total_nas + nJ:total_naf + total_neu + total_nas + nJ + nM]
-    # print 'len(seqM)', len(seqM)
     TseqM = zip(*seqM)
-    # print 'len(TseqM)', len(TseqM)
 
     seqA = Talleles[total_naf + total_neu + total_nas + nJ + nM:total_naf + total_neu + total_nas + nJ + nM + nA]
-    # print 'len(seqA)', len(seqA)
     TseqA = zip(*seqA)
-    # print 'len(TseqA)', len(TseqA)
-
-
 
     ###get genotypes for pseudo array
     allelesAf_asc = []
