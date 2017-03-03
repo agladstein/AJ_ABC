@@ -240,6 +240,126 @@ def main():
         res.append(afs_stats.FST2(seqEuCGI, pi_EuCGI, neu_CGI, seqAsCGI, pi_AsCGI, nas_CGI))
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
+        #######
+        #########calculate summary stats from the ascertained SNPs
+        if nbss_asc > 0:
+
+            Af_asc = []
+            ss_Af_asc = afs_stats.base_S_ss(seqAf_asc, nbss_asc)
+            if (ss_Af_asc[0] == 0):
+                for i in xrange(5):
+                    Af_asc.append(0)
+                pi_Af_asc = 0
+            else:
+                Af_asc.extend(afs_stats.base_S_ss(seqAf_asc, nbss_asc))
+                pi_Af_asc = afs_stats.Pi2(Af_asc[3], len(seqAf_asc))
+                Af_asc.append(pi_Af_asc)
+                Af_asc.append(afs_stats.Tajimas(pi_Af_asc, Af_asc[0], len(seqAf_asc)))
+                del (Af_asc[3])
+
+            res.extend(Af_asc)
+            head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
+
+            ############
+
+            Eu_asc = []
+            ss_Eu_asc = afs_stats.base_S_ss(seqEu_asc, nbss_asc)
+            if (ss_Eu_asc[0] == 0):
+                for i in xrange(5):
+                    Eu_asc.append(0)
+                pi_Eu_asc = 0
+            else:
+                Eu_asc.extend(afs_stats.base_S_ss(seqEu_asc, nbss_asc))
+                pi_Eu_asc = afs_stats.Pi2(Eu_asc[3], len(seqEu_asc))
+                Eu_asc.append(pi_Eu_asc)
+                Eu_asc.append(afs_stats.Tajimas(pi_Eu_asc, Eu_asc[0], len(seqEu_asc)))
+                del (Eu_asc[3])
+
+            res.extend(Eu_asc)
+            head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
+            ###########
+
+            As_asc = []
+            ss_As_asc = afs_stats.base_S_ss(seqAs_asc, nbss_asc)
+            if (ss_As_asc[0] == 0):
+                for i in xrange(5):
+                    As_asc.append(0)
+                pi_As_asc = 0
+            else:
+                As_asc.extend(afs_stats.base_S_ss(seqAs_asc, nbss_asc))
+                pi_As_asc = afs_stats.Pi2(As_asc[3], len(seqAs_asc))
+                As_asc.append(pi_As_asc)
+                As_asc.append(afs_stats.Tajimas(pi_As_asc, As_asc[0], len(seqAs_asc)))
+                del (As_asc[3])
+
+            res.extend(As_asc)
+            head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
+            ############
+
+            J_asc = []
+            ss_J_asc = afs_stats.base_S_ss(seqJ_asc, nbss_asc)
+            if (ss_J_asc[0] == 0):
+                for i in xrange(5):
+                    J_asc.append(0)
+                pi_J_asc = 0
+            else:
+                J_asc.extend(afs_stats.base_S_ss(seqJ_asc, nbss_asc))
+                pi_J_asc = afs_stats.Pi2(J_asc[3], len(seqJ_asc))
+                J_asc.append(pi_J_asc)
+                J_asc.append(afs_stats.Tajimas(pi_J_asc, J_asc[0], len(seqJ_asc)))
+                del (J_asc[3])
+
+            res.extend(J_asc)
+            head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
+            #############
+
+            M_asc = []
+            ss_M_asc = afs_stats.base_S_ss(seqM_asc, nbss_asc)
+            if (ss_M_asc[0] == 0):
+                for i in xrange(5):
+                    M_asc.append(0)
+                pi_M_asc = 0
+            else:
+                M_asc.extend(afs_stats.base_S_ss(seqM_asc, nbss_asc))
+                pi_M_asc = afs_stats.Pi2(M_asc[3], len(seqM_asc))
+                M_asc.append(pi_M_asc)
+                M_asc.append(afs_stats.Tajimas(pi_M_asc, M_asc[0], len(seqM_asc)))
+                del (M_asc[3])
+
+            res.extend(M_asc)
+            head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
+            #############
+
+            A_asc = []
+            ss_A_asc = afs_stats.base_S_ss(seqA_asc, nbss_asc)
+            if (ss_A_asc[0] == 0):
+                for i in xrange(5):
+                    A_asc.append(0)
+                pi_A_asc = 0
+            else:
+                A_asc.extend(afs_stats.base_S_ss(seqA_asc, nbss_asc))
+                pi_A_asc = afs_stats.Pi2(A_asc[3], len(seqA_asc))
+                A_asc.append(pi_A_asc)
+                A_asc.append(afs_stats.Tajimas(pi_A_asc, A_asc[0], len(seqA_asc)))
+                del (A_asc[3])
+
+            res.extend(A_asc)
+            head = head + 'SegS_A_ASC\tSing_A_ASC\tDupl_A_ASC\tPi_A_ASC\tTajD_A_ASC\t'
+            #############
+
+
+            ##fst between populations
+            res.append(afs_stats.FST2(seqAf_asc, pi_Af_asc, naf_CGI, seqEu_asc, pi_Eu_asc, neu_CGI))
+            res.append(afs_stats.FST2(seqAf_asc, pi_Af_asc, naf_CGI, seqAs_asc, pi_As_asc, nas_CGI))
+            res.append(afs_stats.FST2(seqEu_asc, pi_Eu_asc, neu_CGI, seqAs_asc, pi_As_asc, nas_CGI))
+            head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC_m\tFST_EuAs_ASC\t'
+
+            res.append(afs_stats.FST2(seqA_asc, pi_A_asc, nA, seqEu_asc, pi_Eu_asc, neu_CGI))
+            res.append(afs_stats.FST2(seqA_asc, pi_A_asc, nA, seqJ_asc, pi_J_asc, nJ))
+            res.append(afs_stats.FST2(seqA_asc, pi_A_asc, nA, seqM_asc, pi_M_asc, nM))
+            res.append(afs_stats.FST2(seqM_asc, pi_M_asc, nM, seqJ_asc, pi_J_asc, nJ))
+            head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
+
         return res
 
 
@@ -382,6 +502,108 @@ def main():
         res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
         res.append(afs_stats_bitarray.FST2(seqEuCGI_bits, pi_EuCGI, neu_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
+
+        if nbss_asc > 0:
+            Af_asc = []
+            ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, nbss_asc)
+            if (ss_Af_asc[0] == 0):
+                for i in xrange(5):
+                    Af_asc.append(0)
+                pi_Af_asc = 0
+            else:
+                Af_asc.extend(afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI))
+                pi_Af_asc = afs_stats_bitarray.Pi2(Af_asc[3], naf_CGI)
+                Af_asc.append(pi_Af_asc)
+                Af_asc.append(afs_stats_bitarray.Tajimas(pi_Af_asc, Af_asc[0], naf_CGI))
+                del (Af_asc[3])
+            res.extend(Af_asc)
+            head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
+
+            Eu_asc = []
+            ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, nbss_asc)
+            if (ss_Eu_asc[0] == 0):
+                for i in xrange(5):
+                    Eu_asc.append(0)
+                pi_Eu_asc = 0
+            else:
+                Eu_asc.extend(afs_stats_bitarray.base_S_ss(seqEu_asc_bits, neu_CGI))
+                pi_Eu_asc = afs_stats_bitarray.Pi2(Eu_asc[3], neu_CGI)
+                Eu_asc.append(pi_Eu_asc)
+                Eu_asc.append(afs_stats_bitarray.Tajimas(pi_Eu_asc, Eu_asc[0], neu_CGI))
+                del (Eu_asc[3])
+            res.extend(Eu_asc)
+            head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
+
+            As_asc = []
+            ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nbss_asc)
+            if (ss_As_asc[0] == 0):
+                for i in xrange(5):
+                    As_asc.append(0)
+                pi_As_asc = 0
+            else:
+                As_asc.extend(afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nas_CGI))
+                pi_As_asc = afs_stats_bitarray.Pi2(As_asc[3], nas_CGI)
+                As_asc.append(pi_As_asc)
+                As_asc.append(afs_stats_bitarray.Tajimas(pi_As_asc, As_asc[0], nas_CGI))
+                del (As_asc[3])
+            res.extend(As_asc)
+            head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
+
+            J_asc = []
+            ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nbss_asc)
+            if (ss_J_asc[0] == 0):
+                for i in xrange(5):
+                    J_asc.append(0)
+                pi_J_asc = 0
+            else:
+                J_asc.extend(afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nJ))
+                pi_J_asc = afs_stats_bitarray.Pi2(J_asc[3], nJ)
+                J_asc.append(pi_J_asc)
+                J_asc.append(afs_stats_bitarray.Tajimas(pi_J_asc, J_asc[0], nJ))
+                del (J_asc[3])
+            res.extend(J_asc)
+            head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
+
+            M_asc = []
+            ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nbss_asc)
+            if (ss_M_asc[0] == 0):
+                for i in xrange(5):
+                    M_asc.append(0)
+                pi_M_asc = 0
+            else:
+                M_asc.extend(afs_stats_bitarray.base_S_ss(seqM_asc_bits, nM))
+                pi_M_asc = afs_stats_bitarray.Pi2(M_asc[3], nM)
+                M_asc.append(pi_M_asc)
+                M_asc.append(afs_stats_bitarray.Tajimas(pi_M_asc, M_asc[0], nM))
+                del (M_asc[3])
+            res.extend(M_asc)
+            head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
+
+            A_asc = []
+            ss_A_asc = afs_stats_bitarray.base_S_ss(seqA_asc_bits, nbss_asc)
+            if (ss_A_asc[0] == 0):
+                for i in xrange(5):
+                    A_asc.append(0)
+                pi_A_asc = 0
+            else:
+                A_asc.extend(afs_stats_bitarray.base_S_ss(seqA_asc_bits, nA))
+                pi_A_asc = afs_stats_bitarray.Pi2(A_asc[3], nA)
+                A_asc.append(pi_A_asc)
+                A_asc.append(afs_stats_bitarray.Tajimas(pi_A_asc, A_asc[0], nA))
+                del (A_asc[3])
+            res.extend(A_asc)
+            head = head + 'SegS_A_ASC\tSing_A_ASC\tDupl_A_ASC\tPi_A_ASC\tTajD_A_ASC\t'
+
+            res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
+            res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
+            res.append(afs_stats_bitarray.FST2(seqEu_asc_bits, pi_Eu_asc, neu_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
+            head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC_m\tFST_EuAs_ASC\t'
+
+            res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
+            res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqJ_asc_bits, pi_J_asc, nJ))
+            res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqM_asc_bits, pi_M_asc, nM))
+            res.append(afs_stats_bitarray.FST2(seqM_asc_bits, pi_M_asc, nM, seqJ_asc_bits, pi_J_asc, nJ))
+            head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
 
         return res
 
