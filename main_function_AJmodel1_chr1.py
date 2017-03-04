@@ -10,7 +10,9 @@ from ascertainment.pseudo_array import pseudo_array_bits
 from simulation import def_params, run_sim
 from summary_statistics import afs_stats_bitarray
 
+# from memory_profiler import profile
 
+#@profile()
 def main(arguments):
 
     #####set up simulations#####################################
@@ -21,7 +23,7 @@ def main(arguments):
                135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222,
                62887650, 37234222, 35178458]
 
-    job = int(arguments[1])  # must be a number
+    job = arguments[1]  # must be a number
     print 'JOB', job
 
     ####Get parameter values from priors
