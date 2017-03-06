@@ -10,28 +10,10 @@ from ascertainment.pseudo_array import pseudo_array_bits
 from simulation import def_params, run_sim
 from summary_statistics import afs_stats_bitarray
 
-import psutil
-
 # from memory_profiler import profile
 
 #@profile()
 def main(arguments):
-
-    job = arguments[1]  # must be a number
-    print 'JOB', job
-
-    fprof = open('profile' + str(job) + '.log', 'w')
-    p = psutil.Process()
-    with p.oneshot():
-        p.name()  # execute internal routine once collecting multiple info
-        p.cpu_times()  # return cached value
-        p.cpu_percent()  # return cached value
-        p.create_time()  # return cached value
-        p.ppid()  # return cached value
-        p.status()  # return cached value
-
-    profile = p.cpu_times(), p.memory_full_info()
-    fprof.write('main_start\t' + str(profile) + '\n')
 
     #####set up simulations#####################################
     ############################################################
@@ -40,6 +22,9 @@ def main(arguments):
     lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069,
                135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222,
                62887650, 37234222, 35178458]
+
+    job = arguments[1]  # must be a number
+    print 'JOB', job
 
     ####Get parameter values from priors
     seed_option = int(arguments[4])
@@ -59,9 +44,6 @@ def main(arguments):
     para_out = param_model[1]
     case = param_model[2]
     daf = param_model[3]
-
-    profile = p.cpu_times(), p.memory_full_info()
-    fprof.write('define_params\t' + str(profile) + '\n')
 
     ####Samples to be simulated
 
@@ -129,18 +111,12 @@ def main(arguments):
         SNP.append(line)
     fileSNP.close()
 
-    profile = p.cpu_times(), p.memory_full_info()
-    fprof.write('read_snpfile_list\t' + str(profile) + '\n')
-
     ###get sites from snp array
     # print "get sites from snp array"
     snps = []
     for line_snp in SNP:
         columns = line_snp.split('\t')
         snps.append(int(columns[2]))
-
-    profile = p.cpu_times(), p.memory_full_info()
-    fprof.write('append_snplist\t' + str(profile) + '\n')
 
     print 'nb Array snps', len(snps)
 
@@ -161,16 +137,10 @@ def main(arguments):
         sim = run_sim.run_sim(parameters, case, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nA, seed_option)
         print 'finished simulation'
 
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('run_sim_macsswig\t'+str(profile)+'\n')
-
         ##number of segregating sites
         nbss = sim.getNumSites()
         print 'number sites in simulation', nbss
         print 'number of chromosomes', total
-
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('getNumSites\t'+str(profile)+'\n')
 
         ##get position of the simulated sites and scale it to the "real" position in the SNP chip
         pos = []
@@ -189,9 +159,6 @@ def main(arguments):
 
         del sim
 
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('seq_macsswig.make_bitarray_seq\t'+str(profile)+'\n')
-
         ####CGI data
         seqAfCGI_bits = bitarray()
         for first_index in xrange(0, len(seqAF_bits), total_naf):
@@ -205,9 +172,6 @@ def main(arguments):
         for first_index in xrange(0, len(seqAs_bits), total_nas):
             seqAsCGI_bits.extend(seqAs_bits[first_index:first_index + nas_CGI])
 
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('seqCGI_bits.extend\t'+str(profile)+'\n')
-
         ####Discovery subset. Put all the samples together to calculate the daf and select SNPs (matching distance as the array)
         asc_panel_bits = bitarray()
         for site in xrange(0, nbss):
@@ -215,17 +179,11 @@ def main(arguments):
             asc_panel_bits.extend(seqEu_bits[site * total_neu + neu_CGI:site * total_neu + total_neu])
             asc_panel_bits.extend(seqAs_bits[site * total_nas + nas_CGI:site * total_nas + total_nas])
 
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('asc_panel_bits.extend\t'+str(profile)+'\n')
-
         print 'number of chromosomes in asc_panel:', asc_panel_bits.length()/nbss
 
         ####Get pseudo array sites
         print 'Make pseudo array'
         pos_asc, nbss_asc, index_avail_sites, avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
-
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('pseudo_array_bits\t'+str(profile)+'\n')
 
         nb_avail_sites = len(avail_sites)
         if (nb_avail_sites >= len(snps)):
@@ -241,56 +199,32 @@ def main(arguments):
         res = []
         Af_res = []
         Af_res.extend(afs_stats_bitarray.base_S_ss(seqAfCGI_bits, naf_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.base_S_ss\t'+str(profile)+'\n')
         pi_AfCGI = afs_stats_bitarray.Pi2(Af_res[3], naf_CGI)
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.Pi2\t'+str(profile)+'\n')
         Af_res.append(afs_stats_bitarray.Tajimas(pi_AfCGI, Af_res[0], naf_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.Tajimas\t'+str(profile)+'\n')
         del (Af_res[3])
         res.extend(Af_res)
         head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
 
         Eu_res = []
         Eu_res.extend(afs_stats_bitarray.base_S_ss(seqEuCGI_bits, neu_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.base_S_ss\t'+str(profile)+'\n')
         pi_EuCGI = afs_stats_bitarray.Pi2(Eu_res[3], neu_CGI)
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.Pi2\t'+str(profile)+'\n')
         Eu_res.append(afs_stats_bitarray.Tajimas(pi_EuCGI, Eu_res[0], neu_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.Tajimas\t'+str(profile)+'\n')
         del (Eu_res[3])
         res.extend(Eu_res)
         head = head + 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
 
         As_res = []
         As_res.extend(afs_stats_bitarray.base_S_ss(seqAsCGI_bits, nas_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.base_S_ss\t'+str(profile)+'\n')
         pi_AsCGI = afs_stats_bitarray.Pi2(As_res[3], nas_CGI)
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.Pi2\t'+str(profile)+'\n')
         As_res.append(afs_stats_bitarray.Tajimas(pi_AsCGI, As_res[0], nas_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.Tajimas\t'+str(profile)+'\n')
         del (As_res[3])
         res.extend(As_res)
         head = head + 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
 
         ##fst between populations
         res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqEuCGI_bits, pi_EuCGI, neu_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t'+str(profile)+'\n')
         res.append(afs_stats_bitarray.FST2(seqAfCGI_bits, pi_AfCGI, naf_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t'+str(profile)+'\n')
         res.append(afs_stats_bitarray.FST2(seqEuCGI_bits, pi_EuCGI, neu_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
-        profile = p.cpu_times(),p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t'+str(profile)+'\n')
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
     seqAf_asc_bits = bitarray()
@@ -318,9 +252,6 @@ def main(arguments):
             seqJ_asc_bits.extend(seqJ_bits[index_avail_sites[pos_asc[x]] * nJ:index_avail_sites[pos_asc[x]] * nJ + nJ])
             seqM_asc_bits.extend(seqM_bits[index_avail_sites[pos_asc[x]] * nM:index_avail_sites[pos_asc[x]] * nM + nM])
             seqA_asc_bits.extend(seqA_bits[index_avail_sites[pos_asc[x]] * nA:index_avail_sites[pos_asc[x]] * nA + nA])
-
-    profile = p.cpu_times(),p.memory_full_info()
-    fprof.write('seq_asc_bits.extend\t'+str(profile)+'\n')
 
     ##Make ped file
     print 'Make ped and map files'
@@ -364,9 +295,6 @@ def main(arguments):
         fileped.write('\n')
     fileped.close()
 
-    profile = p.cpu_times(),p.memory_full_info()
-    fprof.write('write_ped\t'+str(profile)+'\n')
-
     ##Make map file
     filenamemap = str(sim_data_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number) + '.map'
     filemap = open(filenamemap, 'a')
@@ -376,9 +304,6 @@ def main(arguments):
             int(avail_sites[pos_asc[g]] - 1)) + ' ' + str(int(avail_sites[pos_asc[g]])) + '\n'
         filemap.write(map)
     filemap.close()
-
-    profile = p.cpu_times(),p.memory_full_info()
-    fprof.write('write_map\t'+str(profile)+'\n')
 
     ########Use Germline to find IBD on pseduo array ped and map files
     run_germline = int(arguments[6])
@@ -391,9 +316,6 @@ def main(arguments):
         ###Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
         print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"'
         germline = Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"', shell=True))
-
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('run_germline\t' + str(profile) + '\n')
 
         print 'finished running germline'
 
@@ -438,9 +360,6 @@ def main(arguments):
                 IBDlengths_ME.append(segment)
         filegermline.close()
 
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('IBDlengths.append\t' + str(profile) + '\n')
-
         print 'calculating summary stats'
 
         IBDlengths_mean = []
@@ -454,15 +373,15 @@ def main(arguments):
 
         pairs = [IBDlengths_AA, IBDlengths_JJ, IBDlengths_MM, IBDlengths_EE, IBDlengths_AE, IBDlengths_AJ,
                  IBDlengths_AM, IBDlengths_JM, IBDlengths_JE, IBDlengths_ME]
-        for pair in pairs:
-            IBDlengths_num.append(len(pair))
-            if len(pair) < 1:
-                pair.append(0)
-            IBDlengths_mean.append(np.mean(pair))
-            IBDlengths_median.append(np.median(pair))
-            IBDlengths_var.append(np.var(pair))
+        for p in pairs:
+            IBDlengths_num.append(len(p))
+            if len(p) < 1:
+                p.append(0)
+            IBDlengths_mean.append(np.mean(p))
+            IBDlengths_median.append(np.median(p))
+            IBDlengths_var.append(np.var(p))
             #### Get IBD greater than 30 Mb
-            for l in pair:
+            for l in p:
                 n = 0
                 IBDlengths30 = []
                 if l > 30:
@@ -474,9 +393,6 @@ def main(arguments):
             IBDlengths_median30.append(np.median(IBDlengths30))
             IBDlengths_var30.append(np.var(IBDlengths30))
             IBDlengths_num30.append(n)
-
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('IBDstats\t' + str(profile) + '\n')
 
         res.extend(IBDlengths_mean)
         head = head + 'IBD_mean_AA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_AE\tIBD_mean_AJ\tIBD_mean_AM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
@@ -508,15 +424,9 @@ def main(arguments):
             pi_Af_asc = 0
         else:
             Af_asc.extend(afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.base_S_ss\t' + str(profile) + '\n')
             pi_Af_asc = afs_stats_bitarray.Pi2(Af_asc[3], naf_CGI)
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Pi2\t' + str(profile) + '\n')
             Af_asc.append(pi_Af_asc)
             Af_asc.append(afs_stats_bitarray.Tajimas(pi_Af_asc, Af_asc[0], naf_CGI))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Tajimas\t' + str(profile) + '\n')
             del (Af_asc[3])
         res.extend(Af_asc)
         head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
@@ -529,15 +439,9 @@ def main(arguments):
             pi_Eu_asc = 0
         else:
             Eu_asc.extend(afs_stats_bitarray.base_S_ss(seqEu_asc_bits, neu_CGI))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.base_S_ss\t' + str(profile) + '\n')
             pi_Eu_asc = afs_stats_bitarray.Pi2(Eu_asc[3], neu_CGI)
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Pi2\t' + str(profile) + '\n')
             Eu_asc.append(pi_Eu_asc)
             Eu_asc.append(afs_stats_bitarray.Tajimas(pi_Eu_asc, Eu_asc[0], neu_CGI))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Tajimas\t' + str(profile) + '\n')
             del (Eu_asc[3])
         res.extend(Eu_asc)
         head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
@@ -550,15 +454,9 @@ def main(arguments):
             pi_As_asc = 0
         else:
             As_asc.extend(afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nas_CGI))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.base_S_ss\t' + str(profile) + '\n')
             pi_As_asc = afs_stats_bitarray.Pi2(As_asc[3], nas_CGI)
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Pi2\t' + str(profile) + '\n')
             As_asc.append(pi_As_asc)
             As_asc.append(afs_stats_bitarray.Tajimas(pi_As_asc, As_asc[0], nas_CGI))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Tajimas\t' + str(profile) + '\n')
             del (As_asc[3])
         res.extend(As_asc)
         head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
@@ -571,15 +469,9 @@ def main(arguments):
             pi_J_asc = 0
         else:
             J_asc.extend(afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nJ))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.base_S_ss\t' + str(profile) + '\n')
             pi_J_asc = afs_stats_bitarray.Pi2(J_asc[3], nJ)
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Pi2\t' + str(profile) + '\n')
             J_asc.append(pi_J_asc)
             J_asc.append(afs_stats_bitarray.Tajimas(pi_J_asc, J_asc[0], nJ))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Tajimas\t' + str(profile) + '\n')
             del (J_asc[3])
         res.extend(J_asc)
         head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
@@ -592,15 +484,9 @@ def main(arguments):
             pi_M_asc = 0
         else:
             M_asc.extend(afs_stats_bitarray.base_S_ss(seqM_asc_bits, nM))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.base_S_ss\t' + str(profile) + '\n')
             pi_M_asc = afs_stats_bitarray.Pi2(M_asc[3], nM)
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Pi2\t' + str(profile) + '\n')
             M_asc.append(pi_M_asc)
             M_asc.append(afs_stats_bitarray.Tajimas(pi_M_asc, M_asc[0], nM))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Tajimas\t' + str(profile) + '\n')
             del (M_asc[3])
         res.extend(M_asc)
         head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
@@ -613,42 +499,22 @@ def main(arguments):
             pi_A_asc = 0
         else:
             A_asc.extend(afs_stats_bitarray.base_S_ss(seqA_asc_bits, nA))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.base_S_ss\t' + str(profile) + '\n')
             pi_A_asc = afs_stats_bitarray.Pi2(A_asc[3], nA)
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Pi2\t' + str(profile) + '\n')
             A_asc.append(pi_A_asc)
             A_asc.append(afs_stats_bitarray.Tajimas(pi_A_asc, A_asc[0], nA))
-            profile = p.cpu_times(), p.memory_full_info()
-            fprof.write('afs_stats_bitarray.Tajimas\t' + str(profile) + '\n')
             del (A_asc[3])
         res.extend(A_asc)
         head = head + 'SegS_A_ASC\tSing_A_ASC\tDupl_A_ASC\tPi_A_ASC\tTajD_A_ASC\t'
 
         res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t' + str(profile) + '\n')
         res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t' + str(profile) + '\n')
         res.append(afs_stats_bitarray.FST2(seqEu_asc_bits, pi_Eu_asc, neu_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t' + str(profile) + '\n')
         head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC_m\tFST_EuAs_ASC\t'
 
         res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t' + str(profile) + '\n')
         res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqJ_asc_bits, pi_J_asc, nJ))
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t' + str(profile) + '\n')
         res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqM_asc_bits, pi_M_asc, nM))
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t' + str(profile) + '\n')
         res.append(afs_stats_bitarray.FST2(seqM_asc_bits, pi_M_asc, nM, seqJ_asc_bits, pi_J_asc, nJ))
-        profile = p.cpu_times(), p.memory_full_info()
-        fprof.write('afs_stats_bitarray.FST2\t' + str(profile) + '\n')
         head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
 
     print 'finished calculating ss'
@@ -682,7 +548,5 @@ def main(arguments):
 
     filesumm.write(out)
     filesumm.close()
-
-    fprof.close()
 
     return [res,para_out]
