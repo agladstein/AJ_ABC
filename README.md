@@ -1,4 +1,5 @@
-Created by Ariella Gladstein, based on code from Consuelo Quinto Cortes and Krishna Veeramah. <br />
+Created by Ariella Gladstein, based on code from Consuelo Quinto Cortes and Krishna Veeramah.
+
 agladstein@email.arizona.edu
 
 The main script run_sims_AJmodel1_chr1_all.py runs genome simulations and computes statistics on the simulation output, and is run with run_sims_AJmodel1_chr1_all.py
