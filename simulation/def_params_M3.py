@@ -503,90 +503,182 @@ def choose_case(parameters):
     Tgrowth_Af = parameters['Tgrowth_Af']
 
     #################
-    if (parameters['Tgrowth_Af'] > parameters['Taf']):
+    if (parameters['Tgrowth_Af'] > parameters['Taf'] > parameters['TmE'] > parameters['TmW']):
         case = 1
 
-    if (parameters['Tgrowth_Af'] == parameters['Taf']):
+    if (parameters['Tgrowth_Af'] == parameters['Taf'] > parameters['TmE'] > parameters['TmW']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 1
 
-    ################
-
-    if (parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as']):
+    #################
+    if (parameters['Tgrowth_Af'] > parameters['Taf'] > parameters['TmW'] > parameters['TmE']):
         case = 2
 
-    if (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as']):
+    if (parameters['Tgrowth_Af'] == parameters['Taf'] > parameters['TmW'] > parameters['TmE']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 2
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM']):
+    if (parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as'] > parameters['TmE'] > parameters['TmW']):
         case = 3
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM']):
+    if (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as'] > parameters['TmE'] > parameters['TmW']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 3
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ']):
+
+    if (parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as'] > parameters['TmW'] > parameters['TmE']):
         case = 4
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ']):
+    if (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as'] > parameters['TmW'] > parameters['TmE']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 4
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] >
-            parameters['TA']):
+    if (parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM'] > parameters['TmE'] > parameters['TmW']):
         case = 5
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] ==
-            parameters['TA']):
+    if (parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM'] > parameters['TmE'] > parameters['TmW']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 5
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tgrowth_Af'] > parameters['Tm']):
+    if (parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM'] > parameters['TmW'] > parameters['TmE']):
         case = 6
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tgrowth_Af'] == parameters['Tm']):
+    if (parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM'] > parameters['TmW'] > parameters['TmE']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 6
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tm'] > parameters['Tgrowth_Af']):
+    if (parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ'] > parameters['TmE'] > parameters['TmW']):
         case = 7
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tm'] == parameters['Tgrowth_Af']):
-        Tgrowth_Af += -0.00001
+    if (parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ'] > parameters['TmE'] > parameters['TmW']):
+        Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 7
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tm'] > parameters['TAEW'] > parameters['Tgrowth_Af']):
+    if (parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ'] > parameters['TmW'] > parameters['TmE']):
         case = 8
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
-            parameters['Tm'] > parameters['TAEW'] == parameters['Tgrowth_Af']):
-        Tgrowth_Af += -0.00001
+    if (parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ'] > parameters['TmW'] > parameters['TmE']):
+        Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 8
+
+    ################
+
+    if (parameters['TMJ'] > parameters['Tgrowth_Af'] > parameters['TA'] > parameters['TmE'] > parameters['TmW']):
+        case = 9
+
+    if (parameters['TMJ'] > parameters['Tgrowth_Af'] == parameters['TA'] > parameters['TmE'] > parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 9
+
+    ################
+
+    if (parameters['TMJ'] > parameters['Tgrowth_Af'] > parameters['TA'] > parameters['TmW'] > parameters['TmE']):
+        case = 10
+
+    if (parameters['TMJ'] > parameters['Tgrowth_Af'] == parameters['TA'] > parameters['TmW'] > parameters['TmE']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 10
+
+    ################
+
+    if (parameters['TA'] > parameters['Tgrowth_Af'] > parameters['TAEW'] > parameters['TmE'] > parameters['TmW']):
+        case = 11
+
+    if (parameters['TA'] > parameters['Tgrowth_Af'] == parameters['TAEW'] > parameters['TmE'] > parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 11
+
+    ################
+
+    if (parameters['TA'] > parameters['Tgrowth_Af'] > parameters['TAEW'] > parameters['TmW'] > parameters['TmE']):
+        case = 12
+
+    if (parameters['TA'] > parameters['Tgrowth_Af'] == parameters['TAEW'] > parameters['TmW'] > parameters['TmE']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 12
+
+    ################
+
+    if (parameters['TAEW'] > parameters['Tgrowth_Af'] > parameters['TmE'] > parameters['TmW']):
+        case = 13
+
+    if (parameters['TAEW'] > parameters['Tgrowth_Af'] == parameters['TmE'] > parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 13
+
+    ################
+
+    if (parameters['TAEW'] > parameters['Tgrowth_Af'] > parameters['TmW'] > parameters['TmE']):
+        case = 14
+
+    if (parameters['TAEW'] > parameters['Tgrowth_Af'] == parameters['TmW'] > parameters['TmE']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 14
+
+    ################
+
+    if (parameters['TmE'] > parameters['Tgrowth_Af'] > parameters['TmW']):
+        case = 15
+
+    if (parameters['TmE'] > parameters['Tgrowth_Af'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 15
+
+    ################
+
+    if (parameters['TmW'] > parameters['Tgrowth_Af'] > parameters['TmE']):
+        case = 16
+
+    if (parameters['TmW'] > parameters['Tgrowth_Af'] == parameters['TmE']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 16
+
+    ################
+
+    if (parameters['TmE'] > parameters['TmW'] > parameters['Tgrowth_Af']):
+        case = 17
+
+    if (parameters['TmE'] > parameters['TmW'] == parameters['Tgrowth_Af']):
+        Tgrowth_Af += -0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 17
+
+    ################
+
+    if (parameters['TmW'] > parameters['TmE'] > parameters['Tgrowth_Af']):
+        case = 18
+
+    if (parameters['TmW'] > parameters['TmE'] == parameters['Tgrowth_Af']):
+        Tgrowth_Af += -0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 18
 
     return case, Tgrowth_Af
