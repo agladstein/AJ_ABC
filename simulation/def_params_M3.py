@@ -147,21 +147,21 @@ def param_sim_asc_rand():
 
     # Time of split between Eastern and Western AJ
     TAEW_High = (TA) - 2
-    TAEW_Low = 1
+    TAEW_Low = 3
     TAEW = float(randint(TAEW_Low, TAEW_High))
     para_out.extend([TAEW])
     parameters['TAEW'] = TAEW
 
     # Time of migration to EAJ
-    TmE_High = int(TA) - 1
-    TmE_Low = int(TAEW) + 1
+    TmE_High = int(TAEW) - 1
+    TmE_Low = 1
     TmE = float(randint(TmE_Low, TmE_High))
     para_out.extend([TmE])
     parameters['TmE'] = TmE
 
     # Time of migration to WAJ
-    TmW_High = int(TA) - 1
-    TmW_Low = int(TAEW) + 1
+    TmW_High = int(TAEW) - 1
+    TmW_Low = 1
     TmW = float(randint(TmW_Low, TmW_High))
     para_out.extend([TmW])
     parameters['TmW'] = TmW
@@ -308,21 +308,21 @@ def param_sim_asc_min():
     parameters['TMJ']=TMJ
 
     # Time of split between Eastern and Western AJ
-    TAEW_Low = 1
+    TAEW_Low = 3
     TAEW = float(TAEW_Low)
     para_out.extend([TAEW])
     parameters['TAEW'] = TAEW
 
     # Time of migration to EAJ
-    TmE_High = int(TA) - 1
-    TmE_Low = int(TAEW) + 1
+    TmE_High = int(TAEW) - 1
+    TmE_Low = 1
     TmE = float(randint(TmE_Low, TmE_High))
     para_out.extend([TmE])
     parameters['TmE'] = TmE
 
     # Time of migration to WAJ
-    TmW_High = int(TA) - 1
-    TmW_Low = int(TAEW) + 1
+    TmW_High = int(TAEW) - 1
+    TmW_Low = 1
     TmW = float(randint(TmW_Low, TmW_High))
     para_out.extend([TmW])
     parameters['TmW'] = TmW
@@ -476,15 +476,15 @@ def param_sim_asc_max():
     parameters['TAEW'] = TAEW
 
     # Time of migration to EAJ
-    TmE_High = int(TA) - 1
-    TmE_Low = int(TAEW) + 1
+    TmE_High = int(TAEW) - 1
+    TmE_Low = 1
     TmE = float(randint(TmE_Low, TmE_High))
     para_out.extend([TmE])
     parameters['TmE'] = TmE
 
     # Time of migration to WAJ
-    TmW_High = int(TA) - 1
-    TmW_Low = int(TAEW) + 1
+    TmW_High = int(TAEW) - 1
+    TmW_Low = 1
     TmW = float(randint(TmW_Low, TmW_High))
     para_out.extend([TmW])
     parameters['TmW'] = TmW
@@ -501,6 +501,7 @@ def choose_case(parameters):
     ##choose model/topology
     print "choosing case"
     Tgrowth_Af = parameters['Tgrowth_Af']
+    TmE = parameters['TmE']
 
     #################
     if (parameters['Tgrowth_Af'] > parameters['Taf'] > parameters['TmE'] > parameters['TmW']):
@@ -509,6 +510,18 @@ def choose_case(parameters):
     if (parameters['Tgrowth_Af'] == parameters['Taf'] > parameters['TmE'] > parameters['TmW']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 1
+
+    if (parameters['Tgrowth_Af'] > parameters['Taf'] > parameters['TmE'] == parameters['TmW']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 1
+
+    if (parameters['Tgrowth_Af'] == parameters['Taf'] > parameters['TmE'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
         case = 1
 
     #################
@@ -528,6 +541,18 @@ def choose_case(parameters):
     if (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as'] > parameters['TmE'] > parameters['TmW']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 3
+
+    if (parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as'] > parameters['TmE'] == parameters['TmW']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 3
+
+    if (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as'] > parameters['TmE'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
         case = 3
 
     ################
@@ -551,6 +576,18 @@ def choose_case(parameters):
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 5
 
+    if (parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM'] > parameters['TmE'] == parameters['TmW']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 5
+
+    if (parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM'] > parameters['TmE'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 5
+
     ################
 
     if (parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM'] > parameters['TmW'] > parameters['TmE']):
@@ -569,6 +606,19 @@ def choose_case(parameters):
     if (parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ'] > parameters['TmE'] > parameters['TmW']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 7
+
+
+    if (parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ'] > parameters['TmE'] == parameters['TmW']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 7
+
+    if (parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ'] > parameters['TmE'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
         case = 7
 
     ################
@@ -591,6 +641,18 @@ def choose_case(parameters):
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 9
 
+    if (parameters['TMJ'] > parameters['Tgrowth_Af'] > parameters['TA'] > parameters['TmE'] == parameters['TmW']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 9
+
+    if (parameters['TMJ'] > parameters['Tgrowth_Af'] == parameters['TA'] > parameters['TmE'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 9
+
     ################
 
     if (parameters['TMJ'] > parameters['Tgrowth_Af'] > parameters['TA'] > parameters['TmW'] > parameters['TmE']):
@@ -609,6 +671,18 @@ def choose_case(parameters):
     if (parameters['TA'] > parameters['Tgrowth_Af'] == parameters['TAEW'] > parameters['TmE'] > parameters['TmW']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
+        case = 11
+
+    if (parameters['TA'] > parameters['Tgrowth_Af'] > parameters['TAEW'] > parameters['TmE'] == parameters['TmW']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 11
+
+    if (parameters['TA'] > parameters['Tgrowth_Af'] == parameters['TAEW'] > parameters['TmE'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
         case = 11
 
     ################
@@ -631,6 +705,18 @@ def choose_case(parameters):
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 13
 
+    if (parameters['TAEW'] > parameters['Tgrowth_Af'] > parameters['TmE'] == parameters['TmW']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 13
+
+    if (parameters['TAEW'] > parameters['Tgrowth_Af'] == parameters['TmE'] == parameters['TmW']):
+        Tgrowth_Af += 0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 13
+
     ################
 
     if (parameters['TAEW'] > parameters['Tgrowth_Af'] > parameters['TmW'] > parameters['TmE']):
@@ -650,6 +736,7 @@ def choose_case(parameters):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 15
+
 
     ################
 
@@ -671,6 +758,18 @@ def choose_case(parameters):
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 17
 
+    if (parameters['TmE'] == parameters['TmW'] > parameters['Tgrowth_Af']):
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 17
+
+    if (parameters['TmE'] == parameters['TmW'] == parameters['Tgrowth_Af']):
+        Tgrowth_Af += -0.00001
+        parameters['Tgrowth_Af'] = Tgrowth_Af
+        TmE += 0.00001
+        parameters['TmE'] = TmE
+        case = 17
+
     ################
 
     if (parameters['TmW'] > parameters['TmE'] > parameters['Tgrowth_Af']):
@@ -681,4 +780,5 @@ def choose_case(parameters):
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 18
 
+    print case
     return case, Tgrowth_Af
