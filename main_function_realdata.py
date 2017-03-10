@@ -43,35 +43,20 @@ def main():
         os.makedirs(results_sims_dir)
 
 
-    # seq_real_CGI_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
-    # seqAF_CGI_bits = seq_real_CGI_file.make_bitarray_seq(0, naf_CGI)
-    # seqEu_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
-    # seqAs_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
-    #
-    # seq_real_CGIarray_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
-    # seqAf_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(0, naf_CGI)
-    # seqEu_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
-    # seqAs_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
-    #
-    # seq_real_array_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
-    # seqJ_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI, naf_CGI + neu_CGI + nas_CGI + nJ)
-    # seqM_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ, naf_CGI + neu_CGI + nas_CGI + nJ + nM)
-    # seqA_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ + nM, naf_CGI + neu_CGI + nas_CGI + nJ + nM + nA)
-
     seq_real_CGI_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
-    seqAF_CGI_bits = seq_real_CGI_file.make_list_seq(0, naf_CGI)
-    seqEu_CGI_bits = seq_real_CGI_file.make_list_seq(naf_CGI, naf_CGI + neu_CGI)
-    seqAs_CGI_bits = seq_real_CGI_file.make_list_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
+    seqAF_CGI_bits = seq_real_CGI_file.make_bitarray_seq(0, naf_CGI)
+    seqEu_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
+    seqAs_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
     seq_real_CGIarray_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
-    seqAf_asc_bits = seq_real_CGIarray_file.make_list_seq(0, naf_CGI)
-    seqEu_asc_bits = seq_real_CGIarray_file.make_list_seq(naf_CGI, naf_CGI + neu_CGI)
-    seqAs_asc_bits = seq_real_CGIarray_file.make_list_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
+    seqAf_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(0, naf_CGI)
+    seqEu_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
+    seqAs_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
     seq_real_array_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
-    seqJ_asc_bits = seq_real_array_file.make_list_seq(naf_CGI + neu_CGI + nas_CGI, naf_CGI + neu_CGI + nas_CGI + nJ)
-    seqM_asc_bits = seq_real_array_file.make_list_seq(naf_CGI + neu_CGI + nas_CGI + nJ, naf_CGI + neu_CGI + nas_CGI + nJ + nM)
-    seqA_asc_bits = seq_real_array_file.make_list_seq(naf_CGI + neu_CGI + nas_CGI + nJ + nM, naf_CGI + neu_CGI + nas_CGI + nJ + nM + nA)
+    seqJ_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI, naf_CGI + neu_CGI + nas_CGI + nJ)
+    seqM_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ, naf_CGI + neu_CGI + nas_CGI + nJ + nM)
+    seqA_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ + nM, naf_CGI + neu_CGI + nas_CGI + nJ + nM + nA)
 
 
     res = []
