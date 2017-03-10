@@ -38,7 +38,11 @@ class AllelesReal(object):
         """Make bitarray containing alleles from real data PLINK .tped file.
         sites in rows, individuals in columns (first 4 columns chr, rsnumber, site_begin, site_end).
         plink --bfile bfile --recode transpose 01 --output-missing-genotype N --out tfile01
-        https://www.cog-genomics.org/plink2/formats#tped"""
+        https://www.cog-genomics.org/plink2/formats#tped
+
+        Deal with missing data by changing all non 0's or 1's to 0.
+        This is probably acceptable to data with very low frequency of missing data.
+        Should improve by giving option to read PLINK .frq files for each population to change missing data to 0 or 1 with probability based on frequency of allele for each population."""
 
         real_file = open(self.real_file_name, 'r')
         seq_bits = bitarray()
