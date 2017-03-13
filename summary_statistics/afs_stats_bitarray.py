@@ -57,7 +57,6 @@ def FST2(seq1_bits,pi1,n1,seq2_bits,pi2,n2):
     k3=0
     #Pi within populations
     pw=(pi1+pi2)/2
-    #for i in xrange(0, seq1_bits.length(), seq1_bits.length()/n1):
     for i in xrange(0, n1):
         s1 = seq1_bits[i::n1]
         for j in xrange(0, n2):
