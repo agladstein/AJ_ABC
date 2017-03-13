@@ -449,7 +449,7 @@ def main(arguments):
 
     if nbss_asc > 0:
         Af_asc = []
-        ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, nbss_asc)
+        ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI)
         if (ss_Af_asc[0] == 0):
             for i in xrange(5):
                 Af_asc.append(0)
@@ -464,7 +464,7 @@ def main(arguments):
         head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
 
         Eu_asc = []
-        ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, nbss_asc)
+        ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, neu_CGI)
         if (ss_Eu_asc[0] == 0):
             for i in xrange(5):
                 Eu_asc.append(0)
@@ -479,7 +479,7 @@ def main(arguments):
         head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
 
         As_asc = []
-        ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nbss_asc)
+        ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nas_CGI)
         if (ss_As_asc[0] == 0):
             for i in xrange(5):
                 As_asc.append(0)
@@ -494,7 +494,7 @@ def main(arguments):
         head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
 
         J_asc = []
-        ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nbss_asc)
+        ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nJ)
         if (ss_J_asc[0] == 0):
             for i in xrange(5):
                 J_asc.append(0)
@@ -509,7 +509,7 @@ def main(arguments):
         head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
 
         M_asc = []
-        ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nbss_asc)
+        ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nM)
         if (ss_M_asc[0] == 0):
             for i in xrange(5):
                 M_asc.append(0)
@@ -524,7 +524,7 @@ def main(arguments):
         head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
 
         EA_asc = []
-        ss_EA_asc = afs_stats_bitarray.base_S_ss(seqEA_asc_bits, nbss_asc)
+        ss_EA_asc = afs_stats_bitarray.base_S_ss(seqEA_asc_bits, nEA)
         if (ss_EA_asc[0] == 0):
             for i in xrange(5):
                 EA_asc.append(0)
@@ -539,7 +539,7 @@ def main(arguments):
         head = head + 'SegS_EA_ASC\tSing_EA_ASC\tDupl_EA_ASC\tPi_EA_ASC\tTajD_EA_ASC\t'
 
         WA_asc = []
-        ss_WA_asc = afs_stats_bitarray.base_S_ss(seqWA_asc_bits, nbss_asc)
+        ss_WA_asc = afs_stats_bitarray.base_S_ss(seqWA_asc_bits, nWA)
         if (ss_WA_asc[0] == 0):
             for i in xrange(5):
                 WA_asc.append(0)
