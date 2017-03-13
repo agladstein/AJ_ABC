@@ -1,18 +1,22 @@
-from alleles_generator.real_file import AllelesReal
-from bitarray import bitarray
-from summary_statistics import afs_stats_bitarray
+from subprocess import Popen
+import numpy as np
 import os
-import itertools
+from sys import argv
+from alleles_generator.real_file import AllelesReal
+from summary_statistics import afs_stats_bitarray
 
-
-# from memory_profiler import profile
-
-#@profile()
 def main():
     """This takes in 3 real PLINK .tped files.
     PLINK .tped with CGI or 1000 genomes HapMap populations.
     PLINK .tped snp array data made from same HapMap individuals with PLINK exclude.
     PLINK .tped snp array data with populations of interest."""
+
+    test = argv[1]
+    if test == 'test':
+        dir_data = 'tests/test_data/'
+    elif test == 'real':
+        dir_data = 'real_data/'
+
 
     naf_CGI = 18
     neu_CGI = 18
@@ -21,7 +25,6 @@ def main():
     nM = 28
     nA = 76
 
-
     print 'naf_CGI ' + str(naf_CGI)
     print 'neu_CGI ' + str(neu_CGI)
     print 'nas_CGI ' + str(nas_CGI)
@@ -29,25 +32,27 @@ def main():
     print 'nJ ' + str(nJ)
     print 'nM ' + str(nM)
 
+    CGI_file = str(dir_data)+'YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005'
+    CGIarray_file = str(dir_data)+'YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA'
+    array_file = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset'
 
-    seq_real_CGI_file = AllelesReal('real_data/YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005.tped')
+    seq_real_CGI_file = AllelesReal(str(CGI_file)+'.tped')
     seqAF_CGI_bits = seq_real_CGI_file.make_bitarray_seq(0, naf_CGI)
     seqEu_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
     seqAs_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
-    seq_real_CGIarray_file = AllelesReal('real_data/YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA.tped')
+    seq_real_CGIarray_file = AllelesReal(str(CGIarray_file)+'.tped')
     seqAf_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(0, naf_CGI)
     seqEu_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
     seqAs_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
-    seq_real_array_file = AllelesReal('real_data/Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset.tped')
-    seqJ_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI, naf_CGI + neu_CGI + nas_CGI + nJ)
-    seqM_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ, naf_CGI + neu_CGI + nas_CGI + nJ + nM)
-    seqA_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ + nM, naf_CGI + neu_CGI + nas_CGI + nJ + nM + nA)
+    seq_real_array_file = AllelesReal(str(array_file)+'.tped')
+    seqJ_asc_bits = seq_real_array_file.make_bitarray_seq(0, nJ)
+    seqM_asc_bits = seq_real_array_file.make_bitarray_seq(nJ, nJ + nM)
+    seqA_asc_bits = seq_real_array_file.make_bitarray_seq(nJ + nM, nJ + nM + nA)
 
     res = []
 
-    res = []
     Af_res = []
     Af_res.extend(afs_stats_bitarray.base_S_ss(seqAF_CGI_bits, naf_CGI))
     pi_AfCGI = afs_stats_bitarray.Pi2(Af_res[3], naf_CGI)
@@ -78,6 +83,114 @@ def main():
     res.append(afs_stats_bitarray.FST2(seqEu_CGI_bits, pi_EuCGI, neu_CGI, seqAs_CGI_bits, pi_AsCGI, nas_CGI))
     head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
+    ########Use Germline to find IBD on pseduo array ped and map files
+    run_germline = int(argv[2])
+    filenameped = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1.ped'
+    filenamemap = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1.map'
+    filenameout = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1'
+
+    print 'run germline? '+str(run_germline)
+    if (run_germline == 0):
+        print 'Running Germline on ' + str(filenameped) + ' ' + str(filenamemap)
+        print 'p  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10"'
+        germline = Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10"', shell=True))
+
+        print 'finished running germline'
+
+    ########Get IBD stats from Germline output
+    if os.path.isfile(str(filenameout) + '.match'):
+        print 'reading Germline IBD output'
+        filegermline = open(str(filenameout) + '.match', 'r')
+        IBDlengths_AA = []
+        IBDlengths_JJ = []
+        IBDlengths_MM = []
+        IBDlengths_EE = []
+        IBDlengths_AE = []
+        IBDlengths_AJ = []
+        IBDlengths_AM = []
+        IBDlengths_JM = []
+        IBDlengths_JE = []
+        IBDlengths_ME = []
+        for line in filegermline:
+            pop1 = line.split()[0]
+            pop2 = line.split()[2]
+            segment = float(line.split()[10])
+            pair = str(pop1) + '_' + str(pop2)
+            if pair == 'A_A':
+                IBDlengths_AA.append(segment)
+            if pair == 'J_J':
+                IBDlengths_JJ.append(segment)
+            if pair == 'M_M':
+                IBDlengths_MM.append(segment)
+            if pair == 'E_E':
+                IBDlengths_EE.append(segment)
+            if pair == 'A_E' or pair == 'E_A':
+                IBDlengths_AE.append(segment)
+            if pair == 'A_J' or pair == 'J_A':
+                IBDlengths_AJ.append(segment)
+            if pair == 'A_M' or pair == 'M_A':
+                IBDlengths_AM.append(segment)
+            if pair == 'J_M' or pair == 'M_J':
+                IBDlengths_JM.append(segment)
+            if pair == 'J_E' or pair == 'E_J':
+                IBDlengths_JE.append(segment)
+            if pair == 'M_E' or pair == 'E_M':
+                IBDlengths_ME.append(segment)
+        filegermline.close()
+
+        print 'calculating summary stats'
+
+        IBDlengths_mean = []
+        IBDlengths_median = []
+        IBDlengths_num = []
+        IBDlengths_var = []
+        IBDlengths_mean30 = []
+        IBDlengths_median30 = []
+        IBDlengths_num30 = []
+        IBDlengths_var30 = []
+
+        pairs = [IBDlengths_AA, IBDlengths_JJ, IBDlengths_MM, IBDlengths_EE, IBDlengths_AE, IBDlengths_AJ,
+                 IBDlengths_AM, IBDlengths_JM, IBDlengths_JE, IBDlengths_ME]
+        for p in pairs:
+            IBDlengths_num.append(len(p))
+            if len(p) < 1:
+                p.append(0)
+            IBDlengths_mean.append(np.mean(p))
+            IBDlengths_median.append(np.median(p))
+            IBDlengths_var.append(np.var(p))
+            #### Get IBD greater than 30 Mb
+            for l in p:
+                n = 0
+                IBDlengths30 = []
+                if l > 30:
+                    n = n + 1
+                    IBDlengths30.append(l)
+                else:
+                    IBDlengths30.append(0)
+            IBDlengths_mean30.append(np.mean(IBDlengths30))
+            IBDlengths_median30.append(np.median(IBDlengths30))
+            IBDlengths_var30.append(np.var(IBDlengths30))
+            IBDlengths_num30.append(n)
+
+        res.extend(IBDlengths_mean)
+        head = head + 'IBD_mean_AA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_AE\tIBD_mean_AJ\tIBD_mean_AM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
+        res.extend(IBDlengths_median)
+        head = head + 'IBD_median_AA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_AE\tIBD_median_AJ\tIBD_median_AM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
+        res.extend(IBDlengths_num)
+        head = head + 'IBD_num_AA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_AE\tIBD_num_AJ\tIBD_num_AM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
+        res.extend(IBDlengths_var)
+        head = head + 'IBD_var_AA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_AE\tIBD_var_AJ\tIBD_var_AM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
+
+        res.extend(IBDlengths_mean30)
+        head = head + 'IBD30_mean_AA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_AE\tIBD30_mean_AJ\tIBD30_mean_AM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
+        res.extend(IBDlengths_median30)
+        head = head + 'IBD30_median_AA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_AE\tIBD30_median_AJ\tIBD30_median_AM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
+        res.extend(IBDlengths_num30)
+        head = head + 'IBD30_num_AA\tIBD30_num_JJ\tIBD30_num_MM\tIBD_num_EE\tIBD30_num_AE\tIBD30_num_AJ\tIBD30_num_AM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
+        res.extend(IBDlengths_var30)
+        head = head + 'IBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD_var_EE\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
+
+
     Af_asc = []
     ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI)
     if (ss_Af_asc[0] == 0):
@@ -91,7 +204,7 @@ def main():
         Af_asc.append(afs_stats_bitarray.Tajimas(pi_Af_asc, Af_asc[0], naf_CGI))
         del (Af_asc[3])
     res.extend(Af_asc)
-    head = 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
+    head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
 
     Eu_asc = []
     ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, neu_CGI)
