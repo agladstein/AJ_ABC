@@ -9,15 +9,18 @@ import itertools
 
 #@profile()
 def main():
-    """This is for memory_profiling purposes of the differences between lists and bitarray.
-    Must give list or bitarray as argument"""
+    """This takes in 3 real PLINK .tped files.
+    PLINK .tped with CGI or 1000 genomes HapMap populations.
+    PLINK .tped snp array data made from same HapMap individuals with PLINK exclude.
+    PLINK .tped snp array data with populations of interest."""
 
-    naf_CGI = 10
-    neu_CGI = 10
-    nas_CGI = 10
-    nA = 10
-    nJ = 10
-    nM = 10
+    naf_CGI = 18
+    neu_CGI = 18
+    nas_CGI = 8
+    nJ = 28
+    nM = 28
+    nA = 76
+
 
     print 'naf_CGI ' + str(naf_CGI)
     print 'neu_CGI ' + str(neu_CGI)
@@ -27,39 +30,53 @@ def main():
     print 'nM ' + str(nM)
 
 
-    #### Check if necessary directories exist.
-    sim_data_dir = './sim_data_AJ_M1'
-    germline_out_dir='./germline_out_AJ_M1'
-    sim_values_dir='./sim_values_AJ_M1'
-    results_sims_dir='./results_sims_AJ_M1'
-
-    if not os.path.exists(sim_data_dir):
-        os.makedirs(sim_data_dir)
-    if not os.path.exists(germline_out_dir):
-        os.makedirs(germline_out_dir)
-    if not os.path.exists(sim_values_dir):
-        os.makedirs(sim_values_dir)
-    if not os.path.exists(results_sims_dir):
-        os.makedirs(results_sims_dir)
-
-
-    seq_real_CGI_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
+    seq_real_CGI_file = AllelesReal('real_data/YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005.tped')
     seqAF_CGI_bits = seq_real_CGI_file.make_bitarray_seq(0, naf_CGI)
     seqEu_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
     seqAs_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
-    seq_real_CGIarray_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
+    seq_real_CGIarray_file = AllelesReal('real_data/YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA.tped')
     seqAf_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(0, naf_CGI)
     seqEu_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
     seqAs_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
-    seq_real_array_file = AllelesReal('tests/test_data/head_Behar_HGDP_FtDNA_Jews_MidEast_chr1.tped')
+    seq_real_array_file = AllelesReal('real_data/Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset.tped')
     seqJ_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI, naf_CGI + neu_CGI + nas_CGI + nJ)
     seqM_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ, naf_CGI + neu_CGI + nas_CGI + nJ + nM)
     seqA_asc_bits = seq_real_array_file.make_bitarray_seq(naf_CGI + neu_CGI + nas_CGI + nJ + nM, naf_CGI + neu_CGI + nas_CGI + nJ + nM + nA)
 
+    res = []
 
     res = []
+    Af_res = []
+    Af_res.extend(afs_stats_bitarray.base_S_ss(seqAF_CGI_bits, naf_CGI))
+    pi_AfCGI = afs_stats_bitarray.Pi2(Af_res[3], naf_CGI)
+    Af_res.append(afs_stats_bitarray.Tajimas(pi_AfCGI, Af_res[0], naf_CGI))
+    del (Af_res[3])
+    res.extend(Af_res)
+    head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
+
+    Eu_res = []
+    Eu_res.extend(afs_stats_bitarray.base_S_ss(seqEu_CGI_bits, neu_CGI))
+    pi_EuCGI = afs_stats_bitarray.Pi2(Eu_res[3], neu_CGI)
+    Eu_res.append(afs_stats_bitarray.Tajimas(pi_EuCGI, Eu_res[0], neu_CGI))
+    del (Eu_res[3])
+    res.extend(Eu_res)
+    head = head + 'SegS_Eu_CGI\tSing_Eu_CGI\tDupl_Eu_CGI\tTajD_Eu_CGI\t'
+
+    As_res = []
+    As_res.extend(afs_stats_bitarray.base_S_ss(seqAs_CGI_bits, nas_CGI))
+    pi_AsCGI = afs_stats_bitarray.Pi2(As_res[3], nas_CGI)
+    As_res.append(afs_stats_bitarray.Tajimas(pi_AsCGI, As_res[0], nas_CGI))
+    del (As_res[3])
+    res.extend(As_res)
+    head = head + 'SegS_As_CGI\tSing_As_CGI\tDupl_As_CGI\tTajD_As_CGI\t'
+
+    ##fst between populations
+    res.append(afs_stats_bitarray.FST2(seqAF_CGI_bits, pi_AfCGI, naf_CGI, seqEu_CGI_bits, pi_EuCGI, neu_CGI))
+    res.append(afs_stats_bitarray.FST2(seqAF_CGI_bits, pi_AfCGI, naf_CGI, seqAs_CGI_bits, pi_AsCGI, nas_CGI))
+    res.append(afs_stats_bitarray.FST2(seqEu_CGI_bits, pi_EuCGI, neu_CGI, seqAs_CGI_bits, pi_AsCGI, nas_CGI))
+    head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
     Af_asc = []
     ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI)
@@ -161,6 +178,18 @@ def main():
     res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqM_asc_bits, pi_M_asc, nM))
     res.append(afs_stats_bitarray.FST2(seqM_asc_bits, pi_M_asc, nM, seqJ_asc_bits, pi_J_asc, nJ))
     head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_MJ_ASC\n'
+
+    filesummary='real_output.summary'
+    filesumm=open(filesummary,'w')
+    filesumm.write(head)
+
+    out=''
+    for g in range(len(res)):
+        out=out+str(res[g])+'\t'
+    out=out[:-1]+'\n'
+
+    filesumm.write(out)
+    filesumm.close()
 
     return res
 
