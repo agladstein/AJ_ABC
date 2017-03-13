@@ -51,6 +51,6 @@ class AllelesReal(object):
             for i in xrange(n_0+4, n_m+4):
                 if columns[i] != '0' or '1':
                     columns[i] = '0'
-            seq_bits.extend(columns[i])
+                seq_bits.extend(columns[i])
         real_file.close()
         return seq_bits
