@@ -19,3 +19,7 @@ macs_asc*.log
 *.summary
 sim*_*_values.txt
 .DS_Store
+workflow/dax.xml
+workflow/macss_env
+workflow/macss_env.tar.gz
+workflow/model.tar.gz
