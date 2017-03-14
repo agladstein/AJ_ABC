@@ -413,18 +413,16 @@ def main(arguments):
             IBDlengths_median.append(np.median(p))
             IBDlengths_var.append(np.var(p))
             #### Get IBD greater than 30 Mb
+            IBDlengths30 = []
             for l in p:
-                n = 0
-                IBDlengths30 = []
                 if l > 30:
-                    n = n + 1
                     IBDlengths30.append(l)
-                else:
-                    IBDlengths30.append(0)
+            IBDlengths_num30.append(len(IBDlengths30))
+            if len(IBDlengths30) == 0:
+                IBDlengths30.append(0)
             IBDlengths_mean30.append(np.mean(IBDlengths30))
             IBDlengths_median30.append(np.median(IBDlengths30))
             IBDlengths_var30.append(np.var(IBDlengths30))
-            IBDlengths_num30.append(n)
 
         res.extend(IBDlengths_mean)
         head = head + 'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
