@@ -47,3 +47,101 @@ pip install --upgrade pip
 pip install -r requirements.txt
 macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0
 ```
+
+-------------------------
+
+## Running as a Workflow on Open Science Grid
+
+The workflow creates a Python virtual environment according to the requirements.in file, and then tars up this whole
+directory. That tarball is then shipped with the jobs, with the result being that wherever the jobs start up, they 
+still have access to any files currently in this directory. However, note that paths will be different, so only
+reference files using relative paths.
+
+
+### Submitting the Workflow
+
+Figure out what the start job id and end job id you want to have in the run. These are provided by the user as a
+convenience so that outputs from multiple runs uses unique names. To submit a new workflow, run:
+
+    ./submit [startid] [endid]
+
+For exaple, to run a small test workflow:
+
+    ./submit 1 100
+
+The output of the command is something similar to:
+
+    An outputs directory will be created within the base of the workflow directory.
+    Directory: /local-scratch/rynge/workflows/macsswig_simsaj_1489465382/outputs
+
+    2017.03.13 23:23:39.930 CDT:    
+    2017.03.13 23:23:39.936 CDT:   ----------------------------------------------------------------------- 
+    2017.03.13 23:23:39.941 CDT:   File for submitting this DAG to Condor           : macsswig_simsaj-0.dag.condor.sub 
+    2017.03.13 23:23:39.947 CDT:   Log of DAGMan debugging messages                 : macsswig_simsaj-0.dag.dagman.out 
+    2017.03.13 23:23:39.952 CDT:   Log of Condor library output                     : macsswig_simsaj-0.dag.lib.out 
+    2017.03.13 23:23:39.958 CDT:   Log of Condor library error messages             : macsswig_simsaj-0.dag.lib.err 
+    2017.03.13 23:23:39.963 CDT:   Log of the life of condor_dagman itself          : macsswig_simsaj-0.dag.dagman.log 
+    2017.03.13 23:23:39.968 CDT:    
+    2017.03.13 23:23:39.984 CDT:   ----------------------------------------------------------------------- 
+    2017.03.13 23:23:41.049 CDT:   Your database is compatible with Pegasus version: 4.7.3 
+    2017.03.13 23:23:41.178 CDT:   Submitting to condor macsswig_simsaj-0.dag.condor.sub 
+    2017.03.13 23:23:41.360 CDT:   Submitting job(s). 
+    2017.03.13 23:23:41.365 CDT:   1 job(s) submitted to cluster 3891204. 
+    2017.03.13 23:23:41.371 CDT:    
+    2017.03.13 23:23:41.376 CDT:   Your workflow has been started and is running in the base directory: 
+    2017.03.13 23:23:41.381 CDT:    
+    2017.03.13 23:23:41.387 CDT:     /local-scratch/rynge/workflows/macsswig_simsaj_1489465382/workflow/macsswig_simsaj_1489465382 
+    2017.03.13 23:23:41.392 CDT:    
+    2017.03.13 23:23:41.397 CDT:   *** To monitor the workflow you can run *** 
+    2017.03.13 23:23:41.403 CDT:    
+    2017.03.13 23:23:41.408 CDT:     pegasus-status -l /local-scratch/rynge/workflows/macsswig_simsaj_1489465382/workflow/macsswig_simsaj_1489465382 
+    2017.03.13 23:23:41.413 CDT:    
+    2017.03.13 23:23:41.419 CDT:   *** To remove your workflow run *** 
+    2017.03.13 23:23:41.424 CDT:    
+    2017.03.13 23:23:41.429 CDT:     pegasus-remove /local-scratch/rynge/workflows/macsswig_simsaj_1489465382/workflow/macsswig_simsaj_1489465382 
+    2017.03.13 23:23:41.435 CDT:    
+    2017.03.13 23:23:41.624 CDT:   Time taken to execute is 3.636 seconds 
+
+Note how Pegasus uses a directory as "handle" to the workflow. This directory path can be used with various Pegasus commands.
+
+
+### Monitoring
+
+The system will send email notifications when the workflow changes state, but if you want to see the current state, use the
+`pegasus-status` command. For example:
+
+    $ pegasus-status -l /local-scratch/rynge/workflows/macsswig_simsaj_1489465382/workflow/macsswig_simsaj_1489465382
+    STAT  IN_STATE  JOB                                                                                                                
+    Run      03:12  macsswig_simsaj-0 ( /local-scratch/rynge/workflows/macsswig_simsaj_1489465382/workflow/macsswig_simsaj_1489465382 )
+    Idle     02:31   ┣━run-sim.sh_ID0000090                                                                                            
+    ...
+    Idle     00:40   ┗━run-sim.sh_ID0000077                                                                                            
+    Summary: 101 Condor jobs total (I:74 R:27)
+    
+    UNRDY READY   PRE  IN_Q  POST  DONE  FAIL %DONE STATE   DAGNAME                                 
+        6     0     0   100     0     3     0   2.8 Running *macsswig_simsaj-0.dag  
+
+The last couple of lines will tell you the overall state. Note that jobs can be "READY" but not yet submitted to the queue. The
+reason for this is that the workflow is configured to keep at most 1,000 idle jobs in the queue, in order to not overwhelm the
+scheduler.
+
+
+### Statistics / Debugging
+
+For successful workflows, you can generate statistics such as cumulative runtimes using the `pegasus-statistics -s all [dir]`
+command. For failed workflows, `pegasus-analyzer [dir]` can help pinpoint the failures.
+
+
+### Stopping / Restarting
+
+If you want to stop a workflow, use the `pegasus-remove [dir]` command. Workflows which have stopped for some reason (removed
+by the user or maybe from a longer system outage), can be restarted from where they left of with the `pegasus-run [dir]`
+command.
+
+
+### Links to documentation
+
+ * [Pegasus Command Line Interface](https://pegasus.isi.edu/documentation/cli.php)
+ * [Pegasus User Guide](https://pegasus.isi.edu/documentation/)
+ * [OSG Connect Documentation](https://support.opensciencegrid.org/solution/categories)
+

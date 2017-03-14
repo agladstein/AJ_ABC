@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -e
+
+# make sure we are in the correct dir
+if [ ! -e sites.xml.template ]; then
+    echo "Please only run this script from within the workflow directory"
+    exit 1
+fi
+
+# did the user specify the number of jobs
+if [ "x$1" == "x" -o "x$2" == "x" ]; then
+    echo "Please specify job start and end ids. Example: ./submit 100 300"
+    exit 1
+fi
+JOB_START=$1
+JOB_END=$2
+
+module load pegasus
+module load stashcp
+
+TOP_DIR=`pwd`
+
+export RUN_ID=macsswig_simsaj_`date +'%s'`
+
+export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
+mkdir -p $RUN_DIR
+
+# makeing sure we have current venv
+make
+
+# we need a full tarball of the model code 
+# do this by a copy first so we can clean up before tar
+echo
+echo "Creating a model tarball ..."
+(DIR=`mktemp -d -q /tmp/model.XXXXXX` && \
+    mkdir $DIR/model && \
+    cd .. && \
+    cp -r * $DIR/model/ && \
+    cd $DIR/model && \
+    rm -rf workflow/model.tar.gz && \
+    cd .. && \
+    tar czf $TOP_DIR/model.tar.gz model && \
+    cd $TOP_DIR && \
+    rm -rf $DIR)
+
+# generate the site catalog
+SC=$RUN_DIR/sites.xml
+envsubst <sites.xml.template >$SC
+
+# generate the dax
+export PYTHONPATH=`pegasus-config --python`
+./tools/dax-generator $RUN_ID $RUN_DIR $JOB_START $JOB_END
+
+echo
+echo "An outputs directory will be created within the base of the workflow directory."
+echo "Directory: $RUN_DIR/outputs"
+
+# plan and submit the  workflow
+echo
+pegasus-plan \
+    -Dpegasus.catalog.site.file=$SC \
+    --conf pegasus.conf \
+    --relative-dir $RUN_ID \
+    --sites condorpool \
+    --staging-site stash \
+    --output-site local \
+    --dir $RUN_DIR/workflow \
+    --dax dax.xml \
+    --submit
+
