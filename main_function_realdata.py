@@ -118,7 +118,7 @@ def main():
             pop2 = line.split()[2]
             segment = float(line.split()[10])
             pair = str(pop1) + '_' + str(pop2)
-            if pair == 'A_A':
+            if pair == 'EA_EA' or pair == 'WA_WA' or pair == 'EA_WA' or pair == 'WA_EA':
                 IBDlengths_AA.append(segment)
             if pair == 'J_J':
                 IBDlengths_JJ.append(segment)
@@ -126,11 +126,11 @@ def main():
                 IBDlengths_MM.append(segment)
             if pair == 'E_E':
                 IBDlengths_EE.append(segment)
-            if pair == 'A_E' or pair == 'E_A':
+            if pair == 'EA_E' or pair == 'E_EA' or pair == 'WA_E' or pair == 'E_WA':
                 IBDlengths_AE.append(segment)
-            if pair == 'A_J' or pair == 'J_A':
+            if pair == 'EA_J' or pair == 'J_EA' or pair == 'WA_J' or pair == 'J_WA':
                 IBDlengths_AJ.append(segment)
-            if pair == 'A_M' or pair == 'M_A':
+            if pair == 'EA_M' or pair == 'M_EA' or pair == 'WA_M' or pair == 'M_WA':
                 IBDlengths_AM.append(segment)
             if pair == 'J_M' or pair == 'M_J':
                 IBDlengths_JM.append(segment)
