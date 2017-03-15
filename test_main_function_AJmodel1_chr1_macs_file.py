@@ -399,6 +399,7 @@ def main():
             asc_panel_bits.extend(seqEu_bits[site * total_neu + neu_CGI:site * total_neu + total_neu])
             asc_panel_bits.extend(seqAs_bits[site * total_nas + nas_CGI:site * total_nas + total_nas])
 
+
         pos_asc, nbss_asc, index_avail_sites, avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
 
         seqAf_asc_bits = bitarray()
@@ -470,6 +471,7 @@ def main():
                 int(avail_sites[pos_asc[g]] - 1)) + ' ' + str(int(avail_sites[pos_asc[g]])) + '\n'
             filemap.write(map)
         filemap.close()
+
 
 
         res = []

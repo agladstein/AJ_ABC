@@ -8,8 +8,7 @@ def base_S_ss(seq,nbsites):
     var_ss = 0  # Segregating sites
     alleles = zip(*seq)
     for g in range(nbsites):
-        if 0 < list(alleles[g]).count('1') < (list(alleles[g]).count('1') + list(alleles[g]).count(
-                '0')):  ##this ignores sites that have all zeros, or all ones
+        if 0 < list(alleles[g]).count('1') < (list(alleles[g]).count('1') + list(alleles[g]).count('0')):  ##this ignores sites that have all zeros, or all ones
             var_ss = var_ss + 1
             spec_zero[list(alleles[g]).count('1') - 1] = spec_zero[list(alleles[g]).count('1') - 1] + 1
     if var_ss > 0:
@@ -55,6 +54,7 @@ def FST2(seq1,pi1,nseq1,seq2,pi2,nseq2):
     #Pi within populations
     pw=(pi1+pi2)/2
     for i in xrange(len(seq1)):
+        si = seq1[i]
         for j in xrange(len(seq2)):
             k3=k3+hamming_distance(seq1[i],seq2[j])
     pb=k3/(float(nseq1)*float(nseq2))

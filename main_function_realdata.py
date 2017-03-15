@@ -17,7 +17,6 @@ def main():
     elif test == 'real':
         dir_data = 'real_data/'
 
-
     naf_CGI = 18
     neu_CGI = 18
     nas_CGI = 8
