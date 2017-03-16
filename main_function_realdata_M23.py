@@ -150,7 +150,7 @@ def main():
             if pair == 'EA_M' or pair == 'M_EA':
                 IBDlengths_eAM.append(segment)
             if pair == 'WA_M' or pair == 'M_WA':
-                IBDlengths_eAM.append(segment)
+                IBDlengths_wAM.append(segment)
             if pair == 'J_M' or pair == 'M_J':
                 IBDlengths_JM.append(segment)
             if pair == 'J_E' or pair == 'E_J':
