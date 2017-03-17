@@ -63,11 +63,11 @@ reference files using relative paths.
 Figure out what the start job id and end job id you want to have in the run. These are provided by the user as a
 convenience so that outputs from multiple runs uses unique names. To submit a new workflow, run:
 
-    ./submit [startid] [endid]
+    ./submit [modell] [startid] [endid]
 
 For exaple, to run a small test workflow:
 
-    ./submit 1 100
+    ./submit run_sims_AJmodel2_chr1_all.py 1 100
 
 The output of the command is something similar to:
 
