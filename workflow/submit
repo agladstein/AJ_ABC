@@ -9,12 +9,13 @@ if [ ! -e sites.xml.template ]; then
 fi
 
 # did the user specify the number of jobs
-if [ "x$1" == "x" -o "x$2" == "x" ]; then
-    echo "Please specify job start and end ids. Example: ./submit 100 300"
+if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" ]; then
+    echo "Please specify model, job start and end ids. Example: ./submit run_sims_AJmodel2_chr1_all.py 100 300"
     exit 1
 fi
-JOB_START=$1
-JOB_END=$2
+MODEL=$1
+JOB_START=$2
+JOB_END=$3
 
 module load pegasus
 module load stashcp
@@ -50,7 +51,7 @@ envsubst <sites.xml.template >$SC
 
 # generate the dax
 export PYTHONPATH=`pegasus-config --python`
-./tools/dax-generator $RUN_ID $RUN_DIR $JOB_START $JOB_END
+./tools/dax-generator $RUN_ID $RUN_DIR $MODEL $JOB_START $JOB_END
 
 echo
 echo "An outputs directory will be created within the base of the workflow directory."
