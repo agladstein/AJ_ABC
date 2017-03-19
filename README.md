@@ -47,12 +47,19 @@ pip install --upgrade pip
 pip install -r requirements.txt
 macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0
 ```
+
 -------------------------
 
 ## Running on University of Arizona HPC
 There are four University of Arizona HPC systems - Ocelote, HTC, SMP, and Cluster. All four systems shared the same storage space. Log onto any any of the HPC systems with
 ``ssh name@hpc.arizona.edu``
 Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
+
+### Setting up virtualenv on Ocelote
+```module load python/2/2.7.11
+virtualenv macss_env
+source macss_env/bin/activate
+pip install -r macsswig_simsaj/requirements.txt```
 
 ### Submitting PBS from the command line
 There are separate PBS files for each model and for each system:
