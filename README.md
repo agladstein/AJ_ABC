@@ -47,6 +47,43 @@ pip install --upgrade pip
 pip install -r requirements.txt
 macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0
 ```
+-------------------------
+
+## Running on University of Arizona HPC
+There are four University of Arizona HPC systems - Ocelote, HTC, SMP, and Cluster. All four systems shared the same storage space. Log onto any any of the HPC systems with
+``ssh name@hpc.arizona.edu``
+Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
+
+### Submitting PBS from the command line
+There are separate PBS files for each model and for each system:
+main_function_AJmodel1_chr1.pbs - is run on Ocelote
+main_function_AJmodel1_chr1_cluster.pbs, main_function_AJmodel1_chr1_htc.pbs, and main_function_AJmodel1_chr1_smp.pbs are run on ice.
+You need to change the line ``#PBS -M agladstein@email.arizona.edu`` in all .pbs scripts to your email.
+Submit a pbs script by:
+`qsub main_function_AJmodel1_chr1.pbs`
+
+### Automatically Submit PBS with crontab
+`crontab -e` to edit the crontab file.
+`crontab -l` to view the crontab file.
+`crontab -r` to remove the crontab file.
+
+You should use two seperate crontab files - one on Ocelote and one on ice.
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >crontab_ice.log```
+
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_cluster.pbs clu; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_smp.pbs smp; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_htc.pbs htc >crontab_ice.log```
+Use, your own absolute paths.
+
+
+
+### Basic Commands
+`qstat` shows all of the jobs currently in the que or running.
+`qstat -t` shows the status of all subjobs.
+`qstat -f` shows details of job.
+`qsub` submits a pbs script.
+`qdel` stops a job
+`va` shows status of hours.
+
+
 
 -------------------------
 

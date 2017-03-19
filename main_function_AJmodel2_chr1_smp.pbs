@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -N AJmodel2
+#PBS -m bea
+#PBS -M agladstein@email.arizona.edu
+#PBS -W group_list=mfh
+#PBS -J 1-1000
+#PBS -q standard
+#PBS -l cput=60:0:0
+#PBS -l walltime=60:0:0
+#PBS -l jobtype=smp_only
+#PBS -j oe
+#PBS -l select=1:ncpus=1:mem=8gb:pcmem=8gb
+
+
+cd $PBS_O_WORKDIR
+echo PBS_ARRAY_INDEX=$PBS_ARRAY_INDEX
+NOW=$(date +%m%d%y%s)
+ID=$NOW"_"$PBS_ARRAY_INDEX
+
+macss_env_ice/bin/python run_sims_AJmodel2_chr1_all.py $ID ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0
+rm sim_data_AJ_M2/macs_asc_${ID}_chr1.ped
+rm sim_data_AJ_M2/macs_asc_${ID}_chr1.map
