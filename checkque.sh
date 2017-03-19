@@ -5,8 +5,8 @@ RESULTS=$2
 echo "Check for ${GOAL} completed runs in $RESULTS"
 QUEMAX=$3
 PBS=$4
-qstat=/cm/shared/apps/pbspro/13.0.2.153173/bin/qstat
-qsub=/cm/shared/apps/pbspro/13.0.2.153173/bin/qsub
+qstat=/cm/shared/apps/pbspro/current/bin/qstat
+qsub=/cm/shared/apps/pbspro/current/bin/qsub
 
 #check number of completed simulations
 COMP=$(ls $RESULTS/ | wc -l)
