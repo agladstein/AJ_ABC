@@ -56,10 +56,12 @@ There are four University of Arizona HPC systems - Ocelote, HTC, SMP, and Cluste
 Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
 
 ### Setting up virtualenv on Ocelote
-```module load python/2/2.7.11
+```bash
+module load python/2/2.7.11
 virtualenv macss_env
 source macss_env/bin/activate
-pip install -r macsswig_simsaj/requirements.txt```
+pip install -r macsswig_simsaj/requirements.txt
+```
 
 ### Submitting PBS from the command line
 There are separate PBS files for each model and for each system:
