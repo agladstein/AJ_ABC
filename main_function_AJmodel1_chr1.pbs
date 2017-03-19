@@ -15,6 +15,6 @@ echo PBS_ARRAY_INDEX=$PBS_ARRAY_INDEX
 NOW=$(date +%m%d%y%s)
 ID=$NOW"_"$PBS_ARRAY_INDEX
 
-macss_env/bin/python run_sims_AJmodel1_chr1_all.py $ID ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0
+macss_env/bin/python run_sims_AJmodel1_chr1_all.py $ID ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 >& /dev/null
 rm sim_data_AJ_M1/macs_asc_${ID}_chr1.ped
 rm sim_data_AJ_M1/macs_asc_${ID}_chr1.map

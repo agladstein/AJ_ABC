@@ -68,19 +68,24 @@ Submit a pbs script by:
 `crontab -r` to remove the crontab file.
 
 You should use two seperate crontab files - one on Ocelote and one on ice.
-```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >crontab_ice.log```
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ocelote.log```
 
-```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_cluster.pbs clu; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_smp.pbs smp; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_htc.pbs htc >crontab_ice.log```
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_cluster.pbs clu; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_smp.pbs smp; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_htc.pbs htc >/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log```
 Use, your own absolute paths.
 
-
+The crontab files run the shell scripts checkque.sh and checkque_ice.sh check the number of completed runs in the designated directory, the number of CPU hrs left to use, and the number of jobs currently in the que.
+The shell scripts currently allow for a minimum of 350 hrs a day to be left for the group.
+checkque.sh runs as
+`checkque.sh sim_goal results_dir que_max pbs`
+and checkque_ice.sh runs as
+`checkque.sh sim_goal results_dir que_max pbs system`
 
 ### Basic Commands
 `qstat` shows all of the jobs currently in the que or running.
 `qstat -t` shows the status of all subjobs.
 `qstat -f` shows details of job.
 `qsub` submits a pbs script.
-`qdel` stops a job
+`qdel` stops a job.
 `va` shows status of hours.
 
 

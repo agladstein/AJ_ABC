@@ -1,3 +1,5 @@
+cd /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels
+
 GOAL=$1
 RESULTS=$2
 echo "Check for ${GOAL} completed runs in $RESULTS"
