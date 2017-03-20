@@ -67,7 +67,10 @@ pip install -r macsswig_simsaj/requirements.txt
 There are separate PBS files for each model and for each system:
 main_function_AJmodel1_chr1.pbs - is run on Ocelote
 main_function_AJmodel1_chr1_cluster.pbs, main_function_AJmodel1_chr1_htc.pbs, and main_function_AJmodel1_chr1_smp.pbs are run on ice.
-You need to change the line ``#PBS -M agladstein@email.arizona.edu`` in all .pbs scripts to your email.
+
+You need to change the line ``#PBS -M agladstein@email.arizona.edu`` in all pbs scripts to your email and change the line ``#PBS -W group_list=mfh`` to your group.
+You can find your group with ``groups``.
+
 Submit a pbs script by:
 `qsub main_function_AJmodel1_chr1.pbs`
 
@@ -77,9 +80,9 @@ Submit a pbs script by:
 `crontab -r` to remove the crontab file.
 
 You should use two seperate crontab files - one on Ocelote and one on ice.
-```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ocelote.log```
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ocelote.log 2>&1```
 
-```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_cluster.pbs clu; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_smp.pbs smp; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_htc.pbs htc >/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log```
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_cluster.pbs clu >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_smp.pbs smp >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_htc.pbs htc >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&```
 Use, your own absolute paths.
 
 The crontab files run the shell scripts checkque.sh and checkque_ice.sh check the number of completed runs in the designated directory, the number of CPU hrs left to use, and the number of jobs currently in the que.
