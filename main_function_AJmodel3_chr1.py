@@ -87,14 +87,26 @@ def main(arguments):
     sim_values_dir='./sim_values_AJ_M3'
     results_sims_dir='./results_sims_AJ_M3'
 
-    if not os.path.exists(sim_data_dir):
+    try:
         os.makedirs(sim_data_dir)
-    if not os.path.exists(germline_out_dir):
+    except OSError:
+        if not os.path.isdir(sim_data_dir):
+            raise
+    try:
         os.makedirs(germline_out_dir)
-    if not os.path.exists(sim_values_dir):
+    except OSError:
+        if not os.path.isdir(germline_out_dir):
+            raise
+    try:
         os.makedirs(sim_values_dir)
-    if not os.path.exists(results_sims_dir):
+    except OSError:
+        if not os.path.isdir(sim_values_dir):
+            raise
+    try:
         os.makedirs(results_sims_dir)
+    except OSError:
+        if not os.path.isdir(results_sims_dir):
+            raise
 
     ##############START SIMULATIONS
     ##############
