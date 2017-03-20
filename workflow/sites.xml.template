@@ -23,7 +23,7 @@
         <profile namespace="pegasus" key="style" >condor</profile>
         <profile namespace="condor" key="universe" >vanilla</profile>
         <profile namespace="condor" key="requirements" >OSGVO_OS_STRING == "RHEL 6" &amp;&amp; Arch == "X86_64" &amp;&amp; HAS_MODULES == True</profile>
-        <profile namespace="condor" key="request_memory" >2 GB</profile>
+        <profile namespace="condor" key="request_memory" >2500 MB</profile>
         <profile namespace="condor" key="request_disk" >3 GB</profile>
         <profile namespace="condor" key="+WantsStashCache" >True</profile>
     </site>
