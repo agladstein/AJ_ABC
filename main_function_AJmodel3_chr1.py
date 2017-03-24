@@ -87,14 +87,26 @@ def main(arguments):
     sim_values_dir='./sim_values_AJ_M3'
     results_sims_dir='./results_sims_AJ_M3'
 
-    if not os.path.exists(sim_data_dir):
+    try:
         os.makedirs(sim_data_dir)
-    if not os.path.exists(germline_out_dir):
+    except OSError:
+        if not os.path.isdir(sim_data_dir):
+            raise
+    try:
         os.makedirs(germline_out_dir)
-    if not os.path.exists(sim_values_dir):
+    except OSError:
+        if not os.path.isdir(germline_out_dir):
+            raise
+    try:
         os.makedirs(sim_values_dir)
-    if not os.path.exists(results_sims_dir):
+    except OSError:
+        if not os.path.isdir(sim_values_dir):
+            raise
+    try:
         os.makedirs(results_sims_dir)
+    except OSError:
+        if not os.path.isdir(results_sims_dir):
+            raise
 
     ##############START SIMULATIONS
     ##############
@@ -382,7 +394,7 @@ def main(arguments):
             if pair == 'EA_M' or pair == 'M_EA':
                 IBDlengths_eAM.append(segment)
             if pair == 'WA_M' or pair == 'M_WA':
-                IBDlengths_eAM.append(segment)
+                IBDlengths_wAM.append(segment)
             if pair == 'J_M' or pair == 'M_J':
                 IBDlengths_JM.append(segment)
             if pair == 'J_E' or pair == 'E_J':
@@ -413,18 +425,16 @@ def main(arguments):
             IBDlengths_median.append(np.median(p))
             IBDlengths_var.append(np.var(p))
             #### Get IBD greater than 30 Mb
+            IBDlengths30 = []
             for l in p:
-                n = 0
-                IBDlengths30 = []
                 if l > 30:
-                    n = n + 1
                     IBDlengths30.append(l)
-                else:
-                    IBDlengths30.append(0)
+            IBDlengths_num30.append(len(IBDlengths30))
+            if len(IBDlengths30) == 0:
+                IBDlengths30.append(0)
             IBDlengths_mean30.append(np.mean(IBDlengths30))
             IBDlengths_median30.append(np.median(IBDlengths30))
             IBDlengths_var30.append(np.var(IBDlengths30))
-            IBDlengths_num30.append(n)
 
         res.extend(IBDlengths_mean)
         head = head + 'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
@@ -436,13 +446,13 @@ def main(arguments):
         head = head + 'IBD_var_eAeA\tIBD_var_wAwA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_eAwA\tIBD_var_eAE\tIBD_var_wAE\tIBD_var_eAJ\tIBD_var_wAJ\tIBD_var_eAM\tIBD_var_wAM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
 
         res.extend(IBDlengths_mean30)
-        head = head + 'IBD30_mean_AA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_AE\tIBD30_mean_AJ\tIBD30_mean_AM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
+        head = head + 'IBD30_mean_eAeA\tIBD30_mean_wAwA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_eAwA\tIBD30_mean_eAE\tIBD30_mean_wAE\tIBD30_mean_eAJ\tIBD30_mean_wAJ\tIBD30_mean_eAM\tIBD30_mean_wAM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
         res.extend(IBDlengths_median30)
-        head = head + 'IBD30_median_AA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_AE\tIBD30_median_AJ\tIBD30_median_AM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
+        head = head + 'IBD30_median_eAeA\tIBD30_median_wAwA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_eAwA\tIBD30_median_eAE\tIBD30_median_wAE\tIBD30_median_eAJ\tIBD30_median_wAJ\tIBD30_median_eAM\tIBD30_median_wAM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
         res.extend(IBDlengths_num30)
-        head = head + 'IBD30_num_AA\tIBD30_num_JJ\tIBD30_num_MM\tIBD_num_EE\tIBD30_num_AE\tIBD30_num_AJ\tIBD30_num_AM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
+        head = head + 'IBD30_num_eAeA\tIBD30_num_wAwA\tIBD30_num_JJ\tIBD30_num_MM\tIBD30_num_EE\tIBD30_num_eAwA\tIBD30_num_eAE\tIBD30_num_wAE\tIBD30_num_eAJ\tIBD30_num_wAJ\tIBD30_num_eAM\tIBD30_num_wAM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
         res.extend(IBDlengths_var30)
-        head = head + 'IBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD_var_EE\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
+        head = head + 'IBD30_var_eAeA\tIBD30_var_wAwA\tIBD30_var_JJ\tIBD30_var_MM\tIBD30_var_EE\tIBD30_var_eAwA\tIBD30_var_eAE\tIBD30_var_wAE\tIBD30_var_eAJ\tIBD30_var_wAJ\tIBD30_var_eAM\tIBD30_var_wAM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
 
     #########calculate summary stats from the ascertained SNPs
 

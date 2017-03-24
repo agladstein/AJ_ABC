@@ -85,14 +85,26 @@ def main(arguments):
     sim_values_dir='./sim_values_AJ_M1'
     results_sims_dir='./results_sims_AJ_M1'
 
-    if not os.path.exists(sim_data_dir):
+    try:
         os.makedirs(sim_data_dir)
-    if not os.path.exists(germline_out_dir):
+    except OSError:
+        if not os.path.isdir(sim_data_dir):
+            raise
+    try:
         os.makedirs(germline_out_dir)
-    if not os.path.exists(sim_values_dir):
+    except OSError:
+        if not os.path.isdir(germline_out_dir):
+            raise
+    try:
         os.makedirs(sim_values_dir)
-    if not os.path.exists(results_sims_dir):
+    except OSError:
+        if not os.path.isdir(sim_values_dir):
+            raise
+    try:
         os.makedirs(results_sims_dir)
+    except OSError:
+        if not os.path.isdir(results_sims_dir):
+            raise
 
     ##############START SIMULATIONS
     ##############
@@ -381,18 +393,16 @@ def main(arguments):
             IBDlengths_median.append(np.median(p))
             IBDlengths_var.append(np.var(p))
             #### Get IBD greater than 30 Mb
+            IBDlengths30 = []
             for l in p:
-                n = 0
-                IBDlengths30 = []
                 if l > 30:
-                    n = n + 1
                     IBDlengths30.append(l)
-                else:
-                    IBDlengths30.append(0)
+            IBDlengths_num30.append(len(IBDlengths30))
+            if len(IBDlengths30) == 0:
+                IBDlengths30.append(0)
             IBDlengths_mean30.append(np.mean(IBDlengths30))
             IBDlengths_median30.append(np.median(IBDlengths30))
             IBDlengths_var30.append(np.var(IBDlengths30))
-            IBDlengths_num30.append(n)
 
         res.extend(IBDlengths_mean)
         head = head + 'IBD_mean_AA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_AE\tIBD_mean_AJ\tIBD_mean_AM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
@@ -417,7 +427,7 @@ def main(arguments):
 
     if nbss_asc > 0:
         Af_asc = []
-        ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, nbss_asc)
+        ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI)
         if (ss_Af_asc[0] == 0):
             for i in xrange(5):
                 Af_asc.append(0)
@@ -432,7 +442,7 @@ def main(arguments):
         head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
 
         Eu_asc = []
-        ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, nbss_asc)
+        ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, neu_CGI)
         if (ss_Eu_asc[0] == 0):
             for i in xrange(5):
                 Eu_asc.append(0)
@@ -447,7 +457,7 @@ def main(arguments):
         head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
 
         As_asc = []
-        ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nbss_asc)
+        ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nas_CGI)
         if (ss_As_asc[0] == 0):
             for i in xrange(5):
                 As_asc.append(0)
@@ -462,7 +472,7 @@ def main(arguments):
         head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
 
         J_asc = []
-        ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nbss_asc)
+        ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nJ)
         if (ss_J_asc[0] == 0):
             for i in xrange(5):
                 J_asc.append(0)
@@ -477,7 +487,7 @@ def main(arguments):
         head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
 
         M_asc = []
-        ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nbss_asc)
+        ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nM)
         if (ss_M_asc[0] == 0):
             for i in xrange(5):
                 M_asc.append(0)
@@ -492,7 +502,7 @@ def main(arguments):
         head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
 
         A_asc = []
-        ss_A_asc = afs_stats_bitarray.base_S_ss(seqA_asc_bits, nbss_asc)
+        ss_A_asc = afs_stats_bitarray.base_S_ss(seqA_asc_bits, nA)
         if (ss_A_asc[0] == 0):
             for i in xrange(5):
                 A_asc.append(0)

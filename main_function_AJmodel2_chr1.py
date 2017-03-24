@@ -88,14 +88,26 @@ def main(arguments):
     sim_values_dir='./sim_values_AJ_M2'
     results_sims_dir='./results_sims_AJ_M2'
 
-    if not os.path.exists(sim_data_dir):
+    try:
         os.makedirs(sim_data_dir)
-    if not os.path.exists(germline_out_dir):
+    except OSError:
+        if not os.path.isdir(sim_data_dir):
+            raise
+    try:
         os.makedirs(germline_out_dir)
-    if not os.path.exists(sim_values_dir):
+    except OSError:
+        if not os.path.isdir(germline_out_dir):
+            raise
+    try:
         os.makedirs(sim_values_dir)
-    if not os.path.exists(results_sims_dir):
+    except OSError:
+        if not os.path.isdir(sim_values_dir):
+            raise
+    try:
         os.makedirs(results_sims_dir)
+    except OSError:
+        if not os.path.isdir(results_sims_dir):
+            raise
 
     ##############START SIMULATIONS
     ##############
@@ -383,7 +395,7 @@ def main(arguments):
             if pair == 'EA_M' or pair == 'M_EA':
                 IBDlengths_eAM.append(segment)
             if pair == 'WA_M' or pair == 'M_WA':
-                IBDlengths_eAM.append(segment)
+                IBDlengths_wAM.append(segment)
             if pair == 'J_M' or pair == 'M_J':
                 IBDlengths_JM.append(segment)
             if pair == 'J_E' or pair == 'E_J':
@@ -414,18 +426,16 @@ def main(arguments):
             IBDlengths_median.append(np.median(p))
             IBDlengths_var.append(np.var(p))
             #### Get IBD greater than 30 Mb
+            IBDlengths30 = []
             for l in p:
-                n = 0
-                IBDlengths30 = []
                 if l > 30:
-                    n = n + 1
                     IBDlengths30.append(l)
-                else:
-                    IBDlengths30.append(0)
+            IBDlengths_num30.append(len(IBDlengths30))
+            if len(IBDlengths30) == 0:
+                IBDlengths30.append(0)
             IBDlengths_mean30.append(np.mean(IBDlengths30))
             IBDlengths_median30.append(np.median(IBDlengths30))
             IBDlengths_var30.append(np.var(IBDlengths30))
-            IBDlengths_num30.append(n)
 
         res.extend(IBDlengths_mean)
         head = head + 'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
@@ -437,19 +447,19 @@ def main(arguments):
         head = head + 'IBD_var_eAeA\tIBD_var_wAwA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_eAwA\tIBD_var_eAE\tIBD_var_wAE\tIBD_var_eAJ\tIBD_var_wAJ\tIBD_var_eAM\tIBD_var_wAM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
 
         res.extend(IBDlengths_mean30)
-        head = head + 'IBD30_mean_AA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_AE\tIBD30_mean_AJ\tIBD30_mean_AM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
+        head = head + 'IBD30_mean_eAeA\tIBD30_mean_wAwA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_eAwA\tIBD30_mean_eAE\tIBD30_mean_wAE\tIBD30_mean_eAJ\tIBD30_mean_wAJ\tIBD30_mean_eAM\tIBD30_mean_wAM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
         res.extend(IBDlengths_median30)
-        head = head + 'IBD30_median_AA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_AE\tIBD30_median_AJ\tIBD30_median_AM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
+        head = head + 'IBD30_median_eAeA\tIBD30_median_wAwA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_eAwA\tIBD30_median_eAE\tIBD30_median_wAE\tIBD30_median_eAJ\tIBD30_median_wAJ\tIBD30_median_eAM\tIBD30_median_wAM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
         res.extend(IBDlengths_num30)
-        head = head + 'IBD30_num_AA\tIBD30_num_JJ\tIBD30_num_MM\tIBD_num_EE\tIBD30_num_AE\tIBD30_num_AJ\tIBD30_num_AM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
+        head = head + 'IBD30_num_eAeA\tIBD30_num_wAwA\tIBD30_num_JJ\tIBD30_num_MM\tIBD30_num_EE\tIBD30_num_eAwA\tIBD30_num_eAE\tIBD30_num_wAE\tIBD30_num_eAJ\tIBD30_num_wAJ\tIBD30_num_eAM\tIBD30_num_wAM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
         res.extend(IBDlengths_var30)
-        head = head + 'IBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD_var_EE\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
+        head = head + 'IBD30_var_eAeA\tIBD30_var_wAwA\tIBD30_var_JJ\tIBD30_var_MM\tIBD30_var_EE\tIBD30_var_eAwA\tIBD30_var_eAE\tIBD30_var_wAE\tIBD30_var_eAJ\tIBD30_var_wAJ\tIBD30_var_eAM\tIBD30_var_wAM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
 
     #########calculate summary stats from the ascertained SNPs
 
     if nbss_asc > 0:
         Af_asc = []
-        ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, nbss_asc)
+        ss_Af_asc = afs_stats_bitarray.base_S_ss(seqAf_asc_bits, naf_CGI)
         if (ss_Af_asc[0] == 0):
             for i in xrange(5):
                 Af_asc.append(0)
@@ -464,7 +474,7 @@ def main(arguments):
         head = head + 'SegS_Af_ASC\tSing_Af_ASC\tDupl_Af_ASC\tPi_Af_ASC\tTajD_Af_ASC\t'
 
         Eu_asc = []
-        ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, nbss_asc)
+        ss_Eu_asc = afs_stats_bitarray.base_S_ss(seqEu_asc_bits, neu_CGI)
         if (ss_Eu_asc[0] == 0):
             for i in xrange(5):
                 Eu_asc.append(0)
@@ -479,7 +489,7 @@ def main(arguments):
         head = head + 'SegS_Eu_ASC\tSing_Eu_ASC\tDupl_Eu_ASC\tPi_Eu_ASC\tTajD_Eu_ASC\t'
 
         As_asc = []
-        ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nbss_asc)
+        ss_As_asc = afs_stats_bitarray.base_S_ss(seqAs_asc_bits, nas_CGI)
         if (ss_As_asc[0] == 0):
             for i in xrange(5):
                 As_asc.append(0)
@@ -494,7 +504,7 @@ def main(arguments):
         head = head + 'SegS_As_ASC\tSing_As_ASC\tDupl_As_ASC\tPi_As_ASC\tTajD_As_ASC\t'
 
         J_asc = []
-        ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nbss_asc)
+        ss_J_asc = afs_stats_bitarray.base_S_ss(seqJ_asc_bits, nJ)
         if (ss_J_asc[0] == 0):
             for i in xrange(5):
                 J_asc.append(0)
@@ -509,7 +519,7 @@ def main(arguments):
         head = head + 'SegS_J_ASC\tSing_J_ASC\tDupl_J_ASC\tPi_J_ASC\tTajD_J_ASC\t'
 
         M_asc = []
-        ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nbss_asc)
+        ss_M_asc = afs_stats_bitarray.base_S_ss(seqM_asc_bits, nM)
         if (ss_M_asc[0] == 0):
             for i in xrange(5):
                 M_asc.append(0)
@@ -524,7 +534,7 @@ def main(arguments):
         head = head + 'SegS_M_ASC\tSing_M_ASC\tDupl_M_ASC\tPi_M_ASC\tTajD_M_ASC\t'
 
         EA_asc = []
-        ss_EA_asc = afs_stats_bitarray.base_S_ss(seqEA_asc_bits, nbss_asc)
+        ss_EA_asc = afs_stats_bitarray.base_S_ss(seqEA_asc_bits, nEA)
         if (ss_EA_asc[0] == 0):
             for i in xrange(5):
                 EA_asc.append(0)
@@ -539,7 +549,7 @@ def main(arguments):
         head = head + 'SegS_EA_ASC\tSing_EA_ASC\tDupl_EA_ASC\tPi_EA_ASC\tTajD_EA_ASC\t'
 
         WA_asc = []
-        ss_WA_asc = afs_stats_bitarray.base_S_ss(seqWA_asc_bits, nbss_asc)
+        ss_WA_asc = afs_stats_bitarray.base_S_ss(seqWA_asc_bits, nWA)
         if (ss_WA_asc[0] == 0):
             for i in xrange(5):
                 WA_asc.append(0)

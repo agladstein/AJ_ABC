@@ -49,8 +49,8 @@ class AllelesReal(object):
         for line in real_file:
             columns = line.split(' ')
             for i in xrange(n_0+4, n_m+4):
-                if columns[i] != '0' or '1':
+                if columns[i] not in ('0', '1'):
                     columns[i] = '0'
-            seq_bits.extend(columns[i])
+                seq_bits.extend(columns[i])
         real_file.close()
         return seq_bits

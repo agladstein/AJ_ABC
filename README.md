@@ -50,6 +50,60 @@ macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNP
 
 -------------------------
 
+## Running on University of Arizona HPC
+There are four University of Arizona HPC systems - Ocelote, HTC, SMP, and Cluster. All four systems shared the same storage space. Log onto any any of the HPC systems with
+``ssh name@hpc.arizona.edu``
+Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
+
+### Setting up virtualenv on Ocelote
+```
+module load python/2/2.7.11
+virtualenv macss_env
+source macss_env/bin/activate
+pip install -r macsswig_simsaj/requirements.txt
+```
+
+### Submitting PBS from the command line
+There are separate PBS files for each model and for each system:
+main_function_AJmodel1_chr1.pbs - is run on Ocelote
+main_function_AJmodel1_chr1_cluster.pbs, main_function_AJmodel1_chr1_htc.pbs, and main_function_AJmodel1_chr1_smp.pbs are run on ice.
+
+You need to change the line ``#PBS -M agladstein@email.arizona.edu`` in all pbs scripts to your email and change the line ``#PBS -W group_list=mfh`` to your group.
+You can find your group with ``groups``.
+
+Submit a pbs script by:
+`qsub main_function_AJmodel1_chr1.pbs`
+
+### Automatically Submit PBS with crontab
+`crontab -e` to edit the crontab file.
+`crontab -l` to view the crontab file.
+`crontab -r` to remove the crontab file.
+
+You should use two seperate crontab files - one on Ocelote and one on ice.
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ocelote.log 2>&1```
+
+```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_cluster.pbs clu >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_smp.pbs smp >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_htc.pbs htc >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&```
+Use, your own absolute paths.
+
+The crontab files run the shell scripts checkque.sh and checkque_ice.sh check the number of completed runs in the designated directory, the number of CPU hrs left to use, and the number of jobs currently in the que.
+The shell scripts currently allow for a minimum of 350 hrs a day to be left for the group.
+checkque.sh runs as
+`checkque.sh sim_goal results_dir que_max pbs`
+and checkque_ice.sh runs as
+`checkque.sh sim_goal results_dir que_max pbs system`
+
+### Basic Commands
+`qstat` shows all of the jobs currently in the que or running.
+`qstat -t` shows the status of all subjobs.
+`qstat -f` shows details of job.
+`qsub` submits a pbs script.
+`qdel` stops a job.
+`va` shows status of hours.
+
+
+
+-------------------------
+
 ## Running as a Workflow on Open Science Grid
 
 The workflow creates a Python virtual environment according to the requirements.in file, and then tars up this whole
