@@ -1,2 +1,5 @@
 numpy
 bitarray
+j2cli
+psutil
+memory-profiler
