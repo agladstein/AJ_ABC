@@ -82,11 +82,13 @@ def main(arguments):
 
     chr_number=1
 
+    path = arguments[7]
+
     #### Check if necessary directories exist.
-    sim_data_dir = './sim_data_AJ_M2'
-    germline_out_dir='./germline_out_AJ_M2'
-    sim_values_dir='./sim_values_AJ_M2'
-    results_sims_dir='./results_sims_AJ_M2'
+    sim_data_dir = str(path)+'/sim_data_AJ_M2'
+    germline_out_dir=str(path)+'/germline_out_AJ_M2'
+    sim_values_dir=str(path)+'/sim_values_AJ_M2'
+    results_sims_dir=str(path)+'/results_sims_AJ_M2'
 
     try:
         os.makedirs(sim_data_dir)

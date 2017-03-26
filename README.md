@@ -6,21 +6,24 @@ Version 1
 
 
 Run as  
-python run_sims_AJmodel1_chr1_all.py jobID inputfile simsize seed param_distribution germline  
+`python run_sims_AJmodel1_chr1_all.py jobID inputfile simsize seed param_distribution germline output_dir`
+  
 jobID = can be any unique value to identify the output  
 simsize = full or the length of the locus to be simulated in base pairs  
 seed = a seed value, or 0 if no seed is to be used  
 param_distribution = prior, min, or max  
-
 * prior = simulations with parameter values given by prior distribution  
 * min = simulations with predetermined parameter values that will produce   simulations with shorter run times and less memory - only for testing and profiling purposes  
 * max = simulations with predetermined parameter values that will produce simulations with longer run times and more memory - only for testing and profiling purposes  
-
 germline = 0 to run GERMLINE, 1 to not run GERMLINE (will try to read GERMLINE output from file)  
+
+output_dir = path to the directory to output to. No argument will use the default of current dir "."
+
 e.g.:  
-``python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0``
+``python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir``
+
 Test simulation:  
-``python run_sims_AJmodel1_chr1_all.py 1 ill_650_test.bed 1000000 1278 prior 1``
+``python run_sims_AJmodel1_chr1_all.py 1 ill_650_test.bed 1000000 1278 prior 1 output_dir``
 
 Uses c++ programs macs and GERMLINE. For more information on these programs, see:  
 https://github.com/gchen98/macs  
