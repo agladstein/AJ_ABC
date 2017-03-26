@@ -1,5 +1,5 @@
-numpy
-bitarray
+numpy==1.12.0
+bitarray==0.8.1
 j2cli
 psutil
 memory-profiler

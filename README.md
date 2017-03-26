@@ -55,13 +55,30 @@ There are four University of Arizona HPC systems - Ocelote, HTC, SMP, and Cluste
 ``ssh name@hpc.arizona.edu``
 Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
 
-### Setting up virtualenv on Ocelote
+### Setting up virtualenv on HPC
+
+#### Ocelote
 ```
-module load python/2/2.7.11
-virtualenv macss_env
-source macss_env/bin/activate
-pip install -r macsswig_simsaj/requirements.txt
+module avail
+module show python/2/2.7.11
+virtualenv -p /cm/shared/uaapps/python/2.7.11/bin/python macss_env_ocelote_2.7.11
+source macss_env_ocelote_2.7.11/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
+
+If requirements.txt on Ocelote based on architecture and packages available, this may not work on other environments. You may have to delete requirements.txt and recompile it using `pip-compile`.
+
+#### ICE
+```
+module avail
+module show python/2.7.9
+virtualenv -p /uaopt/python/2.7.9/bin/python macss_env_ICE_2.7.9
+source macss_env_ICE_2.7.9/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
 
 ### Submitting PBS from the command line
 There are separate PBS files for each model and for each system:
