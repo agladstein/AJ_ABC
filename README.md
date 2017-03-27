@@ -97,9 +97,9 @@ Ocelote:
 
 ICE
 ```
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 1 cluster >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ice.log 2>&
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 2 smp >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_smp.log 2>&
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 3 htc >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_htc.log 2>&
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 1 cluster >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ice.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 2 smp >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_smp.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 3 htc >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_htc.log 2>&1
 
 ```
 
