@@ -48,7 +48,7 @@ virtualenv macss_env
 source macss_env/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0
+macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
 ```
 
 -------------------------
@@ -93,6 +93,21 @@ You can find your group with ``groups``.
 
 Submit a pbs script by:
 `qsub main_function_AJmodel1_chr1.pbs`
+
+### Generating PBS with jinja
+To automatically create PBS scripts for all models and HPC systerms use the shell script main_function_AJmodel_j2.sh  
+This should be run from the working directory.  
+
+On ICE:  
+`./main_function_AJmodel_j2.sh htc output_dir`  
+`./main_function_AJmodel_j2.sh smp output_dir`  
+`./main_function_AJmodel_j2.sh cluster output_dir`
+
+On Ocelote:  
+`./main_function_AJmodel_j2.sh ocelote output_dir`  
+
+This will use the template template.pbs.j2 to create pbs files.  
+*Note: the virtual env is specified in main_function_AJmodel_j2 - and must already be created (with requirements installed) to use jinja.*
 
 ### Automatically Submit PBS with crontab
 `crontab -e` to edit the crontab file.
