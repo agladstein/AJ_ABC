@@ -109,6 +109,10 @@ On Ocelote:
 This will use the template template.pbs.j2 to create pbs files.  
 *Note: the virtual env is specified in main_function_AJmodel_j2 - and must already be created (with requirements installed) to use jinja.*
 
+#### jinja Documentation
+http://jinja.pocoo.org/docs/2.9/  
+https://github.com/kolypto/j2cli
+
 ### Automatically Submit PBS with crontab
 `crontab -e` to edit the crontab file.
 `crontab -l` to view the crontab file.
