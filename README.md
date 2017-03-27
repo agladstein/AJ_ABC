@@ -92,7 +92,9 @@ Contab will run commands at timed intervals. See http://crontab-generator.org/
 You should use two seperate crontab files.    
 Ocelote:
 ```
-*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ocelote.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 1 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 2 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 3 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
 ```
 
 ICE
