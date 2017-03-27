@@ -30,7 +30,6 @@ else
     echo "You have $n jobs in the que"
     if [ "$n" -ge "$QUEMAX" ]; then
 	    echo "That's enough jobs in the que"
-
     else
 	    #create PBS scripts
 	    if [ "$SYSTEM" == "clu" ]; then
@@ -46,14 +45,14 @@ else
 	    DAYS=$(( $(($(cal | wc -w) - 9)) - $(date | cut -d " " -f3) ))
 	    SBOUND=$(( $DAYS * 350))
 
-	    echo "${QHRS} mfh qualified hrs are left"
-	    if [ "$QHRS" -gt "$QBOUND" ]; then
-	        echo "Submit to qualified"
-	        echo "qsub model${MODEL}_${SYSTEM}_qualified.pbs"
-	    else
-	        echo "There are no qualified hrs left to use"
+        if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "Ocelote" ] ; then
+            echo "${QHRS} mfh qualified hrs are left"
+            if [ "$QHRS" -gt "$QBOUND" ]; then
+                echo "Submit to qualified"
+	            echo "qsub model${MODEL}_${SYSTEM}_qualified.pbs"
+            fi
 
-	        echo "Try standard"
+	    else
 	        echo "${SHRS} mfh standard hrs are left"
 	        echo "There are $DAYS days left in the month"
 	        echo "You should leave $SBOUND for the rest of the lab"
@@ -62,7 +61,7 @@ else
 	            echo "There are no standard hrs left to use"
 	            echo "Submit to windfall"
 	        else
-    	    echo "Submit to standard"
+    	        echo "Submit to standard"
 #	        echo "$qsub $PBS"
 #	        $qsub $PBS
             fi
