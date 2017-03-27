@@ -5,7 +5,7 @@ GOAL=$1
 QUEMAX=$2
 OUT=$3
 MODEL=$4
-SYSTEM=$5 #smp, clu, htc
+SYSTEM=$5 #smp, cluster, htc
 qstat=/usr/local/bin/qstat_local
 qsub=/usr/pbs/bin/qsub
 
@@ -19,8 +19,12 @@ if [ "$COMP" -ge "$GOAL" ]; then
     echo "Goal completed"
     #crontab -r
 else
-    #check number of jobs in que	
-    JOBS=$($qstat | grep "agladstein" | grep $SYSTEM | cut -d " " -f1)
+    #check number of jobs in que
+    if [ "$SYSTEM" == "cluster" ]; then
+        JOBS=$($qstat | grep "agladstein" | grep clu | cut -d " " -f1)
+    else
+        JOBS=$($qstat | grep "agladstein" | grep $SYSTEM | cut -d " " -f1)
+    fi
     echo $JOBS
     n=0
     for j in $JOBS; do
@@ -32,39 +36,40 @@ else
 	    echo "That's enough jobs in the que"
     else
 	    #create PBS scripts
-	    if [ "$SYSTEM" == "clu" ]; then
-            ./main_function_AJmodel_j2.sh cluster /rsgrps/mfh4/Ariella/macsSwig_AJmodels ${MODEL}
-        else
-            ./main_function_AJmodel_j2.sh ${SYSTEM} /rsgrps/mfh4/Ariella/macsSwig_AJmodels ${MODEL}
-        fi
+        ./main_function_AJmodel_j2.sh ${SYSTEM} /rsgrps/mfh4/Ariella/macsSwig_AJmodels ${MODEL}
 
-	    #check hrs left in group
-	    QHRS=$(va | cut -f3 | tail -1 | cut -d ":" -f1)
-	    QBOUND=0
-	    SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
+        #check standard hrs left in group
+        SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
 	    DAYS=$(( $(($(cal | wc -w) - 9)) - $(date | cut -d " " -f3) ))
 	    SBOUND=$(( $DAYS * 350))
 
-        if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "Ocelote" ] ; then
-            echo "${QHRS} mfh qualified hrs are left"
-            if [ "$QHRS" -gt "$QBOUND" ]; then
-                echo "Submit to qualified"
-	            echo "qsub model${MODEL}_${SYSTEM}_qualified.pbs"
+	    echo "${SHRS} mfh standard hrs are left"
+	    echo "There are $DAYS days left in the month"
+        echo "You should leave $SBOUND for the rest of the lab"
+
+        if [ "$SHRS" -le "$SBOUND" ]; then
+            echo "There are no standard hrs left to use"
+
+            if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "Ocelote" ] ; then
+                #check qualified hrs left in group
+                QHRS=$(va | cut -f3 | tail -1 | cut -d ":" -f1)
+                QBOUND=0
+                echo "${QHRS} mfh qualified hrs are left"
+                if [ "$QHRS" -gt "$QBOUND" ]; then
+                    echo "Submit to qualified"
+                    echo "$qsub model${MODEL}_${SYSTEM}_qualified.pbs"
+                    exit
+                else
+                    echo "There are no qualified hrs left to use"
+                fi
             fi
 
-	    else
-	        echo "${SHRS} mfh standard hrs are left"
-	        echo "There are $DAYS days left in the month"
-	        echo "You should leave $SBOUND for the rest of the lab"
+            echo "Submit to windfall"
+            echo "$qsub model${MODEL}_${SYSTEM}_windfall.pbs"
 
-        	if [ "$SHRS" -le "$SBOUND" ]; then
-	            echo "There are no standard hrs left to use"
-	            echo "Submit to windfall"
-	        else
-    	        echo "Submit to standard"
-#	        echo "$qsub $PBS"
-#	        $qsub $PBS
-            fi
+        else
+            echo "Submit to standard"
+	        echo "$qsub model${MODEL}_${SYSTEM}_standard.pbs"
 	    fi
     fi
 fi
