@@ -5,8 +5,8 @@ GOAL=$1
 RESULTS=$2
 echo "Check for ${GOAL} completed runs in $RESULTS"
 QUEMAX=$3
-PBS=$4
-SYSTEM=$5 #smp, clu, htc
+#PBS=$4
+SYSTEM=$4 #smp, clu, htc
 qstat=/usr/local/bin/qstat_local
 qsub=/usr/pbs/bin/qsub
 
@@ -32,7 +32,7 @@ else
     else
 	    #check hrs left in group
 	    QHRS=$(va | cut -f3 | tail -1 | cut -d ":" -f1)
-	    QBOUND=30000 #0
+	    QBOUND=20000 #0
 	    SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
 	    DAYS=$(( $(($(cal | wc -w) - 9)) - $(date | cut -d " " -f3) ))
 	    SBOUND=$(( $DAYS * 350))
@@ -43,21 +43,18 @@ else
 	    else
 	        echo "There are no qualified hrs left to use"
 	        echo "Try standard"
+	        echo "${SHRS} mfh standard hrs are left"
+	        echo "There are $DAYS days left in the month"
+	        echo "You should leave $SBOUND for the rest of the lab"
 
-
-#	    echo "${HRS} mfh standard hrs are left"
-#	    echo "There are $DAYS days left in the month"
-#	    echo "You should leave $BOUND for the rest of the lab"
-#
-#	if [ "$SHRS" -le "$SBOUND" ]; then
-#	    echo "There are no hrs left to use"
-#	    echo "Submit to windfall"
-#	else
-#
-#	    echo "Submit to standard"
-#	    echo "$qsub $PBS"
-#	    #$qsub $PBS
-#
+        	if [ "$SHRS" -le "$SBOUND" ]; then
+	            echo "There are no standard hrs left to use"
+	            echo "Submit to windfall"
+	        else
+    	    echo "Submit to standard"
+#	        echo "$qsub $PBS"
+#	        $qsub $PBS
+            fi
 	    fi
     fi
 fi
