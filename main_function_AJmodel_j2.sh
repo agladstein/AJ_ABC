@@ -14,11 +14,19 @@ if [ "$SYSTEM" == "ocelote" ]; then
 else
     VIRTUAL_ENV=/home/u15/agladstein/env/macss_env_ICE_2.7.9
     PATH=${VIRTUAL_ENV}/bin:$PATH
+    if [ "$SYSTEM" == "smp" ]; then
+        ICE_MEM=8
+        for i in {1..3}
+        do
+	        QUE=${SYSTEM}_qual JNUM=1-1500 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${i} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${i}_${SYSTEM}_qualified.pbs
+        done
+    else
+        ICE_MEM=4
+    fi
     for i in {1..3}
     do
-	    QUE=standard JNUM=1-1500 NODE=1 CORE=1 MEM=4 PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${i} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${i}_${SYSTEM}_standard.pbs
-	    QUE=qualified JNUM=1-1500 NODE=1 CORE=1 MEM=4 PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${i} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${i}_${SYSTEM}_qualified.pbs
-	    QUE=windfall JNUM=1-5000 NODE=1 CORE=1 MEM=4 PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${i} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${i}_${SYSTEM}_windfall.pbs
+        QUE=standard JNUM=1-1500 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${i} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${i}_${SYSTEM}_standard.pbs
+	    QUE=windfall JNUM=1-5000 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${i} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${i}_${SYSTEM}_windfall.pbs
     done
 fi
 
