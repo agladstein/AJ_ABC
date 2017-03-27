@@ -105,7 +105,8 @@ ICE
 
 ```
 
-Use, your own absolute paths.
+Use, your own absolute paths.  
+If the file switch.txt exists in /home/u15/agladstein/ABC/macsSwig_AJmodels, checkque_ice.sh will submit PBS scripts. Once the goal is reached, switch.txt will be removed.
 
 #### Checking the que and remaining hrs
 The crontab files run the shell scripts checkque.sh and checkque_ice.sh check the number of completed runs in the designated directory, the number of CPU hrs left to use, and the number of jobs currently in the que.  
