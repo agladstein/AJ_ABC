@@ -6,8 +6,14 @@ QUEMAX=$2
 OUT=$3
 MODEL=$4
 SYSTEM=$5 #smp, cluster, htc
-qstat=/usr/local/bin/qstat_local
-qsub=/usr/pbs/bin/qsub
+
+if [ "$SYSTEM" == "ocelote" ] ; then
+    qstat=/cm/shared/apps/pbspro/current/bin/qstat
+    qsub=/cm/shared/apps/pbspro/current/bin/qsub
+else
+    qstat=/usr/local/bin/qstat_local
+    qsub=/usr/pbs/bin/qsub
+fi
 
 RESULTS=${OUT}/results_sims_AJ_M${MODEL}
 echo "Check for ${GOAL} completed runs in $RESULTS"
@@ -22,6 +28,8 @@ else
     #check number of jobs in que
     if [ "$SYSTEM" == "cluster" ]; then
         JOBS=$($qstat | grep "agladstein" | grep clu | cut -d " " -f1)
+    elif [ "$SYSTEM" == "ocelote" ]; then
+        JOBS=$($qstat | grep "agladstein" | cut -d " " -f1)
     else
         JOBS=$($qstat | grep "agladstein" | grep $SYSTEM | cut -d " " -f1)
     fi
@@ -50,7 +58,7 @@ else
         if [ "$SHRS" -le "$SBOUND" ]; then
             echo "There are no standard hrs left to use"
 
-            if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "Ocelote" ] ; then
+            if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "ocelote" ] ; then
                 #check qualified hrs left in group
                 QHRS=$(va | cut -f3 | tail -1 | cut -d ":" -f1)
                 QBOUND=0
