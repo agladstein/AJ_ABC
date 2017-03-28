@@ -25,7 +25,7 @@ if [ -e switch${MODEL}.txt ] ; then
     echo "${COMP} runs have completed"
     if [ "$COMP" -ge "$GOAL" ]; then
         echo "Goal completed"
-        rm switch.txt
+        rm switch${MODEL}.txt
         echo "Goal completed. ${COMP} runs have completed in $RESULTS." | sendmail agladstein@email.arizona.edu
     else
         #check number of jobs in que
