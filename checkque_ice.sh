@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 cd /home/u15/agladstein/ABC/macsSwig_AJmodels
 
-if [ -e switch.txt ] ; then
+GOAL=$1
+QUEMAX=$2
+OUT=$3
+MODEL=$4
+SYSTEM=$5 #smp, cluster, htc
 
-    GOAL=$1
-    QUEMAX=$2
-    OUT=$3
-    MODEL=$4
-    SYSTEM=$5 #smp, cluster, htc
+if [ -e switch${MODEL}.txt ] ; then
 
     if [ "$SYSTEM" == "ocelote" ] ; then
         qstat=/cm/shared/apps/pbspro/current/bin/qstat
