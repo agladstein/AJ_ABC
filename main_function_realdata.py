@@ -189,7 +189,7 @@ def main():
         res.extend(IBDlengths_num30)
         head = head + 'IBD30_num_AA\tIBD30_num_JJ\tIBD30_num_MM\tIBD30_num_EE\tIBD30_num_AE\tIBD30_num_AJ\tIBD30_num_AM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
         res.extend(IBDlengths_var30)
-        head = head + 'IBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD_var_EE\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
+        head = head + 'IBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD30_var_EE\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
 
 
     Af_asc = []
