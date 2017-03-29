@@ -588,7 +588,7 @@ def main(arguments):
     fileoutparam=open(param_file,'w')
 
     ##write parameter values
-    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NJ\tLog10_NM\trWA\trEA\trMJ\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\n'
+    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NJ\tLog10_NM\trWA\trEA\trMJ\tmE\tmW\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTmE\tTmW\n'
     fileoutparam.write(head_param)
 
     for z in range(len(para_out)):
