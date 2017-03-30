@@ -93,7 +93,10 @@ def main():
     for f in files_results:
         if f.endswith(".summary"):
             print str(sim_path_results)+"/"+str(f)
-            job_id = f.split("_")[2].split(".")[0]
+            if len(f.split("_"))==4:
+                job_id = str(f.split(".")[0].split("_")[2])+"_"+str(f.split(".")[0].split("_")[3])
+            elif len(f.split("_"))==3:
+                job_id = f.split("_")[2].split(".")[0]
             sim_values_file_name = str(sim_path_values)+"/sim_"+str(job_id)+"_values.txt"
             if os.path.exists(sim_values_file_name):
                 print sim_values_file_name
@@ -111,6 +114,8 @@ def main():
                 #                 string = str(string)+str(line_results)
                 #         sim_results_file.close()
                 # sim_values_file.close()
+            else:
+                print str(sim_values_file_name)+" does not exist"
 
 if __name__ == '__main__':
     main()
