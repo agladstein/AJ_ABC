@@ -51,7 +51,7 @@ if [ -e switch${MODEL}.txt ] ; then
 
             #check standard hrs left in group
             SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
-	        DAYS=$(( $(($(cal | wc -w) - 9)) - $(date | cut -d " " -f3) ))
+	        DAYS=$(( $(($(cal | wc -w) - 9)) - $(($(date | cut -d " " -f3))) ))
 	        SBOUND=$(( $DAYS * 350))
 
 	        echo "${SHRS} mfh standard hrs are left"
