@@ -17,6 +17,7 @@ def main():
     for line in header_file:
         head = line
     header_file.close()
+    n = len(head.split('\t'))
 
     files_results = listdir(sim_path_results)
 
@@ -33,9 +34,10 @@ def main():
                 job_id = f.split("_")[2].split(".")[0]
             sim_values_file_name = str(sim_path_values)+"/sim_"+str(job_id)+"_values.txt"
             if os.path.exists(sim_values_file_name):
-                print sim_values_file_name
                 line = str(job_id)+"\t"+linecache.getline(sim_values_file_name, 2).rstrip('\n')+"\t"+linecache.getline(str(sim_path_results)+"/"+str(f), 2)
-                fileout.write(str(job_id)+"\t"+linecache.getline(sim_values_file_name, 2).rstrip('\n')+"\t"+linecache.getline(str(sim_path_results)+"/"+str(f), 2))
+                if len(line.split('\t')) == n:
+                    print sim_values_file_name
+                    fileout.write(str(job_id)+"\t"+linecache.getline(sim_values_file_name, 2).rstrip('\n')+"\t"+linecache.getline(str(sim_path_results)+"/"+str(f), 2))
 
                 # string = job_id
                 # sim_values_file = open(sim_values_file_name)
