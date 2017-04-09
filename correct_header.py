@@ -5,9 +5,10 @@ import os.path
 
 
 def fix_broken_file(file_name):
+    file_name = file_name.strip()
     headers_and_replacements = {'IBD_num_EE': 'IBD30_num_EE', 'IBD_var_EE': 'IBD30_var_EE'}
     replaced = False
-    with open(file_name.strip(), 'r') as f:
+    with open(file_name, 'r') as f:
         first_line = f.readline()
         second_line = f.readline()
     for header, replacement in headers_and_replacements.iteritems():
