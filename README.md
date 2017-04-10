@@ -155,7 +155,13 @@ Submit a pbs script by:
 `va` shows status of hours.  
 
 
-
+### Post Processing
+The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.
+  
+First use `find_broken_headers.py` to find any results output files with incorrect headers. This will specifically look for files that have a duplicate of IBD_var_EE in the header. This will create a list of the files with incorrect headers.  
+`find_broken_headers.py dir model >>files_to_fix.txt`
+Then use `correct_header.py` to fix the results files with incorrect headers. This will create new files with the correct headers in `dir/results_AJ_M${model}_fixed`. Once these files are double checked, they should be moved to the original directory and overwrite incorrect files.     
+`correct_header.py files_to_fix.txt`
 -------------------------
 
 ## Running as a Workflow on Open Science Grid
