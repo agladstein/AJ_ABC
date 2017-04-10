@@ -16,7 +16,7 @@ def main():
     pool = multiprocessing.Pool()
 
     listing = glob.glob('{}/results_sims_AJ_M{}/*.summary'.format(sim_path, model))
-    results = pool.imap_unordered(detect_broken_file, listing, 1000)
+    results = pool.imap_unordered(detect_broken_file, listing, 10)
     for file_name, count in results:
         if count == 1:
             # All good. Nothing to see here. Move along.

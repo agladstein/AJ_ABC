@@ -34,11 +34,11 @@ def fix_broken_file(file_name):
 
 def main():
     broken_files_file = sys.argv[1]
-    pool = multiprocessing.Pool()
+    pool = multiprocessing.Pool(168)
 
     broken_files_iterator = fileinput.input([broken_files_file])
 
-    results = pool.imap_unordered(fix_broken_file, broken_files_iterator, 1000)
+    results = pool.imap_unordered(fix_broken_file, broken_files_iterator, 10)
     for file_name, replaced in results:
         if replaced is True:
             # All good. Fixed file without complaining.
