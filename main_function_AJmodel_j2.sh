@@ -4,6 +4,7 @@ OUT=$2
 MODEL=$3
 
 if [ "$SYSTEM" == "ocelote" ]; then
+    module load python/2/2.7.11
     VIRTUAL_ENV=/home/u15/agladstein/env/macss_env_ocelote_2.7.11
     PATH=${VIRTUAL_ENV}/bin:$PATH
 	QUE=standard JNUM=1-2500 NODE=1 CORE=1 MEM=6 PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_standard.pbs
@@ -11,6 +12,7 @@ if [ "$SYSTEM" == "ocelote" ]; then
 	QUE=windfall JNUM=1-5000 NODE=1 CORE=1 MEM=6 PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_windfall.pbs
 
 else
+    module load python/2.7.9
     VIRTUAL_ENV=/home/u15/agladstein/env/macss_env_ICE_2.7.9
     PATH=${VIRTUAL_ENV}/bin:$PATH
     if [ "$SYSTEM" == "smp" ]; then

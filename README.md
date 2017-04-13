@@ -64,6 +64,7 @@ Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
 ```
 module avail
 module show python/2/2.7.11
+module load python/2/2.7.11
 virtualenv -p /cm/shared/uaapps/python/2.7.11/bin/python macss_env_ocelote_2.7.11
 source macss_env_ocelote_2.7.11/bin/activate
 pip install --upgrade pip
@@ -76,6 +77,7 @@ If requirements.txt on Ocelote based on architecture and packages available, thi
 ```
 module avail
 module show python/2.7.9
+module load python/2.7.9
 virtualenv -p /uaopt/python/2.7.9/bin/python macss_env_ICE_2.7.9
 source macss_env_ICE_2.7.9/bin/activate
 pip install --upgrade pip
