@@ -23,3 +23,4 @@ ID=$NOW"_"$PBS_ARRAY_INDEX
 {{ PYTHONENV }} run_sims_AJmodel{{ MODEL }}_chr1_all.py $ID ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 {{ OUT_PATH }}>& /dev/null
 rm {{ OUT_PATH }}/sim_data_AJ_M{{ MODEL }}/macs_asc_${ID}_chr1.ped
 rm {{ OUT_PATH }}/sim_data_AJ_M{{ MODEL }}/macs_asc_${ID}_chr1.map
+rm {{ OUT_PATH }}/germline_out_AJ_M{{ MODEL }}/*${ID}*
