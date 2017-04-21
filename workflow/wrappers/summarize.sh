@@ -14,7 +14,7 @@ paste tmp1 tmp2 >$OUT_RESULTS_SIMS
 rm tmp1; rm tmp2
 
 for f in results_sims_*/*; do
-  tail -l $f >>stats
+  tail -1 $f >>stats
 done
 
 for f in results_sims_*/*; do
@@ -32,7 +32,7 @@ paste tmp1 tmp2 >$OUT_SIM_VALUES
 rm tmp1; rm tmp2
 
 for f in sim_values_*/*; do
-    tail -l $f >>stats
+    tail -1 $f >>stats
 done
 
 for f in sim_values_*/*; do
