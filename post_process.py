@@ -8,13 +8,19 @@ from os import listdir
 import csv
 import re
 
+def get_file_name(f, sim_path_results, sim_path_values):
+    # isolate the job id to get the file names in the sim_values directory
+    if len(f.split("_")) == 4:
+        job_id = str(f.split(".")[0].split("_")[2]) + "_" + str(f.split(".")[0].split("_")[3])
+    elif len(f.split("_")) == 3:
+        job_id = f.split("_")[2].split(".")[0]
+    sim_values_file_name = str(sim_path_values) + "/sim_" + str(job_id) + "_values.txt"
+    results_file_name = str(sim_path_results) + "/" + str(f)
+    return job_id, results_file_name, sim_values_file_name
+
 def combine_files(n, sim_path_results, sim_path_values, f):
     if f.endswith(".summary"):
-        if len(f.split("_")) == 4:
-            job_id = str(f.split(".")[0].split("_")[2]) + "_" + str(f.split(".")[0].split("_")[3])
-        elif len(f.split("_")) == 3:
-            job_id = f.split("_")[2].split(".")[0]
-        sim_values_file_name = str(sim_path_values) + "/sim_" + str(job_id) + "_values.txt"
+        job_id, results_file_name, sim_values_file_name = get_file_name(f, sim_path_results, sim_path_values)
         if os.path.exists(sim_values_file_name):
             line = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip('\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
             if len(line.split('\t')) == n:
@@ -29,12 +35,8 @@ def combine_files(n, sim_path_results, sim_path_values, f):
 
 def combine_same_header(head, sim_path_results, sim_path_values, f):
     if f.endswith(".summary"):
-        if len(f.split("_")) == 4:
-            job_id = str(f.split(".")[0].split("_")[2]) + "_" + str(f.split(".")[0].split("_")[3])
-        elif len(f.split("_")) == 3:
-            job_id = f.split("_")[2].split(".")[0]
-        sim_values_file_name = str(sim_path_values) + "/sim_" + str(job_id) + "_values.txt"
-        results_file_name = str(sim_path_results) + "/" + str(f)
+        job_id, results_file_name, sim_values_file_name = get_file_name(f, sim_path_results, sim_path_values)
+
         if os.path.exists(sim_values_file_name):
             with open(sim_values_file_name) as sim_csvfile:
                 reader = csv.reader(sim_csvfile, delimiter='\t')
@@ -55,13 +57,7 @@ def combine_same_header(head, sim_path_results, sim_path_values, f):
 def combine_duplicate_header(head, sim_path_results, sim_path_values, to_duplicate, to_remove, f):
     # Only get results files that end in .summary
     if f.endswith(".summary"):
-        # isolate the job id to get the file names in the sim_values directory
-        if len(f.split("_")) == 4:
-            job_id = str(f.split(".")[0].split("_")[2]) + "_" + str(f.split(".")[0].split("_")[3])
-        elif len(f.split("_")) == 3:
-            job_id = f.split("_")[2].split(".")[0]
-        sim_values_file_name = str(sim_path_values) + "/sim_" + str(job_id) + "_values.txt"
-        results_file_name = str(sim_path_results) + "/" + str(f)
+        job_id, results_file_name, sim_values_file_name = get_file_name(f, sim_path_results, sim_path_values)
 
         # If the matching sim_values file exists get the headers and the lines
         if os.path.exists(sim_values_file_name):
@@ -98,6 +94,7 @@ def combine_duplicate_header(head, sim_path_results, sim_path_values, to_duplica
                 return False
         else:
             stderr.write(str(sim_values_file_name) + " does not exist\n")
+
 
 def make_duplicate_header(head, to_duplicate, to_remove):
     duplicated_header=[]
