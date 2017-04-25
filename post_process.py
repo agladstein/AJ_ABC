@@ -110,8 +110,9 @@ def make_duplicate_header(head, to_duplicate, to_remove):
             duplicated_header.append(item)
     return duplicated_header
 
+
 def main():
-    pool = multiprocessing.Pool()
+    pool = multiprocessing.Pool(168)
 
     sim_path = argv[1]
     out_path = argv[2]
@@ -139,7 +140,7 @@ def main():
         fileout = open(out_file_name, 'w')
         fileout.write("\t".join(head) + "\n")
     elif combine_function == "duplicate":
-        if model == str(1):
+        if model == str(2):
             to_duplicate = {
                 'IBD_mean_AA': ['IBD_mean_eAeA', 'IBD_mean_wAwA', 'IBD_mean_eAwA'],
                 'IBD_mean_AE': ['IBD_mean_eAE', 'IBD_mean_wAE'],
@@ -157,18 +158,18 @@ def main():
                 'IBD30_median_AE': ['IBD30_median_eAE', 'IBD30_median_wAE'],
                 'IBD30_median_AJ': ['IBD30_median_eAJ', 'IBD30_median_wAJ'],
                 'IBD30_median_AM': ['IBD30_median_eAM', 'IBD30_median_wAM'],
-                'SegS_A_ASC': ['SegS_eA_ASC', 'SegS_wA_ASC'],
-                'Sing_A_ASC': ['Sing_eA_ASC', 'Sing_wA_ASC'],
-                'Dupl_A_ASC': ['Dupl_eA_ASC', 'Dupl_wA_ASC'],
-                'Pi_A_ASC': ['Pi_eA_ASC', 'Pi_wA_ASC'],
-                'TajD_A_ASC': ['TajD_eA_ASC', 'TajD_wA_ASC'],
-                'FST_AEu_ASC': ['FST_eAEu_ASC', 'FST_wAEu_ASC'],
-                'FST_AJ_ASC': ['FST_eAJ_ASC', 'FST_wAJ_ASC'],
-                'FST_AM_ASC': ['FST_eAM_ASC', 'FST_wAM_ASC']
+                'SegS_A_ASC': ['SegS_EA_ASC', 'SegS_WA_ASC'],
+                'Sing_A_ASC': ['Sing_EA_ASC', 'Sing_WA_ASC'],
+                'Dupl_A_ASC': ['Dupl_EA_ASC', 'Dupl_WA_ASC'],
+                'Pi_A_ASC': ['Pi_EA_ASC', 'Pi_WA_ASC'],
+                'TajD_A_ASC': ['TajD_EA_ASC', 'TajD_WA_ASC'],
+                'FST_AEu_ASC': ['FST_EAEu_ASC', 'FST_WAEu_ASC'],
+                'FST_AJ_ASC': ['FST_EAJ_ASC', 'FST_WAJ_ASC'],
+                'FST_AM_ASC': ['FST_EAM_ASC', 'FST_WAM_ASC']
             }
             to_remove = ['IBD_num_AA', 'IBD_num_AE', 'IBD_num_AJ', 'IBD_num_AM', 'IBD_var_AA', 'IBD_var_AE',
                          'IBD_var_AJ', 'IBD_var_AM', 'IBD30_num_AA', 'IBD30_num_AE', 'IBD30_num_AJ', 'IBD30_num_AM',
-                         'IBD30_var_AA', 'IBD30_var_AE', 'IBD30_var_AJ', 'IBD30_var_AM']
+                         'IBD30_var_AA', 'IBD30_var_AE', 'IBD30_var_AJ', 'IBD30_var_AM', 'FST_eAwA_ASC']
             duplicated_header = make_duplicate_header(head, to_duplicate, to_remove)
             fileout = open(out_file_name, 'w')
             fileout.write("\t".join(duplicated_header) + "\n")
