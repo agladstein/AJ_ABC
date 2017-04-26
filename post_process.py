@@ -8,6 +8,7 @@ from os import listdir
 import csv
 import re
 
+
 def get_file_name(f, sim_path_results, sim_path_values):
     # isolate the job id to get the file names in the sim_values directory
     if len(f.split("_")) == 4:
@@ -18,41 +19,63 @@ def get_file_name(f, sim_path_results, sim_path_values):
     results_file_name = str(sim_path_results) + "/" + str(f)
     return job_id, results_file_name, sim_values_file_name
 
+
 def combine_files(n, sim_path_results, sim_path_values, f):
     if f.endswith(".summary"):
         job_id, results_file_name, sim_values_file_name = get_file_name(f, sim_path_results, sim_path_values)
         if os.path.exists(sim_values_file_name):
-            line = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip('\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
+            line = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip(
+                '\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
             if len(line.split('\t')) == n:
                 print str(sim_path_results) + "/" + str(f)
                 print sim_values_file_name
-                combined_string = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip('\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
+                combined_string = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip(
+                    '\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
                 return combined_string
             else:
                 stderr.write(str(sim_path_results) + " does not have the desired number of summary statistics\n")
         else:
             stderr.write(str(sim_values_file_name) + " does not exist\n")
 
+
 def combine_same_header(head, sim_path_results, sim_path_values, f):
     if f.endswith(".summary"):
         job_id, results_file_name, sim_values_file_name = get_file_name(f, sim_path_results, sim_path_values)
 
+        # If the matching sim_values file exists get the headers and the lines
         if os.path.exists(sim_values_file_name):
             with open(sim_values_file_name) as sim_csvfile:
                 reader = csv.reader(sim_csvfile, delimiter='\t')
                 headers = reader.next()
+                line = reader.next()
             with open(results_file_name) as results_csvfile:
                 reader = csv.reader(results_csvfile, delimiter='\t')
                 headers.extend(reader.next())
-            if len(set(head) & set(headers)) == (len(head)-1):
-                print results_file_name
-                print sim_values_file_name
-                combined_string = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip('\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
-                return combined_string
+                line.extend(reader.next())
+
+            # If the results file has IBD statistics (no files missing stats)
+            if re.findall(r"(IBD)", str(headers)):
+                line_same = str(job_id)
+                for i, header in enumerate(headers):
+                    # Only use stats that are included in the input header file
+                    if header not in head:
+                        continue
+                    else:
+                        line_same = line_same + '\t' + line[i]
+                line_same = line_same + '\n'
+                # check the resulting line has the same length as the input header
+                if len(line_same.split('\t')) == (len(head)):
+                    return line_same
+                else:
+                    stderr.write(str(sim_values_file_name) + " does not have the desired parameters or summary statistics\n")
+                    return False
             else:
-                stderr.write(str(sim_path_results) + " does not have the desired parameters or summary statistics\n")
+                stderr.write(str(sim_values_file_name) + " does not have IBD\n")
+                return False
         else:
             stderr.write(str(sim_values_file_name) + " does not exist\n")
+            return False
+
 
 def combine_duplicate_header(head, sim_path_results, sim_path_values, to_duplicate, to_remove, f):
     # Only get results files that end in .summary
@@ -81,7 +104,7 @@ def combine_duplicate_header(head, sim_path_results, sim_path_values, to_duplica
                         continue
                     if header in to_duplicate:
                         assert isinstance(line[i], basestring)
-                        if re.search(r"(AA)",header):
+                        if re.search(r"(AA)", header):
                             line_duplicate = line_duplicate + '\t' + line[i] + '\t' + line[i] + '\t' + line[i]
                         else:
                             line_duplicate = line_duplicate + '\t' + line[i] + '\t' + line[i]
@@ -94,10 +117,11 @@ def combine_duplicate_header(head, sim_path_results, sim_path_values, to_duplica
                 return False
         else:
             stderr.write(str(sim_values_file_name) + " does not exist\n")
+            return False
 
 
 def make_duplicate_header(head, to_duplicate, to_remove):
-    duplicated_header=[]
+    duplicated_header = []
     for item in head:
         if item in to_remove:
             continue
@@ -109,7 +133,7 @@ def make_duplicate_header(head, to_duplicate, to_remove):
 
 
 def main():
-    pool = multiprocessing.Pool(168)
+    pool = multiprocessing.Pool()
 
     sim_path = argv[1]
     out_path = argv[2]
@@ -122,11 +146,11 @@ def main():
         head = reader.next()
     n = len(head)
 
-    sim_path_results = str(sim_path)+"/results_sims_AJ_M"+str(model)
-    sim_path_values = str(sim_path)+"/sim_values_AJ_M"+str(model)
+    sim_path_results = str(sim_path) + "/results_sims_AJ_M" + str(model)
+    sim_path_values = str(sim_path) + "/sim_values_AJ_M" + str(model)
 
     files_results = listdir(sim_path_results)
-    out_file_name = str(out_path)+"/input_ABCtoolbox_M"+str(model)+"_"+str(len(files_results))+".txt"
+    out_file_name = str(out_path) + "/input_ABCtoolbox_M" + str(model) + "_" + str(len(files_results)) + ".txt"
 
     if combine_function == "original":
         function_to_map = functools.partial(combine_files, n, sim_path_results, sim_path_values)
@@ -170,7 +194,8 @@ def main():
             duplicated_header = make_duplicate_header(head, to_duplicate, to_remove)
             fileout = open(out_file_name, 'w')
             fileout.write("\t".join(duplicated_header) + "\n")
-            function_to_map = functools.partial(combine_duplicate_header, head, sim_path_results, sim_path_values, to_duplicate, to_remove)
+            function_to_map = functools.partial(combine_duplicate_header, head, sim_path_results, sim_path_values,
+                                                to_duplicate, to_remove)
         else:
             print "You should only use the duplicate option with Model 1"
             return False
@@ -182,6 +207,7 @@ def main():
     for result in results:
         if result:
             fileout.write(result)
+
 
 if __name__ == '__main__':
     main()
