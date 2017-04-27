@@ -159,11 +159,28 @@ Submit a pbs script by:
 
 ### Post Processing
 The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.
-  
+
+#### Fixing incorrect Headers
 First use `find_broken_headers.py` to find any results output files with incorrect headers. This will specifically look for files that have a duplicate of IBD_var_EE in the header. This will create a list of the files with incorrect headers.  
 `find_broken_headers.py dir model >>files_to_fix.txt`
 Then use `correct_header.py` to fix the results files with incorrect headers. This will create new files with the correct headers in `dir/results_AJ_M${model}_fixed`. Once these files are double checked, they should be moved to the original directory and overwrite incorrect files.     
 `correct_header.py files_to_fix.txt`
+
+#### Tarring, transfering, and removing output files
+1. tar output directories on HPC
+2. transfer tar files to Atmosphere
+3. remove files that have been tarred and transferred on HPC
+
+#### Combining tarred output files
+This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
+
+archive mount tar file to operate files as if in regular directory.  
+`archivemount -o readonly  /vol2/macsSwig_AJmodels/results_sims_AJ_M1.tar ~/postprocessing`  
+To unmount:
+`sudo umount /home/agladstein/postprocessing`
+
+
+
 -------------------------
 
 ## Running as a Workflow on Open Science Grid
@@ -261,3 +278,21 @@ command.
  * [Pegasus User Guide](https://pegasus.isi.edu/documentation/)
  * [OSG Connect Documentation](https://support.opensciencegrid.org/solution/categories)
 
+
+-------------------------
+
+# Using ABC with ABCestimator
+
+## Obtaining and compiling the code
+ABCtoolbox is available from  
+https://bitbucket.org/phaentu/abctoolbox-public/overview  
+
+To download  
+`git clone https://bitbucket.org/phaentu/abctoolbox-public.git`  
+
+If openMP is installed, some functions inside ABCtoolbox, including findStatsModelchoice can be parallelized. Compile as follows  
+`g++ -O3 -o ABCtoolbox *.cpp -DUSE_OMP -fopenmp`  
+See [openMp forum](http://forum.openmp.org/forum/viewtopic.php?f=3&t=1993&p=7809#p7809) 
+
+If openMP is not installed, compile as follows:  
+`g++ -O3 -o ABCtoolbox *.cpp`
