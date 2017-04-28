@@ -51,6 +51,19 @@ pip install -r requirements.txt
 macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
 ```
 
+Alternatively,
+```bash
+sudo apt-get update
+sudo apt-get install python-virtualenv git python-dev
+sudo easy_install -U distribute
+virtualenv macss_env
+source macss_env/bin/activate
+pip install pip-tools
+pip-compile
+pip-sync
+macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
+```
+
 -------------------------
 
 ## Running on University of Arizona HPC
