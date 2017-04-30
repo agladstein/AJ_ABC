@@ -39,8 +39,12 @@ def main():
     input_file = argv[2]
     option = argv[3] # remove or keep
     n_sets = int(argv[4]) # number of sets of statistics from model choice power analysis
+    if len(argv) == 5:
+        sim_id = 'sim'
+    else:
+        sim_id = argv[5] # the header for sim id
 
-    input_file_df = pd.read_csv(input_file, sep="\t", index_col='Sim')
+    input_file_df = pd.read_csv(input_file, sep="\t", index_col=sim_id)
     params_df = get_params(input_file_df)
 
     if option == "remove":
