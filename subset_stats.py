@@ -24,17 +24,28 @@ def get_power_stats(stats_file, n_sets):
     stats = list(itertools.chain(*keep_file_df.head(n_sets)['Statistics(Names)'].str.split(',').tolist()))
     return stats
 
+def get_params(input_file_df):
+    '''This assumes the first summary statistic is SegS_Af_CGI. 
+    Make dataframe containing all columns up to the first summary statistic.'''
+
+    print 'Extracting simulation id and parameters'
+    n_params = input_file_df.columns.get_loc('SegS_Af_CGI')
+    params_df = input_file_df.ix[:,:n_params]
+    return params_df
+
 
 def main():
     stats_file = argv[1]
     input_file = argv[2]
     option = argv[3] # remove or keep
-    n_sets = argv[4] # number of sets of statistics from model choice power analysis
+    n_sets = int(argv[4]) # number of sets of statistics from model choice power analysis
 
-    input_file_df = pd.read_csv(input_file, sep='\t')
+    input_file_df = pd.read_csv(input_file, sep="\t", index_col='Sim')
+    params_df = get_params(input_file_df)
 
     if option == "remove":
         stats = get_corr_stats(stats_file)
+        print 'Creating new file with parameters and summary statistics with correlations passing filter'
         out_file_name = 'pruneCorStats_'+input_file
     elif option == "keep":
         if n_sets < 1:
@@ -42,7 +53,8 @@ def main():
             return
         stats = get_power_stats(stats_file, n_sets)
         out_file_name = 'keepPowerStats_' + input_file
-        input_file_df[stats].to_csv(out_file_name, sep='\t')
+        print 'Creating new file with parameters and summary statistics with high power'
+        pd.concat([params_df, input_file_df[stats]], axis=1, join='inner').to_csv(out_file_name, sep='\t')
     else:
         print "You must specify remove or keep!"
         return
