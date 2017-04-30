@@ -10,4 +10,8 @@ jinja2==2.9.5             # via j2cli
 markupsafe==1.0           # via jinja2
 memory-profiler==0.45
 numpy==1.12.0
+pandas==0.19.2
 psutil==5.2.1
+python-dateutil==2.6.0    # via pandas
+pytz==2017.2              # via pandas
+six==1.10.0               # via python-dateutil
