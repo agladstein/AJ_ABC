@@ -8,17 +8,20 @@ def main():
     stats_file = argv[1]
     input_file = argv[2]
     option = argv[3]  # remove or keep
-    n_sets = int(argv[4])  # number of sets of statistics from model choice power analysis
 
+    print 'Reading input file'
     input_file_df = pd.read_csv(input_file, sep="\t")
-    params_df = get_params(input_file_df)
 
     if option == "remove":
         stats = get_corr_stats(stats_file)
         print 'Creating new file with parameters and summary statistics with correlations passing filter'
         out_file_name = 'pruneCorStats_' + input_file
+        input_file_df.drop(input_file_df[stats], axis=1).to_csv(out_file_name, sep='\t', index=False)
 
     elif option == "keep":
+        n_sets = int(argv[4])  # number of sets of statistics from model choice power analysis
+
+        params_df = get_params(input_file_df)
         if n_sets < 1:
             print 'Tell me how many sets of statistics to use!'
             return
