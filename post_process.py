@@ -24,13 +24,11 @@ def combine_files(n, sim_path_results, sim_path_values, f):
     if f.endswith(".summary"):
         job_id, results_file_name, sim_values_file_name = get_file_name(f, sim_path_results, sim_path_values)
         if os.path.exists(sim_values_file_name):
-            line = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip(
-                '\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
+            line = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip('\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
             if len(line.split('\t')) == n:
                 print str(sim_path_results) + "/" + str(f)
                 print sim_values_file_name
-                combined_string = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip(
-                    '\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
+                combined_string = str(job_id) + "\t" + linecache.getline(sim_values_file_name, 2).rstrip('\n') + "\t" + linecache.getline(str(sim_path_results) + "/" + str(f), 2)
                 return combined_string
             else:
                 stderr.write(str(sim_path_results) + " does not have the desired number of summary statistics\n")
@@ -136,17 +134,18 @@ def main():
     pool = multiprocessing.Pool()
 
     sim_path = argv[1]
-    out_path = argv[2]
-    model = argv[3]
-    header_file_name = argv[4]
-    combine_function = argv[5]
+    results_path = argv[2]
+    out_path = argv[3]
+    model = argv[4]
+    header_file_name = argv[5]
+    combine_function = argv[6] # original, same, or duplicate
 
     with open(header_file_name) as f:
         reader = csv.reader(f, delimiter='\t')
         head = reader.next()
     n = len(head)
 
-    sim_path_results = str(sim_path) + "/results_sims_AJ_M" + str(model)
+    sim_path_results = str(results_path) + "/results_sims_AJ_M" + str(model)
     sim_path_values = str(sim_path) + "/sim_values_AJ_M" + str(model)
 
     files_results = listdir(sim_path_results)
