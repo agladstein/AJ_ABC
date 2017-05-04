@@ -18,15 +18,17 @@ if [ -e switch${MODEL}.txt ] ; then
     fi
 
     RESULTS=${OUT}/results_sims_AJ_M${MODEL}
+    date
     echo "Check for ${GOAL} completed runs in $RESULTS"
 
     #check number of completed simulations
-    COMP=$(ls $RESULTS/ | wc -l)
+    COMP=$(tar -tf ${RESULTS}.tar | wc -l)
     echo "${COMP} runs have completed"
     if [ "$COMP" -ge "$GOAL" ]; then
         echo "Goal completed"
         rm switch${MODEL}.txt
         echo "Goal completed. ${COMP} runs have completed in $RESULTS." | sendmail agladstein@email.arizona.edu
+        exit
     else
         #check number of jobs in que
         if [ "$SYSTEM" == "cluster" ]; then
@@ -45,6 +47,7 @@ if [ -e switch${MODEL}.txt ] ; then
         echo "You have $n jobs in the que"
         if [ "$n" -ge "$QUEMAX" ]; then
 	        echo "That's enough jobs in the que"
+	        exit
         else
 	        #create PBS scripts
             ./main_function_AJmodel_j2.sh ${SYSTEM} /rsgrps/mfh4/Ariella/macsSwig_AJmodels ${MODEL}
@@ -52,7 +55,7 @@ if [ -e switch${MODEL}.txt ] ; then
             #check standard hrs left in group
             SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
 	        DAYS=$(( $(($(cal | wc -w) - 9)) - $(($(date | cut -d " " -f3))) ))
-	        SBOUND=$(( $DAYS * 350))
+	        SBOUND=$(( $DAYS * 500 + $n ))
 
 	        echo "${SHRS} mfh standard hrs are left"
 	        echo "There are $DAYS days left in the month"
@@ -61,20 +64,20 @@ if [ -e switch${MODEL}.txt ] ; then
             if [ "$SHRS" -le "$SBOUND" ]; then
                 echo "There are no standard hrs left to use"
 
-                if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "ocelote" ] ; then
-                    #check qualified hrs left in group
-                    QHRS=$(va | cut -f3 | tail -1 | cut -d ":" -f1)
-                    QBOUND=0
-                    echo "${QHRS} mfh qualified hrs are left"
-                    if [ "$QHRS" -gt "$QBOUND" ]; then
-                        echo "Submit to qualified"
-                        echo "$qsub model${MODEL}_${SYSTEM}_qualified.pbs"
-                        $qsub model${MODEL}_${SYSTEM}_qualified.pbs
-                        exit
-                    else
-                        echo "There are no qualified hrs left to use"
-                    fi
-                fi
+#                if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "ocelote" ] ; then
+#                    #check qualified hrs left in group
+#                    QHRS=$(va | cut -f3 | tail -1 | cut -d ":" -f1)
+#                    QBOUND=0
+#                    echo "${QHRS} mfh qualified hrs are left"
+#                    if [ "$QHRS" -gt "$QBOUND" ]; then
+#                        echo "Submit to qualified"
+#                        echo "$qsub model${MODEL}_${SYSTEM}_qualified.pbs"
+#                        $qsub model${MODEL}_${SYSTEM}_qualified.pbs
+#                        exit
+#                    else
+#                        echo "There are no qualified hrs left to use"
+#                    fi
+#                fi
 
                 echo "Submit to windfall"
                 echo "$qsub model${MODEL}_${SYSTEM}_windfall.pbs"
