@@ -179,17 +179,28 @@ First use `find_broken_headers.py` to find any results output files with incorre
 Then use `correct_header.py` to fix the results files with incorrect headers. This will create new files with the correct headers in `dir/results_AJ_M${model}_fixed`. Once these files are double checked, they should be moved to the original directory and overwrite incorrect files.     
 `correct_header.py files_to_fix.txt`
 
-#### Tarring, transfering, and removing output files
+#### Tarring, backing up, transfering, and removing output files
+
 1. tar output directories on HPC
-2. transfer tar files to Atmosphere
-3. remove files that have been tarred and transferred on HPC
+2. upload tar files to google drive
+3. transfer tar files to Atmosphere
+4. remove files that have been tarred and transferred from HPC
+
+Use crontab to automatically run `tar_rsync_rm.sh` script every hour.
+```
+MAILTO="agladstein@email.arizona.edu"
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 1
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 2
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 3
+```
 
 #### Combining tarred output files
 This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
 
 archive mount tar file to operate files as if in regular directory.  
-`archivemount -o readonly  /vol2/macsSwig_AJmodels/results_sims_AJ_M1.tar ~/postprocessing`  
-To unmount:
+`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/results_sims_AJ_M1.tar ~/postprocessing/results_sims_AJ/`  
+`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/sim_values_AJ_M1.tar ~/postprocessing/sim_values_AJ`  
+To unmount:  
 `sudo umount /home/agladstein/postprocessing`
 
 
