@@ -169,42 +169,6 @@ Submit a pbs script by:
 `qdel` stops a job.  
 `va` shows status of hours.  
 
-
-### Post Processing
-The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.
-
-#### Fixing incorrect Headers
-First use `find_broken_headers.py` to find any results output files with incorrect headers. This will specifically look for files that have a duplicate of IBD_var_EE in the header. This will create a list of the files with incorrect headers.  
-`find_broken_headers.py dir model >>files_to_fix.txt`
-Then use `correct_header.py` to fix the results files with incorrect headers. This will create new files with the correct headers in `dir/results_AJ_M${model}_fixed`. Once these files are double checked, they should be moved to the original directory and overwrite incorrect files.     
-`correct_header.py files_to_fix.txt`
-
-#### Tarring, backing up, transfering, and removing output files
-
-1. tar output directories on HPC
-2. upload tar files to google drive
-3. transfer tar files to Atmosphere
-4. remove files that have been tarred and transferred from HPC
-
-Use crontab to automatically run `tar_rsync_rm.sh` script every hour.
-```
-MAILTO="agladstein@email.arizona.edu"
-0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 1
-0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 2
-0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 3
-```
-
-#### Combining tarred output files
-This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
-
-archive mount tar file to operate files as if in regular directory.  
-`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/results_sims_AJ_M1.tar ~/postprocessing/results_sims_AJ/`  
-`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/sim_values_AJ_M1.tar ~/postprocessing/sim_values_AJ`  
-To unmount:  
-`sudo umount /home/agladstein/postprocessing`
-
-
-
 -------------------------
 
 ## Running as a Workflow on Open Science Grid
@@ -305,6 +269,48 @@ command.
 
 -------------------------
 
+## Post Processing
+
+### Combining OSG output
+The Pegasus workflow outputs concatenated results_sims and sim_values for all the simulations in the workflow. 
+The number of lines in the final output equals the number of simulations plus one for the header.  
+To combine results_sims and sim_values across multiple workflows to create the input for ABCtoolbox use the shell script `combine_OSG_final.sh`
+
+### Fixing incorrect Headers
+The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.  
+
+First use `find_broken_headers.py` to find any results output files with incorrect headers. This will specifically look for files that have a duplicate of IBD_var_EE in the header. This will create a list of the files with incorrect headers.  
+`find_broken_headers.py dir model >>files_to_fix.txt`
+Then use `correct_header.py` to fix the results files with incorrect headers. This will create new files with the correct headers in `dir/results_AJ_M${model}_fixed`. Once these files are double checked, they should be moved to the original directory and overwrite incorrect files.     
+`correct_header.py files_to_fix.txt`
+
+### Tarring, backing up, transfering, and removing output files
+
+1. tar output directories on HPC
+2. upload tar files to google drive
+3. transfer tar files to Atmosphere
+4. remove files that have been tarred and transferred from HPC
+
+Use crontab to automatically run `tar_rsync_rm.sh` script every hour.
+```
+MAILTO="agladstein@email.arizona.edu"
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 1
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 2
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 3
+```
+
+### Combining tarred output files
+This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
+
+archive mount tar file to operate files as if in regular directory.  
+`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/results_sims_AJ_M1.tar ~/postprocessing/results_sims_AJ/`  
+`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/sim_values_AJ_M1.tar ~/postprocessing/sim_values_AJ`  
+To unmount:  
+`sudo umount /home/agladstein/postprocessing`
+
+
+_____________________________
+
 # Using ABC with ABCestimator
 
 ## Obtaining and compiling the code
@@ -320,3 +326,25 @@ See [openMp forum](http://forum.openmp.org/forum/viewtopic.php?f=3&t=1993&p=7809
 
 If openMP is not installed, compile as follows:  
 `g++ -O3 -o ABCtoolbox *.cpp`
+
+## Removing and keeping summary statistics   
+To remove summary statistics or keep summary statistics from ABCtoolbox input use the scripts  
+`main_subset_sim.py` and
+`main_subset_real.py`  
+
+There are two options:  
+1. Remove highly correlated statistics from ABCtoolbox input. 
+The first input file should be the log file after running ABCestimator with the option pruneCorrelatedStats.
+2. Keep parameter values and statistics with high power from ABCtoolbox input. 
+The first input file should be the output file *greedySearchForBestStatisticsForModelChoice.txt after running ABCestimator with the option findStatsModelChoice  
+
+The arguments are  
+- ABCtoolbox output to get summary staistics from
+- ABCtoolbox input (id parameters statistics)
+- keep or remove
+- if using keep option, number of sets of summary statistics
+
+Run as  
+`subset_stats/main_subset_sim.py ABC_searchStatsForModelChoice_OSG_50000_100greedySearchForBestStatisticsForModelChoice.txt input_ABCtoolbox_M1_8.txt keep 4`  
+or  
+`subset_stats/main_subset_sim.py ABC_estimate_OSG_100_50000_100.log input_ABCtoolbox_M1_8.txt remove`
