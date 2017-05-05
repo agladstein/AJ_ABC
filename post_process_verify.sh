@@ -18,9 +18,12 @@ do
 
     rm ${VERIFY_PATH}/tmp1; rm ${VERIFY_PATH}/tmp2
 
-    for f in ${SIM_PATH}/${OUT}${MODEL}/*; do tail -1 $f >>${VERIFY_PATH}/stats; done
-
-    for f in ${SIM_PATH}/${OUT}${MODEL}/*; do echo $f >>${VERIFY_PATH}/name; done
+    for f in ${SIM_PATH}/${OUT}${MODEL}/*;
+    do
+        echo $f
+        echo $f >>${VERIFY_PATH}/name
+        tail -1 $f >>${VERIFY_PATH}/stats
+    done
 
     paste ${VERIFY_PATH}/name ${VERIFY_PATH}/stats >>${VERIFY_PATH}/${OUT}${MODEL}_${n}.txt
 
