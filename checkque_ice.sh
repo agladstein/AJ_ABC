@@ -7,6 +7,8 @@ OUT=$3
 MODEL=$4
 SYSTEM=$5 #smp, cluster, htc
 
+set -f
+
 if [ -e switch${MODEL}.txt ] ; then
 
     if [ "$SYSTEM" == "ocelote" ] ; then
