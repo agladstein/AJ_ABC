@@ -90,16 +90,16 @@ def param_sim_asc_rand():
     parameters['rMJ'] = rMJ
 
     # migration rate from Europe to EAJ
-    mE_High = 1
-    mE_Low = 0
-    mE = float(randint(mE_Low, mE_High))
+    mE_High = 1.0
+    mE_Low = 0.0
+    mE = random.uniform(mE_Low,mE_High)
     para_out.extend([mE])
     parameters['mE'] = mE
 
     # migration rate from Europe to WAJ
-    mW_High = 1
-    mW_Low = 0
-    mW = float(randint(mW_Low, mW_High))
+    mW_High = 1.0
+    mW_Low = 0.0
+    mW = random.uniform(mW_Low, mW_High)
     para_out.extend([mW])
     parameters['mW'] = mW
 
