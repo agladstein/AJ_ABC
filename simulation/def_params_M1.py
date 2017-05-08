@@ -67,13 +67,13 @@ def param_sim_asc_rand():
     parameters['NM'] = NM
 
     # Growth rate in AJ
-    rA = float(round(10 ** random.uniform(0, 1)))  # should it be -1?
-    para_out.extend([math.log10(rA)])
+    rA = random.uniform(0.0, 1.0)  # should it be -1?
+    para_out.extend([rA])
     parameters['rA'] = rA
 
     # Growth rate in Jews and Middle East
-    rMJ = float(round(10 ** random.uniform(0, 1)))  # should it be -1?
-    para_out.extend([math.log10(rMJ)])
+    rMJ = random.uniform(0.0, 1.0) # should it be -1?
+    para_out.extend([rMJ])
     parameters['rMJ'] = rMJ
 
     # migration rate from Europe to AJ
