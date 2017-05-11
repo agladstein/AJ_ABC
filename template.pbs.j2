@@ -22,6 +22,7 @@ echo PBS_ARRAY_INDEX=$PBS_ARRAY_INDEX
 NOW=$(date +%m%d%y%s)
 ID=$NOW"_"$PBS_ARRAY_INDEX
 
+PBS_ID=$(echo ${PBS_JOBID} | cut -d '[' -f1)
 SIM=sim_${ID}_values.txt
 RESULTS=ms_output_${ID}.summary
 
@@ -30,5 +31,6 @@ rm {{ OUT_PATH }}/sim_data_AJ_M{{ MODEL }}/macs_asc_${ID}_chr1.ped
 rm {{ OUT_PATH }}/sim_data_AJ_M{{ MODEL }}/macs_asc_${ID}_chr1.map
 rm {{ OUT_PATH }}/germline_out_AJ_M{{ MODEL }}/*${ID}*
 
-./drive_rsync_rm.sh {{ MODEL }} {{ OUT_PATH }} ${SIM} ${RESULTS} ${PBS_JOBID}
+echo ./drive_rsync_rm.sh {{ MODEL }} {{ OUT_PATH }} ${SIM} ${RESULTS} ${PBS_ID}
+./drive_rsync_rm.sh {{ MODEL }} {{ OUT_PATH }} ${SIM} ${RESULTS} ${PBS_ID}
 
