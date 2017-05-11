@@ -18,6 +18,19 @@ if [ ! -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} ] && [ ! -f ${OUT_PAT
     exit 1
 fi
 
+# rsync to atmosphere
+ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_mfloat/sim_values_AJ_M${MODEL}/${PBS_ID}
+ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_mfloat/results_sims_AJ_M${MODEL}/${PBS_ID}
+
+ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_SIM_PATH} # test
+echo 'rsyncing ' ${SIM}
+rsync -a ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM} agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/${SIM}
+
+ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_RESULTS_PATH}
+echo 'rsyncing ' ${RESULTS}
+rsync -a ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/${RESULTS}
+
+
 # backup to google drive
 DRIVE_SIM_PATH=backup_macsSwig_AJmodels_mfloat/sim_values_AJ_M${MODEL}/$PBS_ID
 DRIVE_RESULTS_PATH=backup_macsSwig_AJmodels_mfloat/results_sims_AJ_M${MODEL}/$PBS_ID
@@ -51,17 +64,6 @@ imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_mfloat/results_s
 iput -K -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_mfloat/results_sims_AJ_M${MODEL}/${PBS_ID}
 
 
-# rsync to atmosphere
-ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_mfloat/sim_values_AJ_M${MODEL}/${PBS_ID}
-ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_mfloat/results_sims_AJ_M${MODEL}/${PBS_ID}
-
-ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_SIM_PATH} # test
-echo 'rsyncing ' ${SIM}
-rsync -a ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM} agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/${SIM}
-
-ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_RESULTS_PATH}
-echo 'rsyncing ' ${RESULTS}
-rsync -a ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/${RESULTS}
 
 # check that the files are the same on hpc and atmosphere
 echo 'atmo md5sum ' ${SIM} $(ssh agladstein@${IP_ADDRESS} md5sum ${ATMO_SIM_PATH}/${SIM} | cut -d " " -f1)
