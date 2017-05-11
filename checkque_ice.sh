@@ -7,6 +7,8 @@ OUT=$3
 MODEL=$4
 SYSTEM=$5 #smp, cluster, htc
 
+IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/8bfef8b8f3f7c43fd99832a323ef7130f98571bb/atmo_instance_ip.txt)
+
 set -f
 
 if [ -e switch${MODEL}.txt ] ; then
@@ -24,7 +26,7 @@ if [ -e switch${MODEL}.txt ] ; then
     echo "Check for ${GOAL} completed runs in $RESULTS"
 
     #check number of completed simulations
-    COMP=$(tar -tf ${RESULTS}.tar | wc -l)
+    COMP=$(ssh agladstein@${IP_ADDRESS} find /vol_c/results_macsSwig_AJmodels_mfloat/sim_values_AJ_M${MODEL} -type f | wc -l)
     echo "${COMP} runs have completed"
     if [ "$COMP" -ge "$GOAL" ]; then
         echo "Goal completed"
