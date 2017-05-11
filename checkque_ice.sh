@@ -13,6 +13,9 @@ set -f
 
 if [ -e switch${MODEL}.txt ] ; then
 
+    echo "\n #################"
+    date
+
     if [ "$SYSTEM" == "ocelote" ] ; then
         qstat=/cm/shared/apps/pbspro/current/bin/qstat
         qsub=/cm/shared/apps/pbspro/current/bin/qsub
@@ -54,7 +57,7 @@ if [ -e switch${MODEL}.txt ] ; then
 	        exit
         else
 	        #create PBS scripts
-            ./main_function_AJmodel_j2.sh ${SYSTEM} /rsgrps/mfh4/Ariella/macsSwig_AJmodels ${MODEL}
+            ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}
 
             #check standard hrs left in group
             SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
