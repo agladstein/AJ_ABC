@@ -149,7 +149,7 @@ def main():
     sim_path_values = str(path) + "/sim_values_AJ_M" + str(model)+"/"+str(bucket_id)
 
     files_results = listdir(sim_path_results)
-    out_file_name = str(out_path) + "/input_ABCtoolbox_M" + str(model) + "_" + str(len(files_results)) + ".txt"
+    out_file_name = str(out_path) + "/input_ABCtoolbox_M" + str(model) + "_" + str(bucket_id) + ".txt"
 
     if combine_function == "original":
         function_to_map = functools.partial(combine_files, n, sim_path_results, sim_path_values)
