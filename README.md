@@ -299,16 +299,26 @@ MAILTO="agladstein@email.arizona.edu"
 0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 3
 ```
 
-### Combining tarred output files
+### Combining HPC output files
 This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
 
-archive mount tar file to operate files as if in regular directory.  
-`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/results_sims_AJ_M1.tar ~/postprocessing/results_sims_AJ/`  
-`archivemount -o readonly  /vol_c/results_macsSwig_AJmodels/sim_values_AJ_M1.tar ~/postprocessing/sim_values_AJ`  
-To unmount:  
-`sudo umount /home/agladstein/postprocessing`
+To combine the simulation output files, sim_values.txt and ms_output.summary, to make the input file for ABCtoolbox use the script
+`post_process.py`
+This is will combine the files for one PBS_ID bucket (each bucket should contain about 2000 simulations).
+It uses multiprocessing, and will automatically detect the number of cores available to use.  
+The arguments are:  
+* path = the path to the sim_values_AJ_M and results_sims_AJ_M directories. On my atmosphere volume this is currently
+`/vol_c/results_macsSwig_AJmodels_mfloat` on HPC, this is `/rsgrps/mfh4/Ariella/macsSwig_AJmodels_mfloat`
+* out_path = the path to write the ABCtoolbox input file to
+* model = `1`, `2`, or `3`
+* bucket_id = The PBS_ID that was used to make the bucket
+* header_file_name = file with one line containing the desired header for the model. Should be tab delimited in the form    
+Sim parameters  statistics
+* combine_function = `original`, `same`, or `duplicate`  
+For now, only use the `same` option. This will make a ABCtoolbox input file with exactly the same parameters and statsitics as in the header file.  
 
-
+e.g.  
+`python /vol_c/src/macsswig_simsaj/post_process.py /vol_c/results_macsSwig_AJmodels_mfloat /vol_c/results_macsSwig_AJmodels_mfloat/intermediate 1 691009 header_M1_222.txt same`
 _____________________________
 
 # Using ABC with ABCestimator
