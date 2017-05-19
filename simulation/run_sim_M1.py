@@ -26,7 +26,6 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     TMJ=float(parameters['TMJ'])
     Tm=float(parameters['Tm'])
 
-
     macs_theta=float(mu*4*NANC)
     macs_rho=float(rho*4*NANC)
     scaled_NAF=float(NAF/NANC)
@@ -36,6 +35,9 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     scaled_NA=float(NA/NANC)
     scaled_NJ=float(NJ/NANC)
     scaled_NM=float(NM/NANC)
+
+    scaled_rA=float(rA*NANC)
+    scaled_rMJ=float(rMJ*NANC)
 
     scaled_m=float(4*m*NANC)
 
@@ -53,8 +55,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                          '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                          str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                          str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                         '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                         '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                          '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA),
                          '6', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
                          str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1', '-en', str(scaled_Tgrowth_Af),
@@ -65,8 +67,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
                      '3', '2', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Taf), '2', '1']
@@ -76,8 +78,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-en',
                      str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Teu_as), '3', '2', '-ej',
@@ -88,8 +90,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-ej', str(scaled_TMJ), '5', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej',
                      str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
@@ -99,8 +101,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TMJ), '5', '4', '-ej',
                      str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
@@ -110,8 +112,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-en', str(scaled_Tgrowth_Af),
                      '1', str(scaled_NANC), '-ej', str(scaled_TA), '6', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej',
                      str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
@@ -121,8 +123,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-en', str(scaled_Tgrowth_Af),
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-en', str(scaled_Tgrowth_Af),
                      '1', str(scaled_NANC), '-em', str(scaled_Tm), '6', '3', str(scaled_m), '-em',
                      str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6', '4', '-ej', str(scaled_TMJ),
                      '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej',
@@ -133,8 +135,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                          '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                          str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                          str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                         '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                         '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                          '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA),
                          '6', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
                          str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1', '-en', str(scaled_Tgrowth_Af),
@@ -145,8 +147,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
                      '3', '2', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Taf), '2', '1']
@@ -156,8 +158,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-en',
                      str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Teu_as), '3', '2', '-ej',
@@ -168,8 +170,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-ej', str(scaled_TMJ), '5', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej',
                      str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
@@ -179,8 +181,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6',
                      '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TMJ), '5', '4', '-ej',
                      str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
@@ -190,8 +192,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-em', str(scaled_Tm), '6',
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-em', str(scaled_Tm), '6',
                      '3', str(scaled_m), '-em', str(scaled_Tm + 0.000001), '6', '3', '0', '-en', str(scaled_Tgrowth_Af),
                      '1', str(scaled_NANC), '-ej', str(scaled_TA), '6', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej',
                      str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
@@ -201,8 +203,8 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                      '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '6',
                      str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nA), '-n', '1',
                      str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(rA),
-                     '-eg', '0.000001', '4', str(rMJ), '-eg', '0.000002', '5', str(rMJ), '-en', str(scaled_Tgrowth_Af),
+                     str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NA), '-eg', '0', '6', str(scaled_rA),
+                     '-eg', '0.000001', '4', str(scaled_rMJ), '-eg', '0.000002', '5', str(scaled_rMJ), '-en', str(scaled_Tgrowth_Af),
                      '1', str(scaled_NANC), '-em', str(scaled_Tm), '6', '3', str(scaled_m), '-em',
                      str(scaled_Tm + 0.000001), '6', '3', '0', '-ej', str(scaled_TA), '6', '4', '-ej', str(scaled_TMJ),
                      '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej',
