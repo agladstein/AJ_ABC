@@ -133,10 +133,10 @@ def make_duplicate_header(head, to_duplicate, to_remove):
 def main():
     pool = multiprocessing.Pool()
 
-    sim_path = argv[1]
-    results_path = argv[2]
-    out_path = argv[3]
-    model = argv[4]
+    path = argv[1]
+    out_path = argv[2]
+    model = argv[3]
+    bucket_id = argv[4] # pbs job id
     header_file_name = argv[5]
     combine_function = argv[6] # original, same, or duplicate
 
@@ -145,8 +145,8 @@ def main():
         head = reader.next()
     n = len(head)
 
-    sim_path_results = str(results_path) + "/results_sims_AJ_M" + str(model)
-    sim_path_values = str(sim_path) + "/sim_values_AJ_M" + str(model)
+    sim_path_results = str(path) + "/results_sims_AJ_M" + str(model)+"/"+str(bucket_id)
+    sim_path_values = str(path) + "/sim_values_AJ_M" + str(model)+"/"+str(bucket_id)
 
     files_results = listdir(sim_path_results)
     out_file_name = str(out_path) + "/input_ABCtoolbox_M" + str(model) + "_" + str(len(files_results)) + ".txt"
