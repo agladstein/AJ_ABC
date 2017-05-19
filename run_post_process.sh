@@ -5,7 +5,7 @@ OUT_PATH=$2
 
 for MODEL in {1..3}
 do
-    if [ "${MODEL}"=="1" ]; then
+    if (( ${MODEL}==1 )); then
         HEADER=header_M${MODEL}_222.txt
     else
         HEADER=header_M${MODEL}.txt
