@@ -22,7 +22,7 @@ def get_power_stats(stats_file, n_sets):
 
     print 'Reading summary statistics found in ' + stats_file + '\n'
     keep_file_df = pd.read_csv(stats_file, sep = '\t')
-    stats = list(itertools.chain(*keep_file_df.head(n_sets)['Statistics(Names)'].str.split(',').tolist()))
+    stats = list(set(itertools.chain(*keep_file_df.head(n_sets)['Statistics(Names)'].str.split(',').tolist())))
     return stats
 
 
