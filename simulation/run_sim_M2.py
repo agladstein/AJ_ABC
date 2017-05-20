@@ -40,9 +40,9 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     scaled_NJ = float(NJ / NANC)
     scaled_NM = float(NM / NANC)
 
-    scaled_rWA = float(rWA * NANC)
-    scaled_rEA = float(rEA * NANC)
-    scaled_rMJ = float(rMJ * NANC)
+    scaled_rWA = float(rWA * 4 * NANC)
+    scaled_rEA = float(rEA * 4 * NANC)
+    scaled_rMJ = float(rMJ * 4 * NANC)
 
     scaled_m = float(4 * m * NANC)
 
