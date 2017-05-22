@@ -75,24 +75,24 @@ def param_sim_asc_rand():
     parameters['NM'] = NM
 
     # Growth rate in WAJ
-    rWA = float(round(10 ** random.uniform(0, 1)))
-    para_out.extend([math.log10(rWA)])
+    rWA = random.uniform(0.0,1.0)
+    para_out.extend([rWA])
     parameters['rWA'] = rWA
 
     # Growth rate in EAJ
-    rEA = float(round(10 ** random.uniform(0, 1)))
-    para_out.extend([math.log10(rEA)])
+    rEA = random.uniform(0.0,1.0)
+    para_out.extend([rEA])
     parameters['rEA'] = rEA
 
     # Growth rate in Jews and Middle East
-    rMJ = float(round(10 ** random.uniform(0, 1)))
-    para_out.extend([math.log10(rMJ)])
+    rMJ = random.uniform(0.0,1.0)
+    para_out.extend([rMJ])
     parameters['rMJ'] = rMJ
 
     # migration rate from Europe to AJ
-    m_High = 1
-    m_Low = 0
-    m = float(randint(m_Low, m_High))
+    m_High = 1.0
+    m_Low = 0.0
+    m = random.uniform(m_Low,m_High)
     para_out.extend([m])
     parameters['m'] = m
 

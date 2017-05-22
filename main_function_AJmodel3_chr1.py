@@ -81,11 +81,13 @@ def main(arguments):
 
     chr_number=1
 
+    path = arguments[7]
+
     #### Check if necessary directories exist.
-    sim_data_dir = './sim_data_AJ_M3'
-    germline_out_dir='./germline_out_AJ_M3'
-    sim_values_dir='./sim_values_AJ_M3'
-    results_sims_dir='./results_sims_AJ_M3'
+    sim_data_dir = str(path)+'/sim_data_AJ_M3'
+    germline_out_dir=str(path)+'/germline_out_AJ_M3'
+    sim_values_dir=str(path)+'/sim_values_AJ_M3'
+    results_sims_dir=str(path)+'/results_sims_AJ_M3'
 
     try:
         os.makedirs(sim_data_dir)
@@ -586,7 +588,7 @@ def main(arguments):
     fileoutparam=open(param_file,'w')
 
     ##write parameter values
-    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NJ\tLog10_NM\trWA\trEA\trMJ\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\n'
+    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NJ\tLog10_NM\trWA\trEA\trMJ\tmE\tmW\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTmE\tTmW\n'
     fileoutparam.write(head_param)
 
     for z in range(len(para_out)):

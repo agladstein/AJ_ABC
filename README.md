@@ -6,21 +6,24 @@ Version 1
 
 
 Run as  
-python run_sims_AJmodel1_chr1_all.py jobID inputfile simsize seed param_distribution germline  
+`python run_sims_AJmodel1_chr1_all.py jobID inputfile simsize seed param_distribution germline output_dir`
+  
 jobID = can be any unique value to identify the output  
 simsize = full or the length of the locus to be simulated in base pairs  
 seed = a seed value, or 0 if no seed is to be used  
 param_distribution = prior, min, or max  
-
 * prior = simulations with parameter values given by prior distribution  
 * min = simulations with predetermined parameter values that will produce   simulations with shorter run times and less memory - only for testing and profiling purposes  
 * max = simulations with predetermined parameter values that will produce simulations with longer run times and more memory - only for testing and profiling purposes  
-
 germline = 0 to run GERMLINE, 1 to not run GERMLINE (will try to read GERMLINE output from file)  
+
+output_dir = path to the directory to output to. No argument will use the default of current dir "."
+
 e.g.:  
-``python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0``
+``python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir``
+
 Test simulation:  
-``python run_sims_AJmodel1_chr1_all.py 1 ill_650_test.bed 1000000 1278 prior 1``
+``python run_sims_AJmodel1_chr1_all.py 1 ill_650_test.bed 1000000 1278 prior 1 output_dir``
 
 Uses c++ programs macs and GERMLINE. For more information on these programs, see:  
 https://github.com/gchen98/macs  
@@ -45,7 +48,20 @@ virtualenv macss_env
 source macss_env/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0
+macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
+```
+
+Alternatively,
+```bash
+sudo apt-get update
+sudo apt-get install python-virtualenv git python-dev
+sudo easy_install -U distribute
+virtualenv macss_env
+source macss_env/bin/activate
+pip install pip-tools
+pip-compile
+pip-sync
+macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
 ```
 
 -------------------------
@@ -55,52 +71,103 @@ There are four University of Arizona HPC systems - Ocelote, HTC, SMP, and Cluste
 ``ssh name@hpc.arizona.edu``
 Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
 
-### Setting up virtualenv on Ocelote
+### Setting up virtualenv on HPC
+
+#### Ocelote
 ```
+module avail
+module show python/2/2.7.11
 module load python/2/2.7.11
-virtualenv macss_env
-source macss_env/bin/activate
-pip install -r macsswig_simsaj/requirements.txt
+virtualenv -p /cm/shared/uaapps/python/2.7.11/bin/python macss_env_ocelote_2.7.11
+source macss_env_ocelote_2.7.11/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
+
+If requirements.txt on Ocelote based on architecture and packages available, this may not work on other environments. You may have to delete requirements.txt and recompile it using `pip-compile`.
+
+#### ICE
+```
+module avail
+module show python/2.7.9
+module load python/2.7.9
+virtualenv -p /uaopt/python/2.7.9/bin/python macss_env_ICE_2.7.9
+source macss_env_ICE_2.7.9/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Automatically Submit PBS with crontab
+Contab will run commands at timed intervals. See http://crontab-generator.org/
+
+`crontab -e` to edit the crontab file.  
+`crontab -l` to view the crontab file.  
+`crontab -r` to remove the crontab file.  
+
+You should use two seperate crontab files.    
+Ocelote:
+```
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 1 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 2 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 3 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
+```
+
+ICE
+```
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 1 cluster >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ice.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 2 smp >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_smp.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 3 htc >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_htc.log 2>&1
+
+```
+
+Use, your own absolute paths.  
+If the file switch.txt exists in /home/u15/agladstein/ABC/macsSwig_AJmodels, checkque_ice.sh will submit PBS scripts. Once the goal is reached, switch.txt will be removed.
+
+#### Checking the que and remaining hrs
+The crontab files run the shell scripts checkque.sh and checkque_ice.sh check the number of completed runs in the designated directory, the number of CPU hrs left to use, and the number of jobs currently in the que.  
+The shell scripts currently allow for a minimum of 350 hrs a day to be left for the group.  
+If there are no more available standard hours, it will submit jobs to qualified (on smp and Ocelote) and windfall.  
+checkque.sh runs as  
+`checkque.sh sim_goal results_dir que_max pbs`
+and checkque_ice.sh runs as  
+`checkque.sh sim_goal que_max output_dir model system`
+ 
+
+#### Generating PBS with jinja
+To automatically create PBS scripts for all models and HPC systerms use the shell script main_function_AJmodel_j2.sh  
+This should be run from the working directory.  
+
+On ICE:  
+`./main_function_AJmodel_j2.sh htc output_dir model`  
+`./main_function_AJmodel_j2.sh smp output_dir model`  
+`./main_function_AJmodel_j2.sh cluster output_dir model`
+
+On Ocelote:  
+`./main_function_AJmodel_j2.sh ocelote output_dir model`  
+
+where model = 1, 2, or 3  
+This will use the template template.pbs.j2 to create pbs files.  
+*Note: the virtual env is specified in main_function_AJmodel_j2 - and must already be created (with requirements installed) to use jinja.*
+
+##### jinja Documentation
+http://jinja.pocoo.org/docs/2.9/  
+https://github.com/kolypto/j2cli
 
 ### Submitting PBS from the command line
-There are separate PBS files for each model and for each system:
-main_function_AJmodel1_chr1.pbs - is run on Ocelote
-main_function_AJmodel1_chr1_cluster.pbs, main_function_AJmodel1_chr1_htc.pbs, and main_function_AJmodel1_chr1_smp.pbs are run on ice.
-
+You will need to edit the jinja template or pbs scripts created from the jinja template.
 You need to change the line ``#PBS -M agladstein@email.arizona.edu`` in all pbs scripts to your email and change the line ``#PBS -W group_list=mfh`` to your group.
 You can find your group with ``groups``.
 
 Submit a pbs script by:
 `qsub main_function_AJmodel1_chr1.pbs`
 
-### Automatically Submit PBS with crontab
-`crontab -e` to edit the crontab file.
-`crontab -l` to view the crontab file.
-`crontab -r` to remove the crontab file.
-
-You should use two seperate crontab files - one on Ocelote and one on ice.
-```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1.pbs >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ocelote.log 2>&1```
-
-```*/30 * * * * /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_cluster.pbs clu >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_smp.pbs smp >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&; /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/checkque_ice.sh 50000 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/results_sims_AJ_M3 500 /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/main_function_AJmodel3_chr1_htc.pbs htc >>/rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels/crontab_ice.log 2>&```
-Use, your own absolute paths.
-
-The crontab files run the shell scripts checkque.sh and checkque_ice.sh check the number of completed runs in the designated directory, the number of CPU hrs left to use, and the number of jobs currently in the que.
-The shell scripts currently allow for a minimum of 350 hrs a day to be left for the group.
-checkque.sh runs as
-`checkque.sh sim_goal results_dir que_max pbs`
-and checkque_ice.sh runs as
-`checkque.sh sim_goal results_dir que_max pbs system`
-
-### Basic Commands
-`qstat` shows all of the jobs currently in the que or running.
-`qstat -t` shows the status of all subjobs.
-`qstat -f` shows details of job.
-`qsub` submits a pbs script.
-`qdel` stops a job.
-`va` shows status of hours.
-
-
+### Basic Commands on HPC
+`qstat` shows all of the jobs currently in the que or running.  
+`qstat -t` shows the status of all subjobs.  
+`qstat -f` shows details of job.  
+`qsub` submits a pbs script.  
+`qdel` stops a job.  
+`va` shows status of hours.  
 
 -------------------------
 
@@ -199,3 +266,95 @@ command.
  * [Pegasus User Guide](https://pegasus.isi.edu/documentation/)
  * [OSG Connect Documentation](https://support.opensciencegrid.org/solution/categories)
 
+
+-------------------------
+
+## Post Processing
+
+### Combining OSG output
+The Pegasus workflow outputs concatenated results_sims and sim_values for all the simulations in the workflow. 
+The number of lines in the final output equals the number of simulations plus one for the header.  
+To combine results_sims and sim_values across multiple workflows to create the input for ABCtoolbox use the shell script `combine_OSG_final.sh`
+
+### Fixing incorrect Headers
+The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.  
+
+First use `find_broken_headers.py` to find any results output files with incorrect headers. This will specifically look for files that have a duplicate of IBD_var_EE in the header. This will create a list of the files with incorrect headers.  
+`find_broken_headers.py dir model >>files_to_fix.txt`
+Then use `correct_header.py` to fix the results files with incorrect headers. This will create new files with the correct headers in `dir/results_AJ_M${model}_fixed`. Once these files are double checked, they should be moved to the original directory and overwrite incorrect files.     
+`correct_header.py files_to_fix.txt`
+
+### Tarring, backing up, transfering, and removing output files
+
+1. tar output directories on HPC
+2. upload tar files to google drive
+3. transfer tar files to Atmosphere
+4. remove files that have been tarred and transferred from HPC
+
+Use crontab to automatically run `tar_rsync_rm.sh` script every hour.
+```
+MAILTO="agladstein@email.arizona.edu"
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 1
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 2
+0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 3
+```
+
+### Combining HPC output files
+This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
+
+To combine the simulation output files, sim_values.txt and ms_output.summary, to make the input file for ABCtoolbox use the script
+`post_process.py`
+This is will combine the files for one PBS_ID bucket (each bucket should contain about 2000 simulations).
+It uses multiprocessing, and will automatically detect the number of cores available to use.  
+The arguments are:  
+* path = the path to the sim_values_AJ_M and results_sims_AJ_M directories. On my atmosphere volume this is currently
+`/vol_c/results_macsSwig_AJmodels_mfloat` on HPC, this is `/rsgrps/mfh4/Ariella/macsSwig_AJmodels_mfloat`
+* out_path = the path to write the ABCtoolbox input file to
+* model = `1`, `2`, or `3`
+* bucket_id = The PBS_ID that was used to make the bucket
+* header_file_name = file with one line containing the desired header for the model. Should be tab delimited in the form    
+Sim parameters  statistics
+* combine_function = `original`, `same`, or `duplicate`  
+For now, only use the `same` option. This will make a ABCtoolbox input file with exactly the same parameters and statsitics as in the header file.  
+
+e.g.  
+`python /vol_c/src/macsswig_simsaj/post_process.py /vol_c/results_macsSwig_AJmodels_mfloat /vol_c/results_macsSwig_AJmodels_mfloat/intermediate 1 691009 header_M1_222.txt same`
+_____________________________
+
+# Using ABC with ABCestimator
+
+## Obtaining and compiling the code
+ABCtoolbox is available from  
+https://bitbucket.org/phaentu/abctoolbox-public/overview  
+
+To download  
+`git clone https://bitbucket.org/phaentu/abctoolbox-public.git`  
+
+If openMP is installed, some functions inside ABCtoolbox, including findStatsModelchoice can be parallelized. Compile as follows  
+`g++ -O3 -o ABCtoolbox *.cpp -DUSE_OMP -fopenmp`  
+See [openMp forum](http://forum.openmp.org/forum/viewtopic.php?f=3&t=1993&p=7809#p7809) 
+
+If openMP is not installed, compile as follows:  
+`g++ -O3 -o ABCtoolbox *.cpp`
+
+## Removing and keeping summary statistics   
+To remove summary statistics or keep summary statistics from ABCtoolbox input use the scripts  
+`main_subset_sim.py` and
+`main_subset_real.py`  
+
+There are two options:    
+1. Remove highly correlated statistics from ABCtoolbox input.   
+The first input file should be the log file after running ABCestimator with the option pruneCorrelatedStats.  
+2. Keep parameter values and statistics with high power from ABCtoolbox input.   
+The first input file should be the output file *greedySearchForBestStatisticsForModelChoice.txt after running ABCestimator with the option findStatsModelChoice  
+
+The arguments are    
+- ABCtoolbox output to get summary staistics from  
+- ABCtoolbox input (id parameters statistics)  
+- keep or remove  
+- if using keep option, number of sets of summary statistics  
+
+Run as  
+`subset_stats/main_subset_sim.py ABC_searchStatsForModelChoice_OSG_50000_100greedySearchForBestStatisticsForModelChoice.txt input_ABCtoolbox_M1_8.txt keep 4`  
+or  
+`subset_stats/main_subset_sim.py ABC_estimate_OSG_100_50000_100.log input_ABCtoolbox_M1_8.txt remove`

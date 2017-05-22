@@ -1,4 +1,5 @@
-cd /rsgrps/mfh/agladstein/Simulations/macsSwig_AJmodels
+#!/usr/bin/env bash
+cd /rsgrps/mfh4/Ariella/macsSwig_AJmodels
 
 GOAL=$1
 RESULTS=$2
