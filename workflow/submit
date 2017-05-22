@@ -9,13 +9,15 @@ if [ ! -e sites.xml.template ]; then
 fi
 
 # did the user specify the number of jobs
-if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" ]; then
-    echo "Please specify model, job start and end ids. Example: ./submit run_sims_AJmodel2_chr1_all.py 100 300"
+if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" -o "x$4" == "x" ]; then
+    echo "Please specify model, job start id, end id, and if you want Comet."
+    echo "Example: ./submit run_sims_AJmodel2_chr1_all.py 100 300 False"
     exit 1
 fi
 MODEL=$1
 JOB_START=$2
 JOB_END=$3
+export WANTS_COMET=$4
 
 module load pegasus
 module load stashcp
