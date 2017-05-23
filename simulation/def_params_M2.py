@@ -148,7 +148,6 @@ def param_sim_asc_rand():
     rEA_High = -(1/TAEW) * math.log(10/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
     rEA_Low = 0.0
     rEA = random.uniform(rEA_Low,rEA_High)
-    rEA = random.uniform(0.0,0.5)
     para_out.extend([rEA])
     parameters['rEA'] = rEA
 
