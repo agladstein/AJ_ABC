@@ -29,7 +29,7 @@ if [ -e switch${MODEL}.txt ] ; then
     echo "Check for ${GOAL} completed runs in $RESULTS"
 
     #check number of completed simulations
-    COMP=$(ssh agladstein@${IP_ADDRESS} find /vol_c/results_macsSwig_AJmodels_rscale4/sim_values_AJ_M${MODEL} -type f | wc -l)
+    COMP=$(ssh agladstein@${IP_ADDRESS} find /vol_c/results_macsSwig_AJmodels_rscale4Trel/sim_values_AJ_M${MODEL} -type f | wc -l)
     echo "${COMP} runs have completed"
     if [ "$COMP" -ge "$GOAL" ]; then
         echo "Goal completed"
