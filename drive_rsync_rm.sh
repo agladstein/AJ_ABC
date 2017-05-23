@@ -3,7 +3,9 @@
 set -e # quits at first error
 set -x # print more debugging in stdout
 
-module load irods
+if [[ $HOSTNAME == service* ]]; then
+    module load irods
+fi
 
 MODEL=$1
 OUT_PATH=$2
