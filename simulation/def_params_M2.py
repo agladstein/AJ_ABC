@@ -74,21 +74,6 @@ def param_sim_asc_rand():
     para_out.extend([math.log10(NM)])
     parameters['NM'] = NM
 
-    # Growth rate in WAJ
-    rWA = random.uniform(0.0,1.0)
-    para_out.extend([rWA])
-    parameters['rWA'] = rWA
-
-    # Growth rate in EAJ
-    rEA = random.uniform(0.0,1.0)
-    para_out.extend([rEA])
-    parameters['rEA'] = rEA
-
-    # Growth rate in Jews and Middle East
-    rMJ = random.uniform(0.0,1.0)
-    para_out.extend([rMJ])
-    parameters['rMJ'] = rMJ
-
     # migration rate from Europe to AJ
     m_High = 1.0
     m_Low = 0.0
@@ -151,6 +136,31 @@ def param_sim_asc_rand():
     Tm = float(randint(Tm_Low, Tm_High))
     para_out.extend([Tm])
     parameters['Tm'] = Tm
+
+    # Growth rate in WAJ
+    rWA_High = -(1/TA) * math.log(10/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rWA_Low = 0.0
+    rWA = random.uniform(rWA_Low,rWA_High)
+    para_out.extend([rWA])
+    parameters['rWA'] = rWA
+
+    # Growth rate in EAJ
+    rEA_High = -(1/TAEW) * math.log(10/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rEA_Low = 0.0
+    rEA = random.uniform(rEA_Low,rEA_High)
+    rEA = random.uniform(0.0,0.5)
+    para_out.extend([rEA])
+    parameters['rEA'] = rEA
+
+    # Growth rate in Jews and Middle East
+    if NM < NJ:
+        rMJ_High = -(1/TMJ) * math.log(10/NM)
+    else:
+        rMJ_High = -(1 / TMJ) * math.log(10 / NJ)
+    rMJ_Low = 0.0
+    rMJ = random.uniform(rMJ_Low, rMJ_High)
+    para_out.extend([rMJ])
+    parameters['rMJ'] = rMJ
 
     case, modified_Tgrowth_Af = choose_case(parameters)
 
