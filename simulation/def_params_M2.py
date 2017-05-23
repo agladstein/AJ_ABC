@@ -138,7 +138,7 @@ def param_sim_asc_rand():
     parameters['Tm'] = Tm
 
     # Growth rate in WAJ
-    rWA_High = -(1/TA) * math.log(10/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rWA_High = -(1/TAEW) * math.log(10/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
     rWA_Low = 0.0
     rWA = random.uniform(rWA_Low,rWA_High)
     para_out.extend([rWA])
