@@ -64,6 +64,10 @@ pip-sync
 macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
 ```
 
+Having trouble getting Vagrant started? Make sure you are in the correct directory.
+* start up vagrant in working directory
+* once in vagrant, go to `/vagrant` to find original working directory
+
 -------------------------
 
 ## Running on University of Arizona HPC
@@ -319,6 +323,16 @@ For now, only use the `same` option. This will make a ABCtoolbox input file with
 
 e.g.  
 `python /vol_c/src/macsswig_simsaj/post_process.py /vol_c/results_macsSwig_AJmodels_mfloat /vol_c/results_macsSwig_AJmodels_mfloat/intermediate 1 691009 header_M1_222.txt same`
+
+To run on all buckets use the script `run_post_process.sh`  
+This will run `post_process.py` on all the buckets in the path.  
+e.g.
+`/vol_c/src/macsswig_simsaj/run_post_process.sh /vol_c/results_macsSwig_AJmodels_mfloat /vol_c/results_macsSwig_AJmodels_mfloat/intermediate`
+
+To combine all post processed bucket files for ABCtoolbox input use `combine_HPC_final.sh`,  
+Takes one arguement, `output_path`  
+e.g.  
+`combine_HPC_final.sh /vol_c/results_macsSwig_AJmodels_mfloat/intermediate`
 _____________________________
 
 # Using ABC with ABCestimator
