@@ -213,7 +213,7 @@ def param_sim_asc_min():
     #migration rate from Europe to AJ
     m_High=1
     m_Low=0
-    m=float(randint(m_Low,m_High))
+    m = random.uniform(m_Low, m_High)
     para_out.extend([m])
     parameters['m']=m
 
