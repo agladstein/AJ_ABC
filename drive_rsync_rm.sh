@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
+module load irods
+
 set -e # quits at first error
 set -x # print more debugging in stdout
 
-if [[ $HOSTNAME == service* ]]; then
-    module load irods
-fi
+#if [[ $HOSTNAME == service* ]]; then
+#    module load irods
+#fi
 
 MODEL=$1
 OUT_PATH=$2
@@ -21,8 +23,8 @@ if [ ! -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} ] && [ ! -f ${OUT_PAT
 fi
 
 # rsync to atmosphere
-ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_rscale4Trel/sim_values_AJ_M${MODEL}/${PBS_ID}
-ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_rscale4Trel/results_sims_AJ_M${MODEL}/${PBS_ID}
+ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/${PBS_ID}
+ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/${PBS_ID}
 
 ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_SIM_PATH} # test
 echo 'rsyncing ' ${SIM}
@@ -34,8 +36,8 @@ rsync -a ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} agladstein@${IP_ADDRES
 
 
 # backup to google drive
-DRIVE_SIM_PATH=backup_macsSwig_AJmodels_rscale4Trel/sim_values_AJ_M${MODEL}/$PBS_ID
-DRIVE_RESULTS_PATH=backup_macsSwig_AJmodels_rscale4Trel/results_sims_AJ_M${MODEL}/$PBS_ID
+DRIVE_SIM_PATH=backup_macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/$PBS_ID
+DRIVE_RESULTS_PATH=backup_macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/$PBS_ID
 
 echo 'google driving ' ${SIM} 'to '${DRIVE_SIM_PATH}
 if [[ -z "$(~/bin/drive ls ${DRIVE_SIM_PATH})" ]]; then
@@ -58,12 +60,12 @@ fi
 
 # backup to Data Store
 echo 'iroding ' ${SIM}
-imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel/sim_values_AJ_M${MODEL}/${PBS_ID}
-iput -K -f ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM} /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel/sim_values_AJ_M${MODEL}/${PBS_ID}
+imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/${PBS_ID}
+iput -K -f ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM} /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/${PBS_ID}
 
 echo 'iroding ' ${RESULTS}
-imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel/results_sims_AJ_M${MODEL}/${PBS_ID}
-iput -K -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel/results_sims_AJ_M${MODEL}/${PBS_ID}
+imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/${PBS_ID}
+iput -K -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/${PBS_ID}
 
 
 

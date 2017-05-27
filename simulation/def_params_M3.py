@@ -18,17 +18,12 @@ def param_sim_asc_rand():
     asc_nb_eu = randint(low, high)
     asc_nb_as = randint(low, high)
 
-    para_out.extend([asc_nb_af])
-    para_out.extend([asc_nb_eu])
-    para_out.extend([asc_nb_as])
 
     daf = random.uniform(0.05, 0.10)
-    para_out.extend([daf])
 
     ####Demographic model
     # population size in Africa
     NAF = float(round(10 ** random.uniform(3.7, 5.0)))
-    para_out.extend([math.log10(NAF)])
     parameters['NAF'] = NAF
     # print NAF
 
@@ -38,54 +33,40 @@ def param_sim_asc_rand():
     Nrat_High = 0.0  # Allow only growth for now
     Nrat_Low = -1.0
     NANC = float(round((10 ** random.uniform(Nrat_Low, Nrat_High)) * NAF))
-    para_out.extend([math.log10(NANC)])
     parameters['NANC'] = NANC
 
     NCEU = float(round(10 ** random.uniform(3.0, 5.0)))
-    para_out.extend([math.log10(NCEU)])
     parameters['NCEU'] = NCEU
 
     NCHB = float(round(10 ** random.uniform(3.0, 5.0)))
-    para_out.extend([math.log10(NCHB)])
     parameters['NCHB'] = NCHB
-
-    # Ancestral population size of Eurasians
-    # NEU_AS=float(randint(1500,5000))
-    # para_out.extend([NEU_AS])
-    # parameters['NEU_AS']=NEU_AS
 
     # Population size of WAJ
     NWA = float(round(10 ** random.uniform(3.0, 6.7)))
-    para_out.extend([math.log10(NWA)])
     parameters['NWA'] = NWA
 
     # Population size of EAJ
     NEA = float(round(10 ** random.uniform(4.0, 6.7)))
-    para_out.extend([math.log10(NEA)])
     parameters['NEA'] = NEA
 
     # Population size of Jews
     NJ = float(round(10 ** random.uniform(3.0, 6.0)))
-    para_out.extend([math.log10(NJ)])
     parameters['NJ'] = NJ
 
     # Population size of Middle Easterns
     NM = float(round(10 ** random.uniform(3.0, 6.0)))
-    para_out.extend([math.log10(NM)])
     parameters['NM'] = NM
 
     # migration rate from Europe to EAJ
     mE_High = 1.0
     mE_Low = 0.0
     mE = random.uniform(mE_Low,mE_High)
-    para_out.extend([mE])
     parameters['mE'] = mE
 
     # migration rate from Europe to WAJ
     mW_High = 1.0
     mW_Low = 0.0
     mW = random.uniform(mW_Low, mW_High)
-    para_out.extend([mW])
     parameters['mW'] = mW
 
     # Time of the instantaneous growth in Africa, before the split between Africans and non Africans
@@ -93,87 +74,105 @@ def param_sim_asc_rand():
     Tgrowth_High = 4100
     Tgrowth_Af = float(randint(Tgrowth_Low, Tgrowth_High))
     parameters['Tgrowth_Af'] = Tgrowth_Af
-    para_out.extend([Tgrowth_Af])
 
     # Time of split between YRI and CEU/CHB
     Taf_High = 4100  # 102,500 years using 25 years per generation
     Taf_Low = 1600  # 40,000 years using 25 years per generation.
     Taf = float(randint(Taf_Low, Taf_High))
-    para_out.extend([Taf])
     parameters['Taf'] = Taf
 
     # Time of split between Europe and Middle East
     TEM_High = 1200
     TEM_Low = 400
     TEM = float(randint(TEM_Low, TEM_High))
-    para_out.extend([TEM])
     parameters['TEM'] = TEM
 
     # Time of split between CEU and CHB
     Teu_as_High = int(Taf) - 1
     Teu_as_Low = int(TEM) + 1
     Teu_as = float(randint(Teu_as_Low, Teu_as_High))
-    para_out.extend([Teu_as])
     parameters['Teu_as'] = Teu_as
 
     # Time of split between Jews and AJ
     TA_High = 36
     TA_Low = 20
     TA = float(randint(TA_Low, TA_High))
-    para_out.extend([TA])
     parameters['TA'] = TA
 
     # Time of split between Jews and Middle East
     TMJ_High = int(TEM) - 1
     TMJ_Low = int(TA) + 1
     TMJ = float(randint(TMJ_Low, TMJ_High))
-    para_out.extend([TMJ])
     parameters['TMJ'] = TMJ
 
     # Time of split between Eastern and Western AJ
     TAEW_High = (TA) - 2
     TAEW_Low = 3
     TAEW = float(randint(TAEW_Low, TAEW_High))
-    para_out.extend([TAEW])
     parameters['TAEW'] = TAEW
 
     # Time of migration to EAJ
     TmE_High = int(TAEW) - 1
     TmE_Low = 1
     TmE = float(randint(TmE_Low, TmE_High))
-    para_out.extend([TmE])
     parameters['TmE'] = TmE
 
     # Time of migration to WAJ
     TmW_High = int(TAEW) - 1
     TmW_Low = 1
     TmW = float(randint(TmW_Low, TmW_High))
-    para_out.extend([TmW])
     parameters['TmW'] = TmW
 
     # Growth rate in WAJ
-    rWA_High = -(1/TAEW) * math.log(10/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rWA_High = -(1/TAEW) * math.log(100/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
     rWA_Low = 0.0
     rWA = random.uniform(rWA_Low,rWA_High)
-    para_out.extend([rWA])
     parameters['rWA'] = rWA
 
     # Growth rate in EAJ
-    rEA_High = -(1/TAEW) * math.log(10/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rEA_High = -(1/TAEW) * math.log(100/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
     rEA_Low = 0.0
     rEA = random.uniform(rEA_Low,rEA_High)
-    para_out.extend([rEA])
     parameters['rEA'] = rEA
 
     # Growth rate in Jews and Middle East
     if NM < NJ:
-        rMJ_High = -(1/TMJ) * math.log(10/NM)
+        rMJ_High = -(1/TMJ) * math.log(100/NM)
     else:
-        rMJ_High = -(1 / TMJ) * math.log(10 / NJ)
+        rMJ_High = -(1 / TMJ) * math.log(100 / NJ)
     rMJ_Low = 0.0
     rMJ = random.uniform(rMJ_Low, rMJ_High)
-    para_out.extend([rMJ])
     parameters['rMJ'] = rMJ
+
+
+    para_out.extend([asc_nb_af])
+    para_out.extend([asc_nb_eu])
+    para_out.extend([asc_nb_as])
+    para_out.extend([daf])
+    para_out.extend([math.log10(NAF)])
+    para_out.extend([math.log10(NANC)])
+    para_out.extend([math.log10(NCEU)])
+    para_out.extend([math.log10(NCHB)])
+    para_out.extend([math.log10(NWA)])
+    para_out.extend([math.log10(NEA)])
+    para_out.extend([math.log10(NJ)])
+    para_out.extend([math.log10(NM)])
+    para_out.extend([rWA])
+    para_out.extend([rEA])
+    para_out.extend([rMJ])
+    para_out.extend([mE])
+    para_out.extend([mW])
+    para_out.extend([Tgrowth_Af])
+    para_out.extend([Taf])
+    para_out.extend([TEM])
+    para_out.extend([Teu_as])
+    para_out.extend([TA])
+    para_out.extend([TMJ])
+    para_out.extend([TAEW])
+    para_out.extend([TmE])
+    para_out.extend([TmW])
+
+
 
     case, modified_Tgrowth_Af = choose_case(parameters)
 
@@ -199,18 +198,12 @@ def param_sim_asc_min():
     asc_nb_eu=low
     asc_nb_as=low
 
-    para_out.extend([asc_nb_af])
-    para_out.extend([asc_nb_eu])
-    para_out.extend([asc_nb_as])
-
     daf=random.uniform(0.05,0.10)
-    para_out.extend([daf])
 
 
     ####Demographic model
     #population size in Africa
     NAF=float(round(10**3.7))
-    para_out.extend([math.log10(NAF)])
     parameters['NAF']=NAF
     #print NAF
 
@@ -219,49 +212,40 @@ def param_sim_asc_min():
     #population growth
     Nrat_Low=-1.0
     NANC=float(round(10**Nrat_Low*NAF))
-    para_out.extend([math.log10(NANC)])
     parameters['NANC']=NANC
 
     NCEU=float(round(10**3.0))
-    para_out.extend([math.log10(NCEU)])
     parameters['NCEU']=NCEU
 
     NCHB=float(round(10**3.0))
-    para_out.extend([math.log10(NCHB)])
     parameters['NCHB']=NCHB
 
     # Population size of WAJ
     NWA = float(round(10 **3.0))
-    para_out.extend([math.log10(NWA)])
     parameters['NWA'] = NWA
 
     # Population size of EAJ
     NEA = float(round(10 **4.0))
-    para_out.extend([math.log10(NEA)])
     parameters['NEA'] = NEA
 
     #Population size of Jews
     NJ=float(round(10**3.0))
-    para_out.extend([math.log10(NJ)])
     parameters['NJ']=NJ
 
     #Population size of Middle Easterns
     NM=float(round(10**3.0))
-    para_out.extend([math.log10(NM)])
     parameters['NM']=NM
 
     # migration rate from Europe to EAJ
     mE_High = 1
     mE_Low = 0
     mE = random.uniform(mE_Low, mE_High)
-    para_out.extend([mE])
     parameters['mE'] = mE
 
     # migration rate from Europe to WAJ
     mW_High = 1
     mW_Low = 0
     mW = random.uniform(mW_Low, mW_High)
-    para_out.extend([mW])
     parameters['mW'] = mW
 
     #Time of the instantaneous growth in Africa, before the split between Africans and non Africans
@@ -269,81 +253,98 @@ def param_sim_asc_min():
     Tgrowth_High=4100
     Tgrowth_Af=float(randint(Tgrowth_Low,Tgrowth_High))
     parameters['Tgrowth_Af']=Tgrowth_Af
-    para_out.extend([Tgrowth_Af])
 
     #Time of split between YRI and CEU/CHB
     Taf_Low=1600				  #40,000 years using 25 years per generation.
     Taf=float(Taf_Low)
-    para_out.extend([Taf])
     parameters['Taf']=Taf
 
     #Time of split between Europe and Middle East
     TEM_Low=400
     TEM=float(TEM_Low)
-    para_out.extend([TEM])
     parameters['TEM']=TEM
 
     #Time of split between CEU and CHB
     Teu_as_Low=int(TEM)+1
     Teu_as=float(Teu_as_Low)
-    para_out.extend([Teu_as])
     parameters['Teu_as']=Teu_as
 
     #Time of split between Jews and AJ
     TA_Low=20
     TA=float(TA_Low)
-    para_out.extend([TA])
     parameters['TA']=TA
 
     #Time of split between Jews and Middle East
     TMJ_Low=int(TA)+1
     TMJ=float(TMJ_Low)
-    para_out.extend([TMJ])
     parameters['TMJ']=TMJ
 
     # Time of split between Eastern and Western AJ
     TAEW_Low = 3
     TAEW = float(TAEW_Low)
-    para_out.extend([TAEW])
     parameters['TAEW'] = TAEW
 
     # Time of migration to EAJ
     TmE_High = int(TAEW) - 1
     TmE_Low = 1
     TmE = float(randint(TmE_Low, TmE_High))
-    para_out.extend([TmE])
     parameters['TmE'] = TmE
 
     # Time of migration to WAJ
     TmW_High = int(TAEW) - 1
     TmW_Low = 1
     TmW = float(randint(TmW_Low, TmW_High))
-    para_out.extend([TmW])
     parameters['TmW'] = TmW
 
     # Growth rate in WAJ
-    rWA_High = -(1/TAEW) * math.log(10/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rWA_High = -(1/TAEW) * math.log(100/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
     rWA_Low = 0.0
     rWA = random.uniform(rWA_Low,rWA_High)
-    para_out.extend([rWA])
     parameters['rWA'] = rWA
 
     # Growth rate in EAJ
-    rEA_High = -(1/TAEW) * math.log(10/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rEA_High = -(1/TAEW) * math.log(100/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
     rEA_Low = 0.0
     rEA = random.uniform(rEA_Low,rEA_High)
-    para_out.extend([rEA])
     parameters['rEA'] = rEA
 
     # Growth rate in Jews and Middle East
     if NM < NJ:
-        rMJ_High = -(1/TMJ) * math.log(10/NM)
+        rMJ_High = -(1/TMJ) * math.log(100/NM)
     else:
-        rMJ_High = -(1 / TMJ) * math.log(10 / NJ)
+        rMJ_High = -(1 / TMJ) * math.log(100 / NJ)
     rMJ_Low = 0.0
     rMJ = random.uniform(rMJ_Low, rMJ_High)
-    para_out.extend([rMJ])
     parameters['rMJ'] = rMJ
+
+
+    para_out.extend([asc_nb_af])
+    para_out.extend([asc_nb_eu])
+    para_out.extend([asc_nb_as])
+    para_out.extend([daf])
+    para_out.extend([math.log10(NAF)])
+    para_out.extend([math.log10(NANC)])
+    para_out.extend([math.log10(NCEU)])
+    para_out.extend([math.log10(NCHB)])
+    para_out.extend([math.log10(NWA)])
+    para_out.extend([math.log10(NEA)])
+    para_out.extend([math.log10(NJ)])
+    para_out.extend([math.log10(NM)])
+    para_out.extend([rWA])
+    para_out.extend([rEA])
+    para_out.extend([rMJ])
+    para_out.extend([mE])
+    para_out.extend([mW])
+    para_out.extend([Tgrowth_Af])
+    para_out.extend([Taf])
+    para_out.extend([TEM])
+    para_out.extend([Teu_as])
+    para_out.extend([TA])
+    para_out.extend([TMJ])
+    para_out.extend([TAEW])
+    para_out.extend([TmE])
+    para_out.extend([TmW])
+
 
     case, modified_Tgrowth_Af = choose_case(parameters)
 
@@ -371,18 +372,13 @@ def param_sim_asc_max():
     asc_nb_eu=high
     asc_nb_as=high
 
-    para_out.extend([asc_nb_af])
-    para_out.extend([asc_nb_eu])
-    para_out.extend([asc_nb_as])
 
     daf=random.uniform(0.05,0.10)
-    para_out.extend([daf])
 
 
     ####Demographic model
     #population size in Africa
     NAF=float(round(10**5))
-    para_out.extend([math.log10(NAF)])
     parameters['NAF']=NAF
 
     #Ancestral population size, before population growth in AF
@@ -390,49 +386,40 @@ def param_sim_asc_max():
     #population growth
     Nrat_High=0.0   #Allow only growth for now
     NANC=float(round(10**Nrat_High*NAF))
-    para_out.extend([math.log10(NANC)])
     parameters['NANC']=NANC
 
     NCEU=float(round(10**5.0))
-    para_out.extend([math.log10(NCEU)])
     parameters['NCEU']=NCEU
 
     NCHB=float(round(10**5.0))
-    para_out.extend([math.log10(NCHB)])
     parameters['NCHB']=NCHB
 
     # Population size of WAJ
     NWA = float(round(10 **6.7))
-    para_out.extend([math.log10(NWA)])
     parameters['NWA'] = NWA
 
     # Population size of EAJ
     NEA = float(round(10 **6.7))
-    para_out.extend([math.log10(NEA)])
     parameters['NEA'] = NEA
 
     #Population size of Jews
     NJ=float(round(10**6.0))
-    para_out.extend([math.log10(NJ)])
     parameters['NJ']=NJ
 
     #Population size of Middle Easterns
     NM=float(round(10**6.0))
-    para_out.extend([math.log10(NM)])
     parameters['NM']=NM
 
     # migration rate from Europe to EAJ
     mE_High = 1.0
     mE_Low = 0.0
     mE = random.uniform(mE_Low,mE_High)
-    para_out.extend([mE])
     parameters['mE'] = mE
 
     # migration rate from Europe to WAJ
     mW_High = 1.0
     mW_Low = 0.0
     mW = random.uniform(mW_Low, mW_High)
-    para_out.extend([mW])
     parameters['mW'] = mW
 
     #Time of the instantaneous growth in Africa, before the split between Africans and non Africans
@@ -440,81 +427,97 @@ def param_sim_asc_max():
     Tgrowth_High=4100
     Tgrowth_Af=float(randint(Tgrowth_Low,Tgrowth_High))
     parameters['Tgrowth_Af']=Tgrowth_Af
-    para_out.extend([Tgrowth_Af])
 
     #Time of split between YRI and CEU/CHB
     Taf_High=4100				  #102,500 years using 25 years per generation
     Taf=float(Taf_High)
-    para_out.extend([Taf])
     parameters['Taf']=Taf
 
     #Time of split between Europe and Middle East
     TEM_High=1200
     TEM=float(TEM_High)
-    para_out.extend([TEM])
     parameters['TEM']=TEM
 
     #Time of split between CEU and CHB
     Teu_as_High=int(Taf)-1
     Teu_as=float(Teu_as_High)
-    para_out.extend([Teu_as])
     parameters['Teu_as']=Teu_as
 
     #Time of split between Jews and AJ
     TA_High=36
     TA=float(TA_High)
-    para_out.extend([TA])
     parameters['TA']=TA
 
     #Time of split between Jews and Middle East
     TMJ_High=int(TEM)-1
     TMJ=float(TMJ_High)
-    para_out.extend([TMJ])
     parameters['TMJ']=TMJ
 
     # Time of split between Eastern and Western AJ
     TAEW_High = (TA) - 2
     TAEW = float(TAEW_High)
-    para_out.extend([TAEW])
     parameters['TAEW'] = TAEW
 
     # Time of migration to EAJ
     TmE_High = int(TAEW) - 1
     TmE_Low = 1
     TmE = float(randint(TmE_Low, TmE_High))
-    para_out.extend([TmE])
     parameters['TmE'] = TmE
 
     # Time of migration to WAJ
     TmW_High = int(TAEW) - 1
     TmW_Low = 1
     TmW = float(randint(TmW_Low, TmW_High))
-    para_out.extend([TmW])
     parameters['TmW'] = TmW
 
     # Growth rate in WAJ
-    rWA_High = -(1/TAEW) * math.log(10/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rWA_High = -(1/TAEW) * math.log(100/NWA) # set max growth rate so the minimum number of individuals at East West split is 10
     rWA_Low = 0.0
     rWA = random.uniform(rWA_Low,rWA_High)
-    para_out.extend([rWA])
     parameters['rWA'] = rWA
 
     # Growth rate in EAJ
-    rEA_High = -(1/TAEW) * math.log(10/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
+    rEA_High = -(1/TAEW) * math.log(100/NEA) # set max growth rate so the minimum number of individuals at East West split is 10
     rEA_Low = 0.0
     rEA = random.uniform(rEA_Low,rEA_High)
-    para_out.extend([rEA])
     parameters['rEA'] = rEA
 
     # Growth rate in Jews and Middle East
     if NM < NJ:
-        rMJ_High = -(1/TMJ) * math.log(10/NM)
+        rMJ_High = -(1/TMJ) * math.log(100/NM)
     else:
-        rMJ_High = -(1 / TMJ) * math.log(10 / NJ)
+        rMJ_High = -(1 / TMJ) * math.log(100 / NJ)
     rMJ_Low = 0.0
     rMJ = random.uniform(rMJ_Low, rMJ_High)
-    para_out.extend([rMJ])
     parameters['rMJ'] = rMJ
+
+
+    para_out.extend([asc_nb_af])
+    para_out.extend([asc_nb_eu])
+    para_out.extend([asc_nb_as])
+    para_out.extend([daf])
+    para_out.extend([math.log10(NAF)])
+    para_out.extend([math.log10(NANC)])
+    para_out.extend([math.log10(NCEU)])
+    para_out.extend([math.log10(NCHB)])
+    para_out.extend([math.log10(NWA)])
+    para_out.extend([math.log10(NEA)])
+    para_out.extend([math.log10(NJ)])
+    para_out.extend([math.log10(NM)])
+    para_out.extend([rWA])
+    para_out.extend([rEA])
+    para_out.extend([rMJ])
+    para_out.extend([mE])
+    para_out.extend([mW])
+    para_out.extend([Tgrowth_Af])
+    para_out.extend([Taf])
+    para_out.extend([TEM])
+    para_out.extend([Teu_as])
+    para_out.extend([TA])
+    para_out.extend([TMJ])
+    para_out.extend([TAEW])
+    para_out.extend([TmE])
+    para_out.extend([TmW])
 
 
     case, modified_Tgrowth_Af = choose_case(parameters)
