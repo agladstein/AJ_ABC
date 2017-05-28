@@ -52,7 +52,7 @@ def param_sim_asc_rand():
     if (NWA < NEA):
         NAg_High = math.log10(NWA)
     else:
-        NAg_High = NEA
+        NAg_High = math.log10(NEA)
     NAg_Low = 2.0
     NAg = float(round(10 ** random.uniform(NAg_Low, NAg_High)))
     parameters['NAg'] = NAg
@@ -109,7 +109,7 @@ def param_sim_asc_rand():
 
     # Time of split between Eastern and Western AJ
     TAEW_High = (TA) - 2
-    TAEW_Low = 1
+    TAEW_Low = 2
     TAEW = float(randint(TAEW_Low, TAEW_High))
     parameters['TAEW'] = TAEW
 
