@@ -7,7 +7,7 @@ from bitarray import bitarray
 import itertools
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from ascertainment.pseudo_array import pseudo_array_bits
-from simulation import def_params_M2, run_sim_M2
+from simulation import def_params_M2_inst, run_sim_M2_inst
 from summary_statistics import afs_stats_bitarray
 
 # from memory_profiler import profile
@@ -33,11 +33,11 @@ def main(arguments):
     if seed_option > int(0):
         random.seed(seed_option)
     if arguments[5] == 'prior':
-        param_model = def_params_M2.param_sim_asc_rand()
+        param_model = def_params_M2_inst.param_sim_asc_rand()
     if arguments[5] == 'min':
-        param_model = def_params_M2.param_sim_asc_min()
+        param_model = def_params_M2_inst.param_sim_asc_min()
     if arguments[5] == 'max':
-        param_model = def_params_M2.param_sim_asc_max()
+        param_model = def_params_M2_inst.param_sim_asc_max()
     ###parameters is a dictionary with the parameter values
     parameters = param_model[0]
     ###case is an integer that indicates which topology/model is going to be simulated
@@ -151,7 +151,7 @@ def main(arguments):
 
         #####Run simulations
         print 'running simulation'
-        sim = run_sim_M2.run_sim(parameters, case, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
+        sim = run_sim_M2_inst.run_sim(parameters, case, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
         print 'finished simulation'
 
         ##number of segregating sites
@@ -589,7 +589,7 @@ def main(arguments):
     fileoutparam=open(param_file,'w')
 
     ##write parameter values
-    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NJ\tLog10_NM\trWA\trEA\trMJ\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\n'
+    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\tTAg\n'
     fileoutparam.write(head_param)
 
     for z in range(len(para_out)):

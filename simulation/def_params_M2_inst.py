@@ -50,7 +50,7 @@ def param_sim_asc_rand():
 
     # Population size of AJ before growth
     if (NWA < NEA):
-        NAg_High = NWA
+        NAg_High = math.log10(NWA)
     else:
         NAg_High = NEA
     NAg_Low = 2.0
@@ -204,6 +204,15 @@ def param_sim_asc_min():
     NEA = float(round(10 **4.0))
     parameters['NEA'] = NEA
 
+    # Population size of AJ before growth
+    if (NWA < NEA):
+        NAg_High = math.log10(NWA)
+    else:
+        NAg_High = NEA
+    NAg_Low = 2.0
+    NAg = float(round(10 ** random.uniform(NAg_Low, NAg_High)))
+    parameters['NAg'] = NAg
+
     #Population size of Jews
     NJ=float(round(10**3.0))
     parameters['NJ']=NJ
@@ -346,6 +355,15 @@ def param_sim_asc_max():
     # Population size of EAJ
     NEA = float(round(10 **6.7))
     parameters['NEA'] = NEA
+
+    # Population size of AJ before growth
+    if (NWA < NEA):
+        NAg_High = math.log10(NWA)
+    else:
+        NAg_High = NEA
+    NAg_Low = 2.0
+    NAg = float(round(10 ** random.uniform(NAg_Low, NAg_High)))
+    parameters['NAg'] = NAg
 
     #Population size of Jews
     NJ=float(round(10**6.0))
