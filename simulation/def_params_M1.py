@@ -104,16 +104,16 @@ def param_sim_asc_rand():
     parameters['Tm'] = Tm
 
     # Growth rate in AJ
-    rA_High = -(1/TA) * math.log(10/NA) # set max growth rate so the minimum number of individuals at founder event is 10
+    rA_High = -(1/TA) * math.log(100/NA) # set max growth rate so the minimum number of individuals at founder event is 10
     rA_Low = 0.0
     rA = random.uniform(rA_Low, rA_High)
     parameters['rA'] = rA
 
     # Growth rate in Jews and Middle East
     if NM < NJ:
-        rMJ_High = -(1/TEM) * math.log(10/NM)
+        rMJ_High = -(1/TEM) * math.log(100/NM)
     else:
-        rMJ_High = -(1 / TEM) * math.log(10 / NJ)
+        rMJ_High = -(1 / TEM) * math.log(100 / NJ)
     rMJ_Low = 0.0
     rMJ = random.uniform(rMJ_Low, rMJ_High)
     parameters['rMJ'] = rMJ
@@ -246,16 +246,16 @@ def param_sim_asc_min():
     parameters['Tm']=Tm
 
     # Growth rate in AJ
-    rA_High = -(1/TA) * math.log(10/NA) # set max growth rate so the minimum number of individuals at founder event is 10
+    rA_High = -(1/TA) * math.log(100/NA) # set max growth rate so the minimum number of individuals at founder event is 10
     rA_Low = 0.0
     rA = random.uniform(rA_Low, rA_High)
     parameters['rA'] = rA
 
     # Growth rate in Jews and Middle East
     if NM < NJ:
-        rMJ_High = -(1/TMJ) * math.log(10/NM)
+        rMJ_High = -(1/TMJ) * math.log(100/NM)
     else:
-        rMJ_High = -(1 / TMJ) * math.log(10 / NJ)
+        rMJ_High = -(1 / TMJ) * math.log(100 / NJ)
     rMJ_Low = 0.0
     rMJ = random.uniform(rMJ_Low, rMJ_High)
     parameters['rMJ'] = rMJ
