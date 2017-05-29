@@ -111,17 +111,16 @@ Contab will run commands at timed intervals. See http://crontab-generator.org/
 You should use two seperate crontab files.    
 Ocelote:
 ```
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 1 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 2 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 1000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 3 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 2 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote2.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 1 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote1.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 3 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote3.log 2>&1
 ```
 
 ICE
 ```
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 1 cluster >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ice.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 2 smp >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_smp.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 100000 500 /rsgrps/mfh4/Ariella/macsSwig_AJmodels 3 htc >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_htc.log 2>&1
-
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 2 cluster >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_clu.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 1 smp >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_smp.log 2>&1
+*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 3 htc >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_htc.log 2>&1
 ```
 
 Use, your own absolute paths.  
@@ -250,6 +249,14 @@ The last couple of lines will tell you the overall state. Note that jobs can be 
 reason for this is that the workflow is configured to keep at most 1,000 idle jobs in the queue, in order to not overwhelm the
 scheduler.
 
+To see status of all jobs run `~/bin/workflow-history`  
+
+To see list of currently running jobs run `cd ; pegasus-status | grep local-scratch`  
+
+To get the run time of recently completed jobs run `condor_history -w agladstein`
+
+To get the run time of currently running jobs run `condor_q agladstein`
+
 
 ### Statistics / Debugging
 
@@ -302,6 +309,20 @@ MAILTO="agladstein@email.arizona.edu"
 0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 2
 0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 3
 ```
+#### Google drive
+We are using the program `drive` from  
+https://github.com/odeke-em/drive
+
+There is an executable version in my bin on HPC, Atmosphere, and OSG.
+Initialize drive by mounting your Google Drive directory on your local file system.  Must be perfomed the directory you are backing up (does not apply to subdirectories).  
+```
+drive init
+```
+
+To back up all of OSG local-scratch     
+```
+tar cf - /local-scratch/agladstein | drive push -exclude-ops "delete,update" -no-prompt -piped backup_OSG_local-scratch/backup_OSG_local-scratch_$(date +"%m-%d-%Y-"%T"").tar.gz
+```
 
 ### Combining HPC output files
 This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
@@ -312,7 +333,7 @@ This is will combine the files for one PBS_ID bucket (each bucket should contain
 It uses multiprocessing, and will automatically detect the number of cores available to use.  
 The arguments are:  
 * path = the path to the sim_values_AJ_M and results_sims_AJ_M directories. On my atmosphere volume this is currently
-`/vol_c/results_macsSwig_AJmodels_mfloat` on HPC, this is `/rsgrps/mfh4/Ariella/macsSwig_AJmodels_mfloat`
+`/vol_c/results_macsSwig_AJmodels_rscale4Trel` on HPC, this is `/rsgrps/mfh4/Ariella/results_macsSwig_AJmodels_rscale4Trel`
 * out_path = the path to write the ABCtoolbox input file to
 * model = `1`, `2`, or `3`
 * bucket_id = The PBS_ID that was used to make the bucket
@@ -322,17 +343,17 @@ Sim parameters  statistics
 For now, only use the `same` option. This will make a ABCtoolbox input file with exactly the same parameters and statsitics as in the header file.  
 
 e.g.  
-`python /vol_c/src/macsswig_simsaj/post_process.py /vol_c/results_macsSwig_AJmodels_mfloat /vol_c/results_macsSwig_AJmodels_mfloat/intermediate 1 691009 header_M1_222.txt same`
+`python /vol_c/src/macsswig_simsaj/post_process.py /vol_c/results_macsSwig_AJmodels_rscale4Trel /vol_c/results_macsSwig_AJmodels_rscale4Trel/intermediate 1 691009 header_M1_222.txt same`
 
 To run on all buckets use the script `run_post_process.sh`  
 This will run `post_process.py` on all the buckets in the path.  
 e.g.
-`/vol_c/src/macsswig_simsaj/run_post_process.sh /vol_c/results_macsSwig_AJmodels_mfloat /vol_c/results_macsSwig_AJmodels_mfloat/intermediate`
+`/vol_c/src/macsswig_simsaj/run_post_process.sh /vol_c/results_macsSwig_AJmodels_rscale4Trel /vol_c/results_macsSwig_AJmodels_rscale4Trel/intermediate`
 
 To combine all post processed bucket files for ABCtoolbox input use `combine_HPC_final.sh`,  
 Takes one arguement, `output_path`  
 e.g.  
-`combine_HPC_final.sh /vol_c/results_macsSwig_AJmodels_mfloat/intermediate`
+`combine_HPC_final.sh /vol_c/results_macsSwig_AJmodels_rscale4Trel/intermediate`
 _____________________________
 
 # Using ABC with ABCestimator
