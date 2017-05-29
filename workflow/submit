@@ -24,7 +24,7 @@ module load stashcp
 
 TOP_DIR=`pwd`
 
-export RUN_ID=macsswig_simsaj_rscale4Trel100_`date +'%s'`
+export RUN_ID=macsswig_simsaj_instant_`date +'%s'`
 
 export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
 mkdir -p $RUN_DIR
