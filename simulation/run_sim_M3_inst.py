@@ -1,7 +1,8 @@
 import macsSwig
+import random
 
 
-def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_neu,nJ,nM,nEA,nWA,seed_option):
+def run_sim(parameters, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option):
 
     mu = 2.5e-8
     rho = 1e-8
@@ -57,10 +58,25 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     scaled_TmW = float(TmW / (4 * NANC))
     scaled_TAg = float(TAg / (4 * NANC))
 
+    print "scaled_TmE:", scaled_TmE
+    print "scaled_TmW:", scaled_TmW
+    print "scaled_TAg:", scaled_TAg
+    adjust = random.uniform(0.0000010, 0.0000099)
     if scaled_TmE == scaled_TmW:
-        scaled_TmE = scaled_TmE + 0.000001
+        scaled_TmE = float(scaled_TmE + adjust)
+        print "new scaled_TmE:", scaled_TmE
+    adjust = random.uniform(0.0000010, 0.0000099)
     if scaled_TmE == scaled_TAg or scaled_TmW == scaled_TAg:
-        scaled_TAg = scaled_TAg + 0.000001
+        scaled_TAg = float(scaled_TAg + adjust)
+        print "new scaled_TAg:", scaled_TAg
+
+    adjust = random.uniform(0.00000000010, 0.00000000099)
+    scaled_TmE2 = float(scaled_TmE + adjust)
+    adjust = random.uniform(0.00000000010, 0.00000000099)
+    scaled_TmW2 = float(scaled_TmW + adjust)
+    adjust = random.uniform(0.00000000010, 0.00000000099)
+    scaled_TAg2 = float(scaled_TAg + adjust)
+
 
     if seed_option > int(0):
         macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-s', str(seed_option), '-r',
@@ -79,10 +95,10 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
 
     ej = [[str(scaled_TAEW), '6', '7'], [str(scaled_TA), '7', '4'], [str(scaled_TMJ), '5', '4'],
           [str(scaled_TEM), '4', '3'], [str(scaled_Teu_as), '3', '2'], [str(scaled_Taf), '2', '1']]
-    em = [[str(scaled_TmW), '7', '3', str(scaled_mW)], [str(scaled_TmW + 0.000001), '7', '3', '0'],
-          [str(scaled_TmE), '6', '3', str(scaled_mE)], [str(scaled_TmE + 0.000001), '6', '3', '0']]
+    em = [[str(scaled_TmW), '7', '3', str(scaled_mW)], [str(scaled_TmW2), '7', '3', '0'],
+          [str(scaled_TmE), '6', '3', str(scaled_mE)], [str(scaled_TmE2), '6', '3', '0']]
     en = [[str(scaled_Tgrowth_Af), '1', str(scaled_NANC)], [str(scaled_TAg), '7', str(scaled_NAg)],
-          [str(scaled_TAg + 0.000001), '6', str(scaled_NAg)]]
+          [str(scaled_TAg2), '6', str(scaled_NAg)]]
     vars = {"-ej": ej, "-em": em, "-en": en}
 
     # pull out all the time sensitive vars '-e*' and order them
@@ -103,15 +119,14 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                     if into[1] != '':
                         seasons.append(into)
 
-        # sorts by time
-        # extend the data to mac_args in the correct order.
-        seasons = sorted(seasons, key=lambda x: float(x[1]))  # sorts the vars in order of time
-        for i in range(len(seasons)):
-            seasons[i][1] = str((seasons[i][1]))
-            macs_args.extend(seasons[i])
+    # sorts by time
+    # extend the data to mac_args in the correct order.
+    seasons = sorted(seasons, key=lambda x: float(x[1]))  # sorts the vars in order of time
+    for i in range(len(seasons)):
+        seasons[i][1] = str((seasons[i][1]))
+        macs_args.extend(seasons[i])
 
-
+    print('final macs_args:')
     print macs_args
-    sim=macsSwig.swigMain(len(macs_args),macs_args)
-
+    sim = macsSwig.swigMain(len(macs_args), macs_args)
     return sim

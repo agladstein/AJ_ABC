@@ -6,7 +6,7 @@ from bitarray import bitarray
 import itertools
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from ascertainment.pseudo_array import pseudo_array_bits
-from simulation import def_params_M3, run_sim_M3
+from simulation import def_params_M3_inst, run_sim_M3_inst
 from summary_statistics import afs_stats_bitarray
 
 # from memory_profiler import profile
@@ -32,11 +32,11 @@ def main(arguments):
     if seed_option > int(0):
         random.seed(seed_option)
     if arguments[5] == 'prior':
-        param_model = def_params_M3.param_sim_asc_rand()
+        param_model = def_params_M3_inst.param_sim_asc_rand()
     if arguments[5] == 'min':
-        param_model = def_params_M3.param_sim_asc_min()
+        param_model = def_params_M3_inst.param_sim_asc_min()
     if arguments[5] == 'max':
-        param_model = def_params_M3.param_sim_asc_max()
+        param_model = def_params_M3_inst.param_sim_asc_max()
     ###parameters is a dictionary with the parameter values
     parameters = param_model[0]
     ###case is an integer that indicates which topology/model is going to be simulated
@@ -150,7 +150,7 @@ def main(arguments):
 
         #####Run simulations
         print 'running simulation'
-        sim = run_sim_M3.run_sim(parameters, case, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
+        sim = run_sim_M3_inst.run_sim(parameters, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
         print 'finished simulation'
 
         ##number of segregating sites
