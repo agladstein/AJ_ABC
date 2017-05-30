@@ -1,5 +1,6 @@
 import macsSwig
 
+
 def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_neu,nJ,nM,nEA,nWA,seed_option):
 
     mu = 2.5e-8
@@ -11,12 +12,10 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     NCHB = float(parameters['NCHB'])
     NWA = float(parameters['NWA'])
     NEA = float(parameters['NEA'])
+    NAg = float(parameters['NAg'])
+
     NJ = float(parameters['NJ'])
     NM = float(parameters['NM'])
-
-    rWA = float(parameters['rWA'])
-    rEA = float(parameters['rEA'])
-    rMJ = float(parameters['rMJ'])
 
     mE = float(parameters['mE'])
     mW = float(parameters['mW'])
@@ -30,6 +29,7 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     TMJ = float(parameters['TMJ'])
     TmE = float(parameters['TmE'])
     TmW = float(parameters['TmW'])
+    TAg = float(parameters['TAg'])
 
     macs_theta = float(mu * 4 * NANC)
     macs_rho = float(rho * 4 * NANC)
@@ -39,12 +39,9 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     scaled_NCHB = float(NCHB / NANC)
     scaled_NWA = float(NWA / NANC)
     scaled_NEA = float(NEA / NANC)
+    scaled_NAg = float(NAg / NANC)
     scaled_NJ = float(NJ / NANC)
     scaled_NM = float(NM / NANC)
-
-    scaled_rWA = float(rWA * 4 * NANC)
-    scaled_rEA = float(rEA * 4 * NANC)
-    scaled_rMJ = float(rMJ * 4 * NANC)
 
     scaled_mE = float(4 * mE * NANC)
     scaled_mW = float(4 * mW * NANC)
@@ -58,384 +55,61 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     scaled_TMJ = float(TMJ / (4 * NANC))
     scaled_TmE = float(TmE / (4 * NANC))
     scaled_TmW = float(TmW / (4 * NANC))
+    scaled_TAg = float(TAg / (4 * NANC))
+
+    if scaled_TmE == scaled_TmW:
+        scaled_TmE = scaled_TmE + 0.000001
+    if scaled_TmE == scaled_TAg or scaled_TmW == scaled_TAg:
+        scaled_TAg = scaled_TAg + 0.000001
 
     if seed_option > int(0):
-        if case == 1:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1', '-en',
-                         str(scaled_Tgrowth_Af), '1', str(scaled_NANC)]
-
-        if case == 2:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1', '-en',
-                         str(scaled_Tgrowth_Af), '1', str(scaled_NANC)]
-
-        if case == 3:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5','-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n','1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg','0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),'4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-en', str(scaled_Tgrowth_Af), '1',str(scaled_NANC), '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 4:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5','-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-en', str(scaled_Tgrowth_Af), '1',
-                         str(scaled_NANC), '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 5:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),'4', '3', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Teu_as), '3','2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 6:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Teu_as), '3',
-                         '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 7:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 8:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 9:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-ej', str(scaled_TA), '7', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC),
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 10:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0','-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-ej', str(scaled_TA), '7', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC),
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 11:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TA), '7', '4',
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 12:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TA), '7', '4',
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 13:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7','4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 14:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC),'-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7','4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 15:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 16:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 17:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-en', str(scaled_Tgrowth_Af),
-                         '1', str(scaled_NANC), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7',
-                         '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 18:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-en', str(scaled_Tgrowth_Af),
-                         '1', str(scaled_NANC), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7',
-                         '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
+        macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-s', str(seed_option), '-r',
+                 str(macs_rho), '-h', '1e5', '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
+                 str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
+                 '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
+                 str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
+                 str(scaled_NWA)]
     else:
-        if case == 1:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1', '-en',
-                         str(scaled_Tgrowth_Af), '1', str(scaled_NANC)]
+        macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r',
+                 str(macs_rho), '-h', '1e5', '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
+                 str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
+                 '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
+                 str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
+                 str(scaled_NWA)]
 
-        if case == 2:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1', '-en',
-                         str(scaled_Tgrowth_Af), '1', str(scaled_NANC)]
+    ej = [[str(scaled_TAEW), '6', '7'], [str(scaled_TA), '7', '4'], [str(scaled_TMJ), '5', '4'],
+          [str(scaled_TEM), '4', '3'], [str(scaled_Teu_as), '3', '2'], [str(scaled_Taf), '2', '1']]
+    em = [[str(scaled_TmW), '7', '3', str(scaled_mW)], [str(scaled_TmW + 0.000001), '7', '3', '0'],
+          [str(scaled_TmE), '6', '3', str(scaled_mE)], [str(scaled_TmE + 0.000001), '6', '3', '0']]
+    en = [[str(scaled_Tgrowth_Af), '1', str(scaled_NANC)], [str(scaled_TAg), '7', str(scaled_NAg)],
+          [str(scaled_TAg + 0.000001), '6', str(scaled_NAg)]]
+    vars = {"-ej": ej, "-em": em, "-en": en}
 
-        if case == 3:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-en', str(scaled_Tgrowth_Af), '1',
-                         str(scaled_NANC), '-ej', str(scaled_Taf), '2', '1']
+    # pull out all the time sensitive vars '-e*' and order them
+    seasons = []
+    for thing in vars.keys():
+        '''
+        make a list of all the vars with a -e 
+        sort them by -e such that the smallest -e value is first
+        check out lamda sorts(?)
+        '''
 
-        if case == 4:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-en', str(scaled_Tgrowth_Af), '1',
-                         str(scaled_NANC), '-ej', str(scaled_Taf), '2', '1']
+        if thing.startswith('-e'):  # makes the list of -t vars.
+            if thing not in seasons:
+                for i in range(len(vars[thing])):
+                    into = [thing]  # thing is the key, I just need key to not be used later so we're going with thing.
+                    for j in range(len(vars[thing][i])):
+                        into.append(vars[thing][i][j])
+                    if into[1] != '':
+                        seasons.append(into)
 
-        if case == 5:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Teu_as), '3',
-                         '2', '-ej', str(scaled_Taf), '2', '1']
+        # sorts by time
+        # extend the data to mac_args in the correct order.
+        seasons = sorted(seasons, key=lambda x: float(x[1]))  # sorts the vars in order of time
+        for i in range(len(seasons)):
+            seasons[i][1] = str((seasons[i][1]))
+            macs_args.extend(seasons[i])
 
-        if case == 6:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM),
-                         '4', '3', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_Teu_as), '3',
-                         '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 7:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 8:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7','-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 9:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-ej', str(scaled_TA), '7', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC),
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 10:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3','0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-ej', str(scaled_TA), '7', '4', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC),
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 11:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TA), '7', '4',
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 12:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7',
-                         '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TA), '7', '4',
-                         '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as),
-                         '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 13:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7','4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 14:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC),'-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7','4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej', str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 15:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 16:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-en', str(scaled_Tgrowth_Af), '1', str(scaled_NANC), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7', '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 17:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-en', str(scaled_Tgrowth_Af),
-                         '1', str(scaled_NANC), '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7',
-                         '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
-
-        if case == 18:
-            macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5',
-                         '-R', 'genetic_map_b37/genetic_map_GRCh37_chr' + str(chr_number) + '.txt.macshs', '-I', '7',
-                         str(total_naf), str(total_nas), str(total_neu), str(nJ), str(nM), str(nEA), str(nWA), '-n',
-                         '1', str(scaled_NAF), '-n', '2', str(scaled_NCHB), '-n', '3', str(scaled_NCEU), '-n', '4',
-                         str(scaled_NJ), '-n', '5', str(scaled_NM), '-n', '6', str(scaled_NEA), '-n', '7',
-                         str(scaled_NWA), '-eg', '0', '7', str(scaled_rWA), '-eg', '0.000001', '6', str(scaled_rEA), '-eg',
-                         '0.000002', '4', str(scaled_rMJ), '-eg', '0.000003', '5', str(scaled_rMJ), '-en', str(scaled_Tgrowth_Af),
-                         '1', str(scaled_NANC), '-em', str(scaled_TmE), '6', '3', str(scaled_mE), '-em', str(scaled_TmE+0.000001), '6', '3', '0', '-em', str(scaled_TmW), '7', '3', str(scaled_mW), '-em', str(scaled_TmW+0.000001), '7', '3', '0', '-ej', str(scaled_TAEW), '6', '7', '-ej', str(scaled_TA), '7',
-                         '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
-                         str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
 
     print macs_args
     sim=macsSwig.swigMain(len(macs_args),macs_args)
