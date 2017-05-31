@@ -47,6 +47,11 @@ def param_sim_asc_rand():
     NA = float(round(10 ** random.uniform(4.0, 6.7)))
     parameters['NA'] = NA
 
+    NAg_High = math.log10(NA)
+    NAg_Low = 2.0
+    NAg = float(round(10 ** random.uniform(NAg_Low, NAg_High)))
+    parameters['NAg'] = NAg
+
     # Population size of Jews
     NJ = float(round(10 ** random.uniform(3.0, 6.0)))
     parameters['NJ'] = NJ
@@ -103,20 +108,12 @@ def param_sim_asc_rand():
     Tm = float(randint(Tm_Low, Tm_High))
     parameters['Tm'] = Tm
 
-    # Growth rate in AJ
-    rA_High = -(1/TA) * math.log(100/NA) # set max growth rate so the minimum number of individuals at founder event is 10
-    rA_Low = 0.0
-    rA = random.uniform(rA_Low, rA_High)
-    parameters['rA'] = rA
+    # Time of growth in AJ
+    TAg_High = int(TA) - 1
+    TAg_Low = 1
+    TAg = float(randint(TAg_Low, TAg_High))
+    parameters['TAg'] = TAg
 
-    # Growth rate in Jews and Middle East
-    if NM < NJ:
-        rMJ_High = -(1/TEM) * math.log(100/NM)
-    else:
-        rMJ_High = -(1 / TEM) * math.log(100 / NJ)
-    rMJ_Low = 0.0
-    rMJ = random.uniform(rMJ_Low, rMJ_High)
-    parameters['rMJ'] = rMJ
 
     para_out.extend([asc_nb_af])
     para_out.extend([asc_nb_eu])
@@ -127,10 +124,9 @@ def param_sim_asc_rand():
     para_out.extend([math.log10(NCEU)])
     para_out.extend([math.log10(NCHB)])
     para_out.extend([math.log10(NA)])
+    para_out.extend([math.log10(NAg)])
     para_out.extend([math.log10(NJ)])
     para_out.extend([math.log10(NM)])
-    para_out.extend([rA])
-    para_out.extend([rMJ])
     para_out.extend([m])
     para_out.extend([Tgrowth_Af])
     para_out.extend([Taf])
@@ -139,7 +135,7 @@ def param_sim_asc_rand():
     para_out.extend([TA])
     para_out.extend([TMJ])
     para_out.extend([Tm])
-
+    para_out.extend([TAg])
 
 
     case, modified_Tgrowth_Af = choose_case(parameters)
@@ -194,6 +190,11 @@ def param_sim_asc_min():
     NA=float(round(10**4.0))
     parameters['NA']=NA
 
+    NAg_High = math.log10(NA)
+    NAg_Low = 2.0
+    NAg = float(round(10 ** random.uniform(NAg_Low, NAg_High)))
+    parameters['NAg'] = NAg
+
     #Population size of Jews
     NJ=float(round(10**3.0))
     parameters['NJ']=NJ
@@ -245,20 +246,11 @@ def param_sim_asc_min():
     Tm=float(randint(Tm_Low,Tm_High))
     parameters['Tm']=Tm
 
-    # Growth rate in AJ
-    rA_High = -(1/TA) * math.log(100/NA) # set max growth rate so the minimum number of individuals at founder event is 10
-    rA_Low = 0.0
-    rA = random.uniform(rA_Low, rA_High)
-    parameters['rA'] = rA
-
-    # Growth rate in Jews and Middle East
-    if NM < NJ:
-        rMJ_High = -(1/TMJ) * math.log(100/NM)
-    else:
-        rMJ_High = -(1 / TMJ) * math.log(100 / NJ)
-    rMJ_Low = 0.0
-    rMJ = random.uniform(rMJ_Low, rMJ_High)
-    parameters['rMJ'] = rMJ
+    # Time of growth in AJ
+    TAg_High = int(TA) - 1
+    TAg_Low = 1
+    TAg = float(randint(TAg_Low, TAg_High))
+    parameters['TAg'] = TAg
 
 
     para_out.extend([asc_nb_af])
@@ -270,10 +262,9 @@ def param_sim_asc_min():
     para_out.extend([math.log10(NCEU)])
     para_out.extend([math.log10(NCHB)])
     para_out.extend([math.log10(NA)])
+    para_out.extend([math.log10(NAg)])
     para_out.extend([math.log10(NJ)])
     para_out.extend([math.log10(NM)])
-    para_out.extend([rA])
-    para_out.extend([rMJ])
     para_out.extend([m])
     para_out.extend([Tgrowth_Af])
     para_out.extend([Taf])
@@ -282,6 +273,8 @@ def param_sim_asc_min():
     para_out.extend([TA])
     para_out.extend([TMJ])
     para_out.extend([Tm])
+    para_out.extend([TAg])
+
 
 
     case, modified_Tgrowth_Af = choose_case(parameters)
@@ -336,6 +329,11 @@ def param_sim_asc_max():
     NA=float(round(10**6.7))
     parameters['NA']=NA
 
+    NAg_High = math.log10(NA)
+    NAg_Low = 2.0
+    NAg = float(round(10 ** random.uniform(NAg_Low, NAg_High)))
+    parameters['NAg'] = NAg
+
     #Population size of Jews
     NJ=float(round(10**6.0))
     parameters['NJ']=NJ
@@ -387,20 +385,11 @@ def param_sim_asc_max():
     Tm=float(randint(Tm_Low,Tm_High))
     parameters['Tm']=Tm
 
-    # Growth rate in AJ
-    rA_High = -(1/TA) * math.log(100/NA) # set max growth rate so the minimum number of individuals at founder event is 10
-    rA_Low = 0.0
-    rA = random.uniform(rA_Low, rA_High)
-    parameters['rA'] = rA
-
-    # Growth rate in Jews and Middle East
-    if NM < NJ:
-        rMJ_High = -(1/TEM) * math.log(100/NM)
-    else:
-        rMJ_High = -(1 / TEM) * math.log(100 / NJ)
-    rMJ_Low = 0.0
-    rMJ = random.uniform(rMJ_Low, rMJ_High)
-    parameters['rMJ'] = rMJ
+    # Time of growth in AJ
+    TAg_High = int(TA) - 1
+    TAg_Low = 1
+    TAg = float(randint(TAg_Low, TAg_High))
+    parameters['TAg'] = TAg
 
 
     para_out.extend([asc_nb_af])
@@ -412,10 +401,9 @@ def param_sim_asc_max():
     para_out.extend([math.log10(NCEU)])
     para_out.extend([math.log10(NCHB)])
     para_out.extend([math.log10(NA)])
+    para_out.extend([math.log10(NAg)])
     para_out.extend([math.log10(NJ)])
     para_out.extend([math.log10(NM)])
-    para_out.extend([rA])
-    para_out.extend([rMJ])
     para_out.extend([m])
     para_out.extend([Tgrowth_Af])
     para_out.extend([Taf])
@@ -424,6 +412,7 @@ def param_sim_asc_max():
     para_out.extend([TA])
     para_out.extend([TMJ])
     para_out.extend([Tm])
+    para_out.extend([TAg])
 
 
     case, modified_Tgrowth_Af = choose_case(parameters)

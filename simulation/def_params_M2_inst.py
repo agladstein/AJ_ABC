@@ -259,7 +259,7 @@ def param_sim_asc_min():
     parameters['TMJ']=TMJ
 
     # Time of split between Eastern and Western AJ
-    TAEW_Low = 1
+    TAEW_Low = 2
     TAEW = float(TAEW_Low)
     parameters['TAEW'] = TAEW
 

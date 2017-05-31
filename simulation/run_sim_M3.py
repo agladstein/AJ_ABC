@@ -59,6 +59,7 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
     scaled_TmE = float(TmE / (4 * NANC))
     scaled_TmW = float(TmW / (4 * NANC))
 
+
     if seed_option > int(0):
         if case == 1:
             macs_args = ['./bin/macs', str(total), str(length), '-t', str(macs_theta),'-s',str(seed_option), '-r', str(macs_rho), '-h', '1e5',

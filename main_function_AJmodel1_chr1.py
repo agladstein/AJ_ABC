@@ -175,7 +175,6 @@ def main(arguments):
         seqEA_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM, total_naf + total_neu + total_nas + nJ + nM + nEA)
         seqWA_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM + nEA, total_naf + total_neu + total_nas + nJ + nM + nEA + nWA)
 
-
         del sim
 
         ####CGI data
@@ -246,8 +245,10 @@ def main(arguments):
         res.append(afs_stats_bitarray.FST2(seqEuCGI_bits, pi_EuCGI, neu_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
-    seqAf_asc_bits = bitarray()
-    seqEu_asc_bits = bitarray()
+    (seqAf_asc_bits, seqEu_asc_bits) = (bitarray(), bitarray())
+
+    # seqAf_asc_bits = bitarray()
+    # seqEu_asc_bits = bitarray()
     seqAs_asc_bits = bitarray()
     seqJ_asc_bits = bitarray()
     seqM_asc_bits = bitarray()
