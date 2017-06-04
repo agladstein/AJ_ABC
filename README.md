@@ -356,6 +356,7 @@ e.g.
 `combine_HPC_final.sh /vol_c/results_macsSwig_AJmodels_instant/intermediate`
 _____________________________
 
+
 # Using ABC with ABCestimator
 
 ## Obtaining and compiling the code
@@ -371,6 +372,17 @@ See [openMp forum](http://forum.openmp.org/forum/viewtopic.php?f=3&t=1993&p=7809
 
 If openMP is not installed, compile as follows:  
 `g++ -O3 -o ABCtoolbox *.cpp`
+
+
+## Verifying simulation results
+To plot the distribution of the parameters, summary statistics, and PCA of summary statsitics, use the R script dist_plot_stats.R  
+There are three argument:  
+* The simulation input file (created from post processing scripts)
+* The summary statistics from the real data
+* The header that contains the columns you want to use
+
+e.g.
+`Rscript ~/dist_plot_stats.R /vol_c/results_macsSwig_AJmodels_instant/input_ABCtoolbox_M2_HPC.txt /vol_c/ABC_AJmodels/real_output_M23.summary /vol_c/results_macsSwig_AJmodels_instant/header_M2.txt`
 
 ## Removing and keeping summary statistics   
 To remove summary statistics or keep summary statistics from ABCtoolbox input use the scripts  
