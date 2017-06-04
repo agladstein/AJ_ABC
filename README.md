@@ -348,7 +348,7 @@ e.g.
 To run on all buckets use the script `run_post_process.sh`    
 This will run `post_process.py` on all the buckets in the path, and combined files for each bucket in an intermediary directory.  
 e.g.  
-`/vol_c/src/macsswig_simsaj/run_post_process.sh /vol_c/results_macsSwig_AJmodels_instant /vol_c/results_macsSwig_AJmodels_instant/intermediate 222`
+`/vol_c/src/macsswig_simsaj/run_post_process.sh /vol_c/results_macsSwig_AJmodels_instant /vol_c/results_macsSwig_AJmodels_instant/intermediate`
 
 To combine all post processed bucket files for ABCtoolbox input use `combine_HPC_final.sh`,    
 Takes one arguement, `output_path`  
