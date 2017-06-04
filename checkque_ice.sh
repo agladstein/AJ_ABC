@@ -29,7 +29,7 @@ if [ -e switch${MODEL}.txt ] ; then
     echo "Check for ${GOAL} completed runs in $RESULTS"
 
     #check number of completed simulations
-    COMP=$(ssh agladstein@${IP_ADDRESS} find /vol_c/results_macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL} -type f | wc -l)
+    COMP=$(ssh agladstein@${IP_ADDRESS} find /vol_c/results_macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL} -type f | wc -l)
     echo "${COMP} runs have completed"
     if [ "$COMP" -ge "$GOAL" ]; then
         echo "Goal completed"
@@ -39,7 +39,7 @@ if [ -e switch${MODEL}.txt ] ; then
     else
         #check number of jobs in que
         if [ "$SYSTEM" == "cluster" ]; then
-            JOBS=$($qstat | grep "agladstein" | grep clu | cut -d " " -f1)
+            JOBS=$($qstat | grep "agladstein" | grep -v smp | grep -v htc | cut -d " " -f1)
         elif [ "$SYSTEM" == "ocelote" ]; then
             JOBS=$($qstat | grep "agladstein" | cut -d " " -f1)
         else
@@ -57,12 +57,12 @@ if [ -e switch${MODEL}.txt ] ; then
 	        exit
         else
 	        #create PBS scripts
-            ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}
+#            ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}
 
             #check standard hrs left in group
             SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
 	        DAYS=$(( $(($(cal | wc -w) - 9)) - $(($(date | cut -d " " -f3))) ))
-	        SBOUND=$(( $DAYS * 500 + $n ))
+	        SBOUND=$(( $DAYS * 1 + $n ))
 
 	        echo "${SHRS} mfh standard hrs are left"
 	        echo "There are $DAYS days left in the month"

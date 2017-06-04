@@ -21,11 +21,11 @@ else
     PATH=${VIRTUAL_ENV}/bin:$PATH
     if [ "$SYSTEM" == "smp" ]; then
         ICE_MEM=8
-	    QUE=${SYSTEM}_qual JNUM=1-1500 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_qualified.pbs
+	    QUE=${SYSTEM}_qual JNUM=1-300 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_qualified.pbs
     else
         ICE_MEM=4
     fi
-    PYTHONMOD=${PYTHONMOD} QUE=standard JNUM=1-1500 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_standard.pbs
+    PYTHONMOD=${PYTHONMOD} QUE=standard JNUM=1-300 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_standard.pbs
 	PYTHONMOD=${PYTHONMOD} QUE=windfall JNUM=1-2000 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_windfall.pbs
 fi
 
