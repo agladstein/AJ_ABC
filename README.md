@@ -328,12 +328,12 @@ tar cf - /local-scratch/agladstein | drive push -exclude-ops "delete,update" -no
 This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
 
 To combine the simulation output files, sim_values.txt and ms_output.summary, to make the input file for ABCtoolbox use the script
-`post_process.py`
-This is will combine the files for one PBS_ID bucket (each bucket should contain about 2000 simulations).
+`post_process.py`  
+This is will combine the files for one PBS_ID bucket (each bucket should contain about 2000 simulations).  
 It uses multiprocessing, and will automatically detect the number of cores available to use.  
 The arguments are:  
-* path = the path to the sim_values_AJ_M and results_sims_AJ_M directories. On my atmosphere volume this is currently
-`/vol_c/results_macsSwig_AJmodels_rscale4Trel` on HPC, this is `/rsgrps/mfh4/Ariella/results_macsSwig_AJmodels_rscale4Trel`
+* path = the path to the sim_values_AJ_M and results_sims_AJ_M directories. On my atmosphere volume this is currently  
+`/vol_c/results_macsSwig_AJmodels_instant` on HPC, this is `/rsgrps/mfh4/Ariella/results_macsSwig_AJmodels_instant`
 * out_path = the path to write the ABCtoolbox input file to
 * model = `1`, `2`, or `3`
 * bucket_id = The PBS_ID that was used to make the bucket
@@ -343,17 +343,17 @@ Sim parameters  statistics
 For now, only use the `same` option. This will make a ABCtoolbox input file with exactly the same parameters and statsitics as in the header file.  
 
 e.g.  
-`python /vol_c/src/macsswig_simsaj/post_process.py /vol_c/results_macsSwig_AJmodels_rscale4Trel /vol_c/results_macsSwig_AJmodels_rscale4Trel/intermediate 1 691009 header_M1_222.txt same`
+`python /vol_c/src/macsswig_simsaj/post_process.py /vol_c/results_macsSwig_AJmodels_instant /vol_c/results_macsSwig_AJmodels_instant/intermediate 1 691009 header_M1_222.txt same`
 
-To run on all buckets use the script `run_post_process.sh`  
-This will run `post_process.py` on all the buckets in the path.  
-e.g.
-`/vol_c/src/macsswig_simsaj/run_post_process.sh /vol_c/results_macsSwig_AJmodels_rscale4Trel /vol_c/results_macsSwig_AJmodels_rscale4Trel/intermediate`
+To run on all buckets use the script `run_post_process.sh`    
+This will run `post_process.py` on all the buckets in the path, and combined files for each bucket in an intermediary directory.  
+e.g.  
+`/vol_c/src/macsswig_simsaj/run_post_process.sh /vol_c/results_macsSwig_AJmodels_instant /vol_c/results_macsSwig_AJmodels_instant/intermediate 222`
 
-To combine all post processed bucket files for ABCtoolbox input use `combine_HPC_final.sh`,  
+To combine all post processed bucket files for ABCtoolbox input use `combine_HPC_final.sh`,    
 Takes one arguement, `output_path`  
 e.g.  
-`combine_HPC_final.sh /vol_c/results_macsSwig_AJmodels_rscale4Trel/intermediate`
+`combine_HPC_final.sh /vol_c/results_macsSwig_AJmodels_instant/intermediate`
 _____________________________
 
 # Using ABC with ABCestimator

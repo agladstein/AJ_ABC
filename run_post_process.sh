@@ -2,11 +2,12 @@
 
 IN_PATH=$1
 OUT_PATH=$2
+CHOICE=$3 #should be 222 for eA, wA, and A or 132 for only A
 
 for MODEL in {1..3}
 do
     if (( ${MODEL}==1 )); then
-        HEADER=header_M${MODEL}_222.txt
+        HEADER=header_M${MODEL}_${CHOICE}.txt
     else
         HEADER=header_M${MODEL}.txt
     fi
