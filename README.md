@@ -282,6 +282,12 @@ command.
 
 ## Post Processing
 
+### Rsync OSG output to Atmosphere
+After a workflow has completed, use the script `OSG_rsync_atmo.sh` to transfer OSG output to Atmosphere.
+This should be run on OSG. It takes 1 argument - the workflow version (e.g. `instant`, `mfloat`, `rscale`).  
+e.g.  
+`~/macsswig_simsaj/OSG_rsync_atmo.sh instant`
+
 ### Combining OSG output
 The Pegasus workflow outputs concatenated results_sims and sim_values for all the simulations in the workflow. 
 The number of lines in the final output equals the number of simulations plus one for the header.  
