@@ -249,14 +249,23 @@ The last couple of lines will tell you the overall state. Note that jobs can be 
 reason for this is that the workflow is configured to keep at most 1,000 idle jobs in the queue, in order to not overwhelm the
 scheduler.
 
-To see status of all jobs run `~/bin/workflow-history`  
+To see status of all jobs  
+`~/bin/workflow-history`  
 
-To see list of currently running jobs run `cd ; pegasus-status | grep local-scratch`  
+To see list of currently running jobs  
+`cd ; pegasus-status | grep local-scratch`  
 
-To get the run time of recently completed jobs run `condor_history -w agladstein`
+To get the run time of recently completed jobs  
+`condor_history -w agladstein`
 
-To get the run time of currently running jobs run `condor_q agladstein`
+To get the run time of currently running jobs  
+`condor_q agladstein`
 
+To see if workflows are configured to run with Comet/Jetstream/Bridges resources  
+`condor_q -const 'Owner == "agladstein" && JobUniverse == 5' -af Iwd -af WantsComet | sort | uniq`
+
+To see how many jobs are currently running on Comet/Jetstream/Bridges  
+`condor_q -const 'Owner == "agladstein" && JobUniverse == 5' -af Iwd -af RemoteHost | egrep -i 'jetstream|bridges|comet' | awk '{print $1;}' | sort | uniq -c`
 
 ### Statistics / Debugging
 
