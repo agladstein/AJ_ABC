@@ -23,21 +23,21 @@ if [ ! -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} ] && [ ! -f ${OUT_PAT
 fi
 
 # rsync to atmosphere
-ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/${PBS_ID}
-ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/${PBS_ID}
+ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/${PBS_ID}
+ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/${PBS_ID}
 
 ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_SIM_PATH} # test
 echo 'rsyncing ' ${SIM}
-rsync -a ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM} agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/${SIM}
+rsync -a ${OUT_PATH}/sim_values_AJ_M${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/
 
 ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_RESULTS_PATH}
 echo 'rsyncing ' ${RESULTS}
-rsync -a ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/${RESULTS}
+rsync -a ${OUT_PATH}/results_sims_AJ_M${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/
 
 
 # backup to google drive
-DRIVE_SIM_PATH=backup_macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/$PBS_ID
-DRIVE_RESULTS_PATH=backup_macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/$PBS_ID
+DRIVE_SIM_PATH=backup_macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/$PBS_ID
+DRIVE_RESULTS_PATH=backup_macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/$PBS_ID
 
 echo 'google driving ' ${SIM} 'to '${DRIVE_SIM_PATH}
 if [[ -z "$(~/bin/drive ls ${DRIVE_SIM_PATH})" ]]; then
@@ -46,7 +46,7 @@ if [[ -z "$(~/bin/drive ls ${DRIVE_SIM_PATH})" ]]; then
 else
     echo ${DRIVE_SIM_PATH} 'is already made on google drive'
 fi
-~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_SIM_PATH}/ ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM}
+~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_SIM_PATH}/ ${OUT_PATH}/sim_values_AJ_M${MODEL}/
 
 echo 'google driving ' ${RESULTS} 'to '${DRIVE_RESULTS_PATH}
 if [[ -z "$(~/bin/drive ls ${DRIVE_RESULTS_PATH})" ]]; then
@@ -55,19 +55,19 @@ if [[ -z "$(~/bin/drive ls ${DRIVE_RESULTS_PATH})" ]]; then
 else
     echo ${DRIVE_RESULTS_PATH} 'is already made on google drive'
 fi
-~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_RESULTS_PATH}/ ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS}
+~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_RESULTS_PATH}/ ${OUT_PATH}/results_sims_AJ_M${MODEL}/
 
 
 # backup to Data Store
 echo 'iroding ' ${SIM}
-imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/${PBS_ID}
-iput -K -f ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM} /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/sim_values_AJ_M${MODEL}/${PBS_ID}
+imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/${PBS_ID}
+iput -K -f ${OUT_PATH}/sim_values_AJ_M${MODEL}/ /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/${PBS_ID}
 
 echo 'iroding ' ${RESULTS}
-imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/${PBS_ID}
-iput -K -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS} /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_rscale4Trel100/results_sims_AJ_M${MODEL}/${PBS_ID}
+imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/${PBS_ID}
+iput -K -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/ /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/${PBS_ID}
 
-
+exit
 
 # check that the files are the same on hpc and atmosphere
 echo 'atmo md5sum ' ${SIM} $(ssh agladstein@${IP_ADDRESS} md5sum ${ATMO_SIM_PATH}/${SIM} | cut -d " " -f1)
