@@ -11,8 +11,8 @@ import re
 
 def get_file_name(f, sim_path_results, sim_path_values):
     # isolate the job id to get the file names in the sim_values directory
-    if len(f.split("_")) == 4:
-        job_id = str(f.split(".")[0].split("_")[2]) + "_" + str(f.split(".")[0].split("_")[3])
+    if len(f.split("_")) > 4:
+        job_id = '_'.join(f.split('.')[0].split('_')[2:])
     elif len(f.split("_")) == 3:
         job_id = f.split("_")[2].split(".")[0]
     sim_values_file_name = str(sim_path_values) + "/sim_" + str(job_id) + "_values.txt"
