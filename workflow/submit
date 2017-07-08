@@ -47,6 +47,8 @@ echo "Creating a model tarball ..."
     cd $TOP_DIR && \
     rm -rf $DIR)
 
+mv model.tar.gz $RUN_DIR/
+
 # generate the site catalog
 SC=$RUN_DIR/sites.xml
 envsubst <sites.xml.template >$SC
@@ -54,6 +56,7 @@ envsubst <sites.xml.template >$SC
 # generate the dax
 export PYTHONPATH=`pegasus-config --python`
 ./tools/dax-generator $RUN_ID $RUN_DIR $MODEL $JOB_START $JOB_END
+mv dax.xml $RUN_DIR/
 
 echo
 echo "An outputs directory will be created within the base of the workflow directory."
@@ -68,7 +71,8 @@ pegasus-plan \
     --sites condorpool \
     --staging-site stash \
     --output-site local \
+    --cleanup leaf \
     --dir $RUN_DIR/workflow \
-    --dax dax.xml \
+    --dax $RUN_DIR/dax.xml \
     --submit
 
