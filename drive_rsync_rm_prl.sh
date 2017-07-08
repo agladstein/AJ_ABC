@@ -3,69 +3,103 @@
 module load irods
 
 set -e # quits at first error
-set -x # print more debugging in stdout
+#set -x # print more debugging in stdout
 
 #if [[ $HOSTNAME == service* ]]; then
 #    module load irods
 #fi
 
-MODEL=$1
-OUT_PATH=$2
-SIM=$3
-RESULTS=$4
-PBS_ID=$5
+OUT_PATH=$1
 
 IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/8bfef8b8f3f7c43fd99832a323ef7130f98571bb/atmo_instance_ip.txt)
 
+# check for currently running jobs
+IP_service1=128.196.131.51
+IP_login2=150.135.165.106
+if [[ $HOSTNAME == service* ]]; then
+    ICE_JOBS=$(/usr/local/bin/qstat_local | grep "agladstein" | cut -d "[" -f1)
+    OCELOTE_JOBS=$(ssh agladstein@${IP_login2} /cm/shared/apps/pbspro/current/bin/qstat | grep "agladstein" | cut -d "[" -f1)
+else
+    ICE_JOBS=$(ssh agladstein@${IP_service1} /usr/local/bin/qstat_local | grep "agladstein" | cut -d "[" -f1)
+    OCELOTE_JOBS=$(/cm/shared/apps/pbspro/current/bin/qstat | grep "agladstein" | cut -d "[" -f1)
+fi
 
-# rsync to atmosphere
-ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/${PBS_ID}
-ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/${PBS_ID}
+#BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev)
+BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev | head)
 
-ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_SIM_PATH} # test
-echo 'rsyncing ${OUT_PATH}/sim_values_AJ_M${MODEL}/'
-rsync -a ${OUT_PATH}/sim_values_AJ_M${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/
+for b in ${BUCKETS}; do
+    # remove completed jobs
+    CONTENT=$(find ${OUT_PATH}/$b | wc -l)
+    SWITCH='keep'
+    for q in ${OCELOTE_JOBS}; do
+        # if the job is not currently running and there aren't any contents of the output dirs
+        if [ "$b" != "$q" ] && [ "${CONTENT}" -le 5 ]; then
+            echo $b != $q and ${CONTENT} -le 5
+            SWITCH='remove'
+            continue
+        fi
+    done
+    if [ ${SWITCH} == 'remove' ]; then
+        echo "rm -r ${OUT_PATH}/$b"
+#        rm -r ${OUT_PATH}/$b
+        continue
+    fi
 
-ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_RESULTS_PATH}
-echo 'rsyncing ${OUT_PATH}/results_sims_AJ_M${MODEL}/'
-rsync -a ${OUT_PATH}/results_sims_AJ_M${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/
+    MODEL=$(echo ${OUT_PATH}/${b}/results_sims_AJ_M* | rev | cut -d "_" -f1 | rev)
 
+
+    # rsync to atmosphere
+    ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_instant/sim_values_AJ_${MODEL}/${b}
+    ATMO_RESULTS_PATH=/vol_c/results_macsSwig_AJmodels_instant/results_sims_AJ_${MODEL}/${b}
+
+    ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_SIM_PATH}
+    echo rsyncing ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/ ${ATMO_SIM_PATH}/
+    rsync --remove-source-files -avzn ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/
+
+    ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_RESULTS_PATH}
+    echo rsyncing ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/ ${ATMO_RESULTS_PATH}/
+    rsync --remove-source-files -avzn ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/
+done
+
+exit
+
+
+## Do the rest of the backing up from Atmosphere in different script.
 
 # backup to google drive
-DRIVE_SIM_PATH=backup_macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/$PBS_ID
-DRIVE_RESULTS_PATH=backup_macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/$PBS_ID
+DRIVE_SIM_PATH=backup_macsSwig_AJmodels_instant/sim_values_AJ_${MODEL}/${b}
+DRIVE_RESULTS_PATH=backup_macsSwig_AJmodels_instant/results_sims_AJ_${MODEL}/${b}
 
-echo 'google driving ${OUT_PATH}/sim_values_AJ_M${MODEL}/ to '${DRIVE_SIM_PATH}
+
+echo 'google driving ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/ to '${DRIVE_SIM_PATH}
 if [[ -z "$(~/bin/drive ls ${DRIVE_SIM_PATH})" ]]; then
     echo ${DRIVE_SIM_PATH} 'is not made yet on google drive'
     ~/bin/drive new -folder ${DRIVE_SIM_PATH}
 else
     echo ${DRIVE_SIM_PATH} 'is already made on google drive'
 fi
-~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_SIM_PATH}/ ${OUT_PATH}/sim_values_AJ_M${MODEL}/
+~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_SIM_PATH}/ ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/
 
-echo 'google driving ${OUT_PATH}/results_sims_AJ_M${MODEL}/ to '${DRIVE_RESULTS_PATH}
+
+echo 'google driving ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/ to '${DRIVE_RESULTS_PATH}
 if [[ -z "$(~/bin/drive ls ${DRIVE_RESULTS_PATH})" ]]; then
     echo ${DRIVE_RESULTS_PATH} 'is not made yet on google drive'
     ~/bin/drive new -folder ${DRIVE_RESULTS_PATH}
 else
     echo ${DRIVE_RESULTS_PATH} 'is already made on google drive'
 fi
-~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_RESULTS_PATH}/ ${OUT_PATH}/results_sims_AJ_M${MODEL}/
+~/bin/drive push -verbose -exclude-ops "delete,update" -no-prompt -destination ${DRIVE_RESULTS_PATH}/ ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/
+
 
 
 # backup to Data Store
-echo 'iroding ${OUT_PATH}/sim_values_AJ_M${MODEL}/'
-imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/${PBS_ID}
-iput -K -f ${OUT_PATH}/sim_values_AJ_M${MODEL}/ /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/sim_values_AJ_M${MODEL}/${PBS_ID}
+IPLANT_SIM_PATH=/iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/sim_values_AJ_${MODEL}/${b}
+IPLANT_RESULTS_PATH=/iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/results_sims_AJ_${MODEL}/${b}
 
-echo 'iroding ${OUT_PATH}/results_sims_AJ_M${MODEL}/'
-imkdir -p /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/${PBS_ID}
-iput -K -f ${OUT_PATH}/results_sims_AJ_M${MODEL}/ /iplant/home/agladstein/AJmacs_data/macsSwig_AJmodels_instant/results_sims_AJ_M${MODEL}/${PBS_ID}
+echo 'iroding ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/'
+imkdir -p ${IPLANT_SIM_PATH}
+iput -K -f ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/ ${IPLANT_SIM_PATH}
 
-echo 'rm file ' ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM}
-rm ${OUT_PATH}/sim_values_AJ_M${MODEL}/${SIM}
-
-echo 'rm file ' ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS}
-rm ${OUT_PATH}/results_sims_AJ_M${MODEL}/${RESULTS}
-
+echo 'iroding ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/'
+imkdir -p ${IPLANT_RESULTS_PATH}
+iput -K -f ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/ ${IPLANT_RESULTS_PATH}
