@@ -3,11 +3,7 @@
 module load irods
 
 set -e # quits at first error
-#set -x # print more debugging in stdout
-
-#if [[ $HOSTNAME == service* ]]; then
-#    module load irods
-#fi
+set -x # print more debugging in stdout
 
 OUT_PATH=$1
 
@@ -24,29 +20,40 @@ else
     OCELOTE_JOBS=$(/cm/shared/apps/pbspro/current/bin/qstat | grep "agladstein" | cut -d "[" -f1)
 fi
 
-#BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev)
-BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev | head)
+BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev)
+#BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev | head -1)
 
 for b in ${BUCKETS}; do
     # remove completed jobs
     CONTENT=$(find ${OUT_PATH}/$b | wc -l)
     SWITCH='keep'
     for q in ${OCELOTE_JOBS}; do
-        # if the job is not currently running and there aren't any contents of the output dirs
-        if [ "$b" != "$q" ] && [ "${CONTENT}" -le 5 ]; then
-            echo $b != $q and ${CONTENT} -le 5
-            SWITCH='remove'
-            continue
+        # if the job is not currently running
+        if [ "$b" != "$q" ]; then
+            # remove intermediate directories
+            if [ -d "${OUT_PATH}/$b/sim_data_AJ_M1" ] || [ -d "${OUT_PATH}/$b/sim_data_AJ_M2" ] || [ -d "${OUT_PATH}/$b/sim_data_AJ_M3" ]; then
+                echo "rm -r ${OUT_PATH}/$b/sim_data_AJ_M*"
+                rm -r ${OUT_PATH}/$b/sim_data_AJ_M*
+            fi
+            if [ -d "${OUT_PATH}/$b/germline_out_AJ_M1" ] || [ -d "${OUT_PATH}/$b/germline_out_AJ_M2" ] || [ -d "${OUT_PATH}/$b/germline_out_AJ_M3" ]; then
+                echo "rm -r ${OUT_PATH}/$b/germline_out_AJ_M*"
+                rm -r ${OUT_PATH}/$b/germline_out_AJ_M*
+            fi
+            # if there aren't any contents of the output dirs
+            if [ "${CONTENT}" -le 3 ]; then
+                echo $b != $q and ${CONTENT} -le 3
+                SWITCH='remove'
+                continue
+            fi
         fi
     done
     if [ ${SWITCH} == 'remove' ]; then
         echo "rm -r ${OUT_PATH}/$b"
-#        rm -r ${OUT_PATH}/$b
+        rm -r ${OUT_PATH}/$b
         continue
     fi
 
     MODEL=$(echo ${OUT_PATH}/${b}/results_sims_AJ_M* | rev | cut -d "_" -f1 | rev)
-
 
     # rsync to atmosphere
     ATMO_SIM_PATH=/vol_c/results_macsSwig_AJmodels_instant/sim_values_AJ_${MODEL}/${b}
@@ -54,11 +61,11 @@ for b in ${BUCKETS}; do
 
     ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_SIM_PATH}
     echo rsyncing ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/ ${ATMO_SIM_PATH}/
-    rsync --remove-source-files -avzn ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/
+    rsync --remove-source-files -avz ${OUT_PATH}/${b}/sim_values_AJ_${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_SIM_PATH}/
 
     ssh agladstein@${IP_ADDRESS} mkdir -p ${ATMO_RESULTS_PATH}
     echo rsyncing ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/ ${ATMO_RESULTS_PATH}/
-    rsync --remove-source-files -avzn ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/
+    rsync --remove-source-files -avz ${OUT_PATH}/${b}/results_sims_AJ_${MODEL}/ agladstein@${IP_ADDRESS}:${ATMO_RESULTS_PATH}/
 done
 
 exit
