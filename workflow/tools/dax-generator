@@ -86,7 +86,7 @@ for exe_name in os.listdir("./wrappers/"):
 
 # common inputs
 model_file = File("model.tar.gz")
-model_file.addPFN(PFN("file://" + base_dir + "/model.tar.gz", "local"))
+model_file.addPFN(PFN("file://" + run_dir + "/model.tar.gz", "local"))
 dax.addFile(model_file)
 
 input_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed")
