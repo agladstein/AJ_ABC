@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-for workflow in macsswig_simsaj_*
+ATMO_PATH=$1
+
+for dir in $ATMO_PATH/*
 do
+    workflow=${dir}/outputs
     if [ -e $workflow/sim_values.txt ] ; then
         echo $workflow
         MODEL=$(head -2 $workflow/sim_values.txt | tail -1 | cut -d '/' -f1 | cut -d '_' -f4)

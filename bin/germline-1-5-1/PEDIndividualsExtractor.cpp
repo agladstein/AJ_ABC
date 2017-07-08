@@ -31,7 +31,7 @@ void PEDIndividualsExtractor::loadInput()
 	ALL_SNPS.beginChromosome();
 	numberOfMarkers = ALL_SNPS.size();
 
-	while (!stream.eof() )
+	while (!stream.fail() ) //David's changed from .eof to .fail so it works
 	{
 		getIndividuals();
 		stream.seekg(numberOfMarkers*4 + 1,ios::cur);
