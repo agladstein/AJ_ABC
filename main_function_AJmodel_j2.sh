@@ -16,12 +16,14 @@ if [ "$SYSTEM" == "ocelote" ]; then
     echo "skipping jinja, pbs already made"
 else
     PYTHONMOD=python/2.7.9
-    module load ${PYTHONMOD}
+#    module load ${PYTHONMOD}
+    export MODULEPATH=/usr/share/Modules/modulefiles:/etc/modulefiles:/uaopt/modulefiles
+    eval `/usr/bin/modulecmd bash load ${PYTHONMOD}`
     VIRTUAL_ENV=/home/u15/agladstein/env/macss_env_ICE_2.7.9
     PATH=${VIRTUAL_ENV}/bin:$PATH
     if [ "$SYSTEM" == "smp" ]; then
         ICE_MEM=8
-	    QUE=${SYSTEM}_qual JNUM=1-300 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_qualified.pbs
+	    PYTHONMOD=${PYTHONMOD} QUE=${SYSTEM}_qual JNUM=1-300 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 template.pbs.j2 >model${MODEL}_${SYSTEM}_qualified.pbs
     else
         ICE_MEM=4
     fi

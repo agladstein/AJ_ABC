@@ -19,6 +19,7 @@ else
     ICE_JOBS=$(ssh agladstein@${IP_service1} /usr/local/bin/qstat_local | grep "agladstein" | cut -d "[" -f1)
     OCELOTE_JOBS=$(/cm/shared/apps/pbspro/current/bin/qstat | grep "agladstein" | cut -d "[" -f1)
 fi
+JOBS=$OCELOTE_JOBS' '$ICE_JOBS
 
 BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev)
 #BUCKETS=$(find ${OUT_PATH} -maxdepth 1 -type d | tail -n +2 | rev | cut -d "/" -f1 | rev | head -1)
@@ -27,7 +28,7 @@ for b in ${BUCKETS}; do
     # remove completed jobs
     CONTENT=$(find ${OUT_PATH}/$b | wc -l)
     SWITCH='keep'
-    for q in ${OCELOTE_JOBS}; do
+    for q in ${JOBS}; do
         # if the job is not currently running
         if [ "$b" != "$q" ]; then
             # remove intermediate directories
