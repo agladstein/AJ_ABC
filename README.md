@@ -300,7 +300,9 @@ e.g.
 ### Combining OSG output
 The Pegasus workflow outputs concatenated results_sims and sim_values for all the simulations in the workflow. 
 The number of lines in the final output equals the number of simulations plus one for the header.  
-To combine results_sims and sim_values across multiple workflows to create the input for ABCtoolbox use the shell script `combine_OSG_final.sh`
+To combine results_sims and sim_values across multiple workflows to create the input for ABCtoolbox use the shell script `combine_OSG_final.sh`  
+e.g.  
+`/vol_c/src/macsswig_simsaj/combine_OSG_final.sh /vol_c/results_macsSwig_AJmodels_instant/OSG`
 
 ### Fixing incorrect Headers
 The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.  
