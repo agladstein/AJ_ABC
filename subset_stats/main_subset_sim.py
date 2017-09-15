@@ -11,6 +11,7 @@ def main():
 
     chunksize = 10 ** 4
 
+    n = 0
     print 'Reading input file'
     for input_file_df in pd.read_csv(input_file, sep="\t", chunksize=chunksize, error_bad_lines=False):
 
@@ -18,7 +19,10 @@ def main():
             stats = get_corr_stats(stats_file)
             print 'Creating new file with parameters and summary statistics with correlations passing filter'
             out_file_name = 'pruneCorStats_' + input_file
-            input_file_df.drop(input_file_df[stats], axis=1).to_csv(out_file_name, mode = 'a', sep='\t', index=False)
+            if n == 0:
+                input_file_df.drop(input_file_df[stats], axis=1).to_csv(out_file_name, sep='\t', index=False)
+            else:
+                input_file_df.drop(input_file_df[stats], axis=1).to_csv(out_file_name, mode = 'a', sep='\t', index=False, header=False)
 
         elif option == "keep":
             n_sets = int(argv[4])  # number of sets of statistics from model choice power analysis
@@ -30,11 +34,15 @@ def main():
             stats = get_power_stats(stats_file, n_sets)
             out_file_name = 'keepPowerStats_' + input_file
             print 'Creating new file with parameters and summary statistics with high power'
-            pd.concat([params_df, input_file_df[stats]], axis=1, join='inner').to_csv(out_file_name, mode = 'a', sep='\t', index=False)
+            if n == 0:
+                pd.concat([params_df, input_file_df[stats]], axis=1, join='inner').to_csv(out_file_name, sep='\t', index=False)
+            else:
+                pd.concat([params_df, input_file_df[stats]], axis=1, join='inner').to_csv(out_file_name, mode = 'a', sep='\t', index=False, header=False)
+
         else:
             print "You must specify remove or keep!"
             return
-
+        n = n+1
 
 if __name__ == '__main__':
     main()
