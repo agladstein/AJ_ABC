@@ -12,7 +12,7 @@ def main():
     chunksize = 10 ** 4
 
     print 'Reading input file'
-    for input_file_df in pd.read_csv(input_file, sep="\t", chunksize=chunksize):
+    for input_file_df in pd.read_csv(input_file, sep="\t", chunksize=chunksize, error_bad_lines=False):
 
         if option == "remove":
             stats = get_corr_stats(stats_file)
