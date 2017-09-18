@@ -341,6 +341,11 @@ To back up all of OSG local-scratch
 tar cf - /local-scratch/agladstein | drive push -exclude-ops "delete,update" -no-prompt -piped backup_OSG_local-scratch/backup_OSG_local-scratch_$(date +"%m-%d-%Y-"%T"").tar.gz
 ```
 
+Back up complete Atmosphere volume
+```bash
+tar cf - /vol_c | drive push -exclude-ops "delete,update" -no-prompt -piped backup_atmo_vol_1T/backup_atmo_vol_1T_$(date +%m%d%Y%T).tar
+```
+
 ### Combining HPC output files
 This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
 
