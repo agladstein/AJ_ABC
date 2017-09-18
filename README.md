@@ -399,7 +399,7 @@ There are three argument:
 * The header that contains the columns you want to use
 
 e.g.
-`Rscript ~/dist_plot_stats.R /vol_c/results_macsSwig_AJmodels_instant/input_ABCtoolbox_M2_HPC.txt /vol_c/ABC_AJmodels/real_output_M23.summary /vol_c/results_macsSwig_AJmodels_instant/header_M2.txt`
+`Rscript /vol_c/src/macsswig_simsaj/dist_plot_stats.R /vol_c/results_macsSwig_AJmodels_instant/input_ABCtoolbox_M1_HPC.txt /vol_c/ABC_AJmodels/real_output_M23.summary /vol_c/results_macsSwig_AJmodels_instant/header_M1_132.txt`
 
 ## Removing and keeping summary statistics   
 To remove summary statistics or keep summary statistics from ABCtoolbox input use the scripts  
@@ -422,3 +422,11 @@ Run as
 `subset_stats/main_subset_sim.py ABC_searchStatsForModelChoice_OSG_50000_100greedySearchForBestStatisticsForModelChoice.txt input_ABCtoolbox_M1_8.txt keep 4`  
 or  
 `subset_stats/main_subset_sim.py ABC_estimate_OSG_100_50000_100.log input_ABCtoolbox_M1_8.txt remove`
+
+## Plotting the posterior distribution
+To plot the prior, marginal, and posterior distribution use the script `plot_posterior_ABtoolbox_new.R`.
+
+e.g.
+```
+Rscript /vol_c/src/macsswig_simsaj/plot_posterior_ABtoolbox_new.R keepPowerStats_input_ABCtoolbox_M2_HPC_OSG_2.txt ABC_correlatedstats6_1446125_pruneCorStats_90_model0_MarginalPosteriorDensities_Obs0.txt ABC_correlatedstats6_1446125_pruneCorStats_90_model0_BestSimsParamStats_Obs0.txt
+```
