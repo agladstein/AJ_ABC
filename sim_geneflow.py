@@ -39,6 +39,29 @@ def geneflow(receiving_bits, source_bits, n_receiving, n_source, p):
     return admixed_bits
 
 
+def print_admixed(admixed_bits, receiving_file, admixed_file, n_receiving):
+    """
+    Print tped file with gene flow from source population to receiving population
+    :param admixed_bits: bitarray with admixed sequence
+    :param receiving_file: original tped file of receiving population
+    :param admixed_file: new admixed tped file
+    :param n_receiving: number of haploid individuals in receiving population
+    :return: 
+    """
+
+    file = open(receiving_file, 'r')
+    site = 0
+    for line in file:
+        info = ' '.join(line.split(' ')[0:4])
+        alleles = ' '.join(admixed_bits[site*n_receiving : site*n_receiving+n_receiving].to01())
+        admixed_line = info + ' ' + alleles + '\n'
+        admixed_file.write(admixed_line)
+        site+=1
+
+    file.close()
+    admixed_file.close()
+
+
 def main():
     """
     This script simulates gene flow from a source population to a receiving population.
@@ -66,14 +89,26 @@ def main():
         print '***** Error: p must be between 0 and 1 *****'
         quit()
 
+    # name output file
+    n = (len(receiving_file.split('.')) - 1)
+    base_name = '.'.join(receiving_file.split('.')[:-n])
+    admixed_file_name = base_name + '_admixed' + str(p) + '.tped'
+
+    if os.path.isfile(admixed_file_name):
+        print admixed_file_name + ' already exists'
+        quit()
+
     n_receiving = sample_size(receiving_file)
     receiving_bits = AllelesReal(receiving_file).make_bitarray_seq(0, n_receiving)
 
     n_source = sample_size(source_file)
     source_bits = AllelesReal(source_file).make_bitarray_seq(0, n_source)
 
-    geneflow(receiving_bits, source_bits, n_receiving, n_source, p)
+    admixed_bits = geneflow(receiving_bits, source_bits, n_receiving, n_source, p)
 
+
+    admixed_file = open(admixed_file_name, 'a')
+    print_admixed(admixed_bits, receiving_file, admixed_file, n_receiving)
 
 if __name__ == '__main__':
     main()
