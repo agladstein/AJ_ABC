@@ -27,14 +27,16 @@ def geneflow(receiving_bits, source_bits, n_receiving, n_source, p):
 
     admixed_bits = bitarray(receiving_bits)
 
-    for site in range(0, receiving_bits.length(), n_receiving):
-        freq_source = source_bits[site:site+n_source].count(1)/source_bits[site:site+n_source].length()
+    site = 0
+    for index in range(0, receiving_bits.length(), n_receiving):
+        freq_source = float(source_bits[site*n_source:site*n_source+n_source].count(1))/float(source_bits[site*n_source:site*n_source+n_source].length())
         for indiv in range(n_receiving):
             if random.random() < p:
                 if random.random() < freq_source:
-                    admixed_bits[site + indiv] = 1
+                    admixed_bits[index + indiv] = 1
                 else:
-                    admixed_bits[site + indiv] = 0
+                    admixed_bits[index + indiv] = 0
+        site+=1
 
     return admixed_bits
 
