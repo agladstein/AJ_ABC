@@ -5,7 +5,8 @@ OSG_DIR=/local-scratch/agladstein/workflows/macsswig_simsaj_$VERSION
 ATMO_DIR=/vol_c/results_macsSwig_AJmodels_$VERSION
 echo ${ATMO_DIR}
 
-IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/8bfef8b8f3f7c43fd99832a323ef7130f98571bb/atmo_instance_ip.txt)
+IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/ec6e0d31cb588dcdb5db8af1e47bb2466cb85208/atmo_instance_ip.txt)
+
 
 echo ssh agladstein@${IP_ADDRESS} mkdir -p $ATMO_DIR/OSG
 ssh agladstein@${IP_ADDRESS} mkdir -p $ATMO_DIR/OSG
