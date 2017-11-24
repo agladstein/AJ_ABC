@@ -300,7 +300,9 @@ e.g.
 ### Combining OSG output
 The Pegasus workflow outputs concatenated results_sims and sim_values for all the simulations in the workflow. 
 The number of lines in the final output equals the number of simulations plus one for the header.  
-To combine results_sims and sim_values across multiple workflows to create the input for ABCtoolbox use the shell script `combine_OSG_final.sh`
+To combine results_sims and sim_values across multiple workflows to create the input for ABCtoolbox use the shell script `combine_OSG_final.sh`  
+e.g.  
+`/vol_c/src/macsswig_simsaj/combine_OSG_final.sh /vol_c/results_macsSwig_AJmodels_instant/OSG`
 
 ### Fixing incorrect Headers
 The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.  
@@ -337,6 +339,11 @@ drive init
 To back up all of OSG local-scratch     
 ```
 tar cf - /local-scratch/agladstein | drive push -exclude-ops "delete,update" -no-prompt -piped backup_OSG_local-scratch/backup_OSG_local-scratch_$(date +"%m-%d-%Y-"%T"").tar.gz
+```
+
+Back up complete Atmosphere volume
+```bash
+tar cf - /vol_c | drive push -exclude-ops "delete,update" -no-prompt -piped backup_atmo_vol_1T/backup_atmo_vol_1T_$(date +%m%d%Y%T).tar
 ```
 
 ### Combining HPC output files
@@ -397,7 +404,7 @@ There are three argument:
 * The header that contains the columns you want to use
 
 e.g.
-`Rscript ~/dist_plot_stats.R /vol_c/results_macsSwig_AJmodels_instant/input_ABCtoolbox_M2_HPC.txt /vol_c/ABC_AJmodels/real_output_M23.summary /vol_c/results_macsSwig_AJmodels_instant/header_M2.txt`
+`Rscript /vol_c/src/macsswig_simsaj/dist_plot_stats.R /vol_c/results_macsSwig_AJmodels_instant/input_ABCtoolbox_M1_HPC.txt /vol_c/ABC_AJmodels/real_output_M23.summary /vol_c/results_macsSwig_AJmodels_instant/header_M1_132.txt`
 
 ## Removing and keeping summary statistics   
 To remove summary statistics or keep summary statistics from ABCtoolbox input use the scripts  
@@ -420,3 +427,11 @@ Run as
 `subset_stats/main_subset_sim.py ABC_searchStatsForModelChoice_OSG_50000_100greedySearchForBestStatisticsForModelChoice.txt input_ABCtoolbox_M1_8.txt keep 4`  
 or  
 `subset_stats/main_subset_sim.py ABC_estimate_OSG_100_50000_100.log input_ABCtoolbox_M1_8.txt remove`
+
+## Plotting the posterior distribution
+To plot the prior, marginal, and posterior distribution use the script `plot_posterior_ABtoolbox_new.R`.
+
+e.g.
+```
+Rscript /vol_c/src/macsswig_simsaj/plot_posterior_ABtoolbox_new.R keepPowerStats_input_ABCtoolbox_M2_HPC_OSG_2.txt ABC_correlatedstats6_1446125_pruneCorStats_90_model0_MarginalPosteriorDensities_Obs0.txt ABC_correlatedstats6_1446125_pruneCorStats_90_model0_BestSimsParamStats_Obs0.txt
+```
