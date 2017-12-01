@@ -1,4 +1,3 @@
-import macsSwig
 import random
 
 def run_sim(parameters,length,chr_number,total,total_naf,total_nas,total_neu,nJ,nM,nA,seed_option):
@@ -48,12 +47,9 @@ def run_sim(parameters,length,chr_number,total,total_naf,total_nas,total_neu,nJ,
     scaled_Tm=float(Tm/(4*NANC))
     scaled_TAg = float(TAg / (4 * NANC))
 
-    print "scaled_Tm:", scaled_Tm
-    print "scaled_TAg:", scaled_TAg
     adjust = random.uniform(0.0000010, 0.0000099)
     if scaled_Tm == scaled_TAg:
         scaled_Tm = float(scaled_Tm + adjust)
-        print "new scaled_Tm:", scaled_Tm
 
     adjust = random.uniform(0.0000000010, 0.0000000099)
     scaled_Tm2 = float(scaled_Tm + adjust)
@@ -103,7 +99,5 @@ def run_sim(parameters,length,chr_number,total,total_naf,total_nas,total_neu,nJ,
         seasons[i][1] = str((seasons[i][1]))
         macs_args.extend(seasons[i])
 
-    print('final macs_args:')
-    print macs_args
-    sim = macsSwig.swigMain(len(macs_args), macs_args)
-    return sim
+    return macs_args
+
