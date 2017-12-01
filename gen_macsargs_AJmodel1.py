@@ -19,6 +19,8 @@ def main():
     seed_option = int(argv[4]) # 0 (random, no seed) or integer > 0
     path = argv[5]
 
+    print 'JOB', job
+
     ## Make output directory if it doesn't exist
     try:
         os.makedirs(path)
@@ -32,8 +34,8 @@ def main():
     except OSError:
         pass
     out_file = open(para_macsargs_file, 'a')
+    out_file.write('job:{}\n'.format(job))
 
-    print 'JOB', job
     if seed_option > int(0):
         print 'seed: ', seed_option
         random.seed(seed_option)
