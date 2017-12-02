@@ -1,3 +1,4 @@
+import random
 from subprocess import Popen
 import numpy as np
 import os
@@ -5,7 +6,7 @@ from bitarray import bitarray
 import itertools
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from ascertainment.pseudo_array import pseudo_array_bits
-import macsSwig
+from simulation import def_params_M3_inst, run_sim_M3_inst
 from summary_statistics import afs_stats_bitarray
 
 # from memory_profiler import profile
@@ -13,17 +14,80 @@ from summary_statistics import afs_stats_bitarray
 #@profile()
 def main(arguments):
 
-    chr_number = int(arguments[1]) # chromosome number
-    macsargs_name = arguments[2] #Path to file created by gen_macsargs_AJmodel1.py
-    snp_file = arguments[3] # SNP array template file
-    run_germline = int(arguments[4]) # 0 to run GERMLINE, 1 to not run GERMLINE
-    path = arguments[5] # Path for output files
+    #####set up simulations#####################################
+    ############################################################
+
+    ##Length of chromosomes
+    lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069,
+               135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222,
+               62887650, 37234222, 35178458]
+
+    job = arguments[1]  # must be a number
+    print 'JOB', job
+
+    ####Get parameter values from priors
+    seed_option = int(arguments[4])
+    print seed_option
+
+    if seed_option > int(0):
+        random.seed(seed_option)
+    if arguments[5] == 'prior':
+        param_model = def_params_M3_inst.param_sim_asc_rand()
+    if arguments[5] == 'min':
+        param_model = def_params_M3_inst.param_sim_asc_min()
+    if arguments[5] == 'max':
+        param_model = def_params_M3_inst.param_sim_asc_max()
+    ###parameters is a dictionary with the parameter values
+    parameters = param_model[0]
+    ###case is an integer that indicates which topology/model is going to be simulated
+    para_out = param_model[1]
+    case = param_model[2]
+    daf = param_model[3]
+
+
+    ####Samples to be simulated
+
+    naf_CGI = 18
+    neu_CGI = 18
+    nas_CGI = 8
+    nWA = 38
+    nEA = 38
+    nJ = 28
+    nM = 28  # 114
+
+    print 'naf_CGI ' + str(naf_CGI)
+    print 'neu_CGI ' + str(neu_CGI)
+    print 'nas_CGI ' + str(nas_CGI)
+    print 'nWA ' + str(nWA)
+    print 'nEA ' + str(nEA)
+    print 'nJ ' + str(nJ)
+    print 'nM ' + str(nM)
+
+    total_CGI = naf_CGI + neu_CGI + nas_CGI + nWA + nEA + nJ + nM
+    print 'total samples ' + str(total_CGI)
+
+    ###Discovery panel
+    asc_nb_af = para_out[0]
+    asc_nb_eu = para_out[1]
+    asc_nb_as = para_out[2]
+
+    total_naf = naf_CGI + asc_nb_af
+    total_neu = neu_CGI + asc_nb_eu
+    total_nas = nas_CGI + asc_nb_as
+
+    ###Total number of chromosomes
+    total_asc = asc_nb_af + asc_nb_eu + asc_nb_as
+    total = total_CGI + total_asc
+
+    chr_number=1
+
+    path = arguments[7]
 
     #### Check if necessary directories exist.
-    sim_data_dir = str(path) + '/sim_data_AJ_M2'
-    germline_out_dir = str(path) + '/germline_out_AJ_M2'
-    sim_values_dir = str(path) + '/sim_values_AJ_M2'
-    results_sims_dir = str(path) + '/results_sims_AJ_M2'
+    sim_data_dir = str(path)+'/sim_data_AJ_M3'
+    germline_out_dir=str(path)+'/germline_out_AJ_M3'
+    sim_values_dir=str(path)+'/sim_values_AJ_M3'
+    results_sims_dir=str(path)+'/results_sims_AJ_M3'
 
     try:
         os.makedirs(sim_data_dir)
@@ -46,59 +110,16 @@ def main(arguments):
         if not os.path.isdir(results_sims_dir):
             raise
 
-    macs_args = []
-    macsargs_file = open(macsargs_name, 'r')
-    for line in macsargs_file:
-        strip_line = line.strip('\n')
-        if 'job' in strip_line:
-            ID = strip_line.split(':')[1]
-        if 'para_out' in strip_line:
-            para_out = eval(strip_line.split(':')[1])
-        if 'daf' in strip_line:
-            daf = float(strip_line.split(':')[1])
-        if 'macs_args_'+str(chr_number) == strip_line.split(':')[0]:
-            macs_args = eval(strip_line.split(':')[1])
-    macsargs_file.close()
+    ##############START SIMULATIONS
+    ##############
 
-    job = str(ID)+'_chr'+str(chr_number)
-    length = macs_args[2]
-
-    naf_CGI = 18
-    neu_CGI = 18
-    nas_CGI = 8
-    nA = 76  # 528
-    nWA = 38
-    nEA = 38
-    nJ = 28
-    nM = 28  # 114
-
-    print 'naf_CGI ' + str(naf_CGI)
-    print 'neu_CGI ' + str(neu_CGI)
-    print 'nas_CGI ' + str(nas_CGI)
-    print 'nA ' + str(nA)
-    print 'nJ ' + str(nJ)
-    print 'nM ' + str(nM)
-
-    total_CGI = naf_CGI + neu_CGI + nas_CGI + nA + nJ + nM
-    print 'total samples ' + str(total_CGI)
-
-    ###Discovery panel
-    asc_nb_af = para_out[0]
-    asc_nb_eu = para_out[1]
-    asc_nb_as = para_out[2]
-
-    total_naf = naf_CGI + asc_nb_af
-    total_neu = neu_CGI + asc_nb_eu
-    total_nas = nas_CGI + asc_nb_as
-
-    ###Total number of chromosomes
-    total_asc = asc_nb_af + asc_nb_eu + asc_nb_as
-    total = total_CGI + total_asc
+    res = []
 
     # flag to check if the nb of asc SNPs is the same as the nb of Array SNPs
     flag_nb_asc_snps = 0
 
     ####Get the positions of the SNPs that are on the chip
+    snp_file = arguments[2]  # SNP file
     fileSNP = open(snp_file, 'r')
     # print "read SNP file"
     SNP = []
@@ -113,7 +134,14 @@ def main(arguments):
         columns = line_snp.split('\t')
         snps.append(int(columns[2]))
 
-    ##############START SIMULATIONS##############
+    print 'nb Array snps', len(snps)
+
+    ###define simulation size
+    size = arguments[3]
+    if size == "full":
+        length = lengths[chr_number - 1]
+    else:
+        length = size
 
     ##flag to check if the simulation work (generate the number of file
     flag_sim = False
@@ -121,9 +149,8 @@ def main(arguments):
     while flag_sim == False:
 
         #####Run simulations
-        print macs_args
         print 'running simulation'
-        sim = macsSwig.swigMain(len(macs_args), macs_args)
+        sim = run_sim_M3_inst.run_sim(parameters, length, chr_number, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
         print 'finished simulation'
 
         ##number of segregating sites
@@ -144,9 +171,9 @@ def main(arguments):
         seqAs_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu, total_naf + total_neu + total_nas)
         seqJ_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas, total_naf + total_neu + total_nas + nJ)
         seqM_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ, total_naf + total_neu + total_nas + nJ + nM)
-        seqA_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM, total_naf + total_neu + total_nas + nJ + nM + nA)
         seqEA_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM, total_naf + total_neu + total_nas + nJ + nM + nEA)
         seqWA_bits = seq_macsswig.make_bitarray_seq(total_naf + total_neu + total_nas + nJ + nM + nEA, total_naf + total_neu + total_nas + nJ + nM + nEA + nWA)
+
 
         del sim
 
@@ -174,7 +201,6 @@ def main(arguments):
 
         ####Get pseudo array sites
         print 'Make pseudo array'
-        print 'nb Array snps', len(snps)
         pos_asc, nbss_asc, index_avail_sites, avail_sites = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
 
         nb_avail_sites = len(avail_sites)
@@ -186,8 +212,6 @@ def main(arguments):
 
     #######################
     #####Calculate summary statistics from the regions for the CGI data
-    res = []
-
     if nbss > 0:  ###no segregating sites in the simulations which is not possible
 
         res = []
@@ -221,14 +245,11 @@ def main(arguments):
         res.append(afs_stats_bitarray.FST2(seqEuCGI_bits, pi_EuCGI, neu_CGI, seqAsCGI_bits, pi_AsCGI, nas_CGI))
         head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
-    (seqAf_asc_bits, seqEu_asc_bits) = (bitarray(), bitarray())
-
-    # seqAf_asc_bits = bitarray()
-    # seqEu_asc_bits = bitarray()
+    seqAf_asc_bits = bitarray()
+    seqEu_asc_bits = bitarray()
     seqAs_asc_bits = bitarray()
     seqJ_asc_bits = bitarray()
     seqM_asc_bits = bitarray()
-    seqA_asc_bits = bitarray()
     seqEA_asc_bits = bitarray()
     seqWA_asc_bits = bitarray()
     if (nbss_asc == len(index_avail_sites)):
@@ -238,7 +259,6 @@ def main(arguments):
             seqAs_asc_bits.extend(seqAsCGI_bits[pos_asc[x] * nas_CGI:pos_asc[x] * nas_CGI + nas_CGI])
             seqJ_asc_bits.extend(seqJ_bits[pos_asc[x] * nJ:pos_asc[x] * nJ + nJ])
             seqM_asc_bits.extend(seqM_bits[pos_asc[x] * nM:pos_asc[x] * nM + nM])
-            seqA_asc_bits.extend(seqA_bits[pos_asc[x] * nA:pos_asc[x] * nA + nA])
             seqEA_asc_bits.extend(seqEA_bits[pos_asc[x] * nEA:pos_asc[x] * nEA + nEA])
             seqWA_asc_bits.extend(seqWA_bits[pos_asc[x] * nWA:pos_asc[x] * nWA + nWA])
     elif (len(index_avail_sites) > nbss_asc):
@@ -251,7 +271,6 @@ def main(arguments):
                 x]] * nas_CGI + nas_CGI])
             seqJ_asc_bits.extend(seqJ_bits[index_avail_sites[pos_asc[x]] * nJ:index_avail_sites[pos_asc[x]] * nJ + nJ])
             seqM_asc_bits.extend(seqM_bits[index_avail_sites[pos_asc[x]] * nM:index_avail_sites[pos_asc[x]] * nM + nM])
-            seqA_asc_bits.extend(seqA_bits[index_avail_sites[pos_asc[x]] * nA:index_avail_sites[pos_asc[x]] * nA + nA])
             seqEA_asc_bits.extend(seqEA_bits[index_avail_sites[pos_asc[x]] * nEA:index_avail_sites[pos_asc[x]] * nEA + nEA])
             seqWA_asc_bits.extend(seqWA_bits[index_avail_sites[pos_asc[x]] * nWA:index_avail_sites[pos_asc[x]] * nWA + nWA])
 
@@ -303,14 +322,6 @@ def main(arguments):
                 fileped.write('2 ')
             else:
                 fileped.write('1 ')
-    for indiv in xrange(0, nA, 2):
-        fileped.write('A ' + str(indiv / 2 + 1) + '_A 0 0 1 -9 ')
-        for bit in itertools.chain.from_iterable(
-                [seqA_asc_bits[i:i + 2] for i in xrange(indiv, seqA_asc_bits.length(), nA)]):
-            if bit:
-                fileped.write('2 ')
-            else:
-                fileped.write('1 ')
         fileped.write('\n')
     fileped.close()
 
@@ -325,6 +336,7 @@ def main(arguments):
     filemap.close()
 
     ########Use Germline to find IBD on pseduo array ped and map files
+    run_germline = int(arguments[6])
     filenameout = str(germline_out_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number)
 
     print 'run germline? '+str(run_germline)
@@ -343,7 +355,6 @@ def main(arguments):
         filegermline = open(str(filenameout) + '.match', 'r')
         IBDlengths_eAeA = []
         IBDlengths_wAwA = []
-        IBDlengths_AA = []
         IBDlengths_JJ = []
         IBDlengths_MM = []
         IBDlengths_EE = []
@@ -354,9 +365,6 @@ def main(arguments):
         IBDlengths_wAJ = []
         IBDlengths_eAM = []
         IBDlengths_wAM = []
-        IBDlengths_AE = []
-        IBDlengths_AJ = []
-        IBDlengths_AM = []
         IBDlengths_JM = []
         IBDlengths_JE = []
         IBDlengths_ME = []
@@ -369,8 +377,6 @@ def main(arguments):
                 IBDlengths_eAeA.append(segment)
             if pair == 'WA_WA':
                 IBDlengths_wAwA.append(segment)
-            if pair == 'A_A':
-                IBDlengths_AA.append(segment)
             if pair == 'J_J':
                 IBDlengths_JJ.append(segment)
             if pair == 'M_M':
@@ -391,12 +397,6 @@ def main(arguments):
                 IBDlengths_eAM.append(segment)
             if pair == 'WA_M' or pair == 'M_WA':
                 IBDlengths_wAM.append(segment)
-            if pair == 'A_E' or pair == 'E_A':
-                IBDlengths_AE.append(segment)
-            if pair == 'A_J' or pair == 'J_A':
-                IBDlengths_AJ.append(segment)
-            if pair == 'A_M' or pair == 'M_A':
-                IBDlengths_AM.append(segment)
             if pair == 'J_M' or pair == 'M_J':
                 IBDlengths_JM.append(segment)
             if pair == 'J_E' or pair == 'E_J':
@@ -416,9 +416,9 @@ def main(arguments):
         IBDlengths_num30 = []
         IBDlengths_var30 = []
 
-        pairs = [IBDlengths_eAeA, IBDlengths_wAwA, IBDlengths_AA, IBDlengths_JJ, IBDlengths_MM, IBDlengths_EE, IBDlengths_eAwA,
-                 IBDlengths_eAE, IBDlengths_wAE, IBDlengths_eAJ, IBDlengths_wAJ, IBDlengths_eAM, IBDlengths_wAM, IBDlengths_AE, IBDlengths_AJ,
-                 IBDlengths_AM, IBDlengths_JM, IBDlengths_JE, IBDlengths_ME]
+        pairs = [IBDlengths_eAeA, IBDlengths_wAwA, IBDlengths_JJ, IBDlengths_MM, IBDlengths_EE, IBDlengths_eAwA,
+                 IBDlengths_eAE, IBDlengths_wAE, IBDlengths_eAJ, IBDlengths_wAJ, IBDlengths_eAM, IBDlengths_wAM,
+                 IBDlengths_JM, IBDlengths_JE, IBDlengths_ME]
         for p in pairs:
             IBDlengths_num.append(len(p))
             if len(p) < 1:
@@ -439,22 +439,22 @@ def main(arguments):
             IBDlengths_var30.append(np.var(IBDlengths30))
 
         res.extend(IBDlengths_mean)
-        head = head + 'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_AA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_AE\tIBD_mean_AJ\tIBD_mean_AM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
+        head = head + 'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
         res.extend(IBDlengths_median)
-        head = head + 'IBD_median_eAeA\tIBD_median_wAwA\tIBD_median_AA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_eAwA\tIBD_median_eAE\tIBD_median_wAE\tIBD_median_eAJ\tIBD_median_wAJ\tIBD_median_eAM\tIBD_median_wAM\tIBD_median_AE\tIBD_median_AJ\tIBD_median_AM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
+        head = head + 'IBD_median_eAeA\tIBD_median_wAwA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_eAwA\tIBD_median_eAE\tIBD_median_wAE\tIBD_median_eAJ\tIBD_median_wAJ\tIBD_median_eAM\tIBD_median_wAM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
         res.extend(IBDlengths_num)
-        head = head + 'IBD_num_eAeA\tIBD_num_wAwA\tIBD_num_AA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_eAwA\tIBD_num_eAE\tIBD_num_wAE\tIBD_num_eAJ\tIBD_num_wAJ\tIBD_num_eAM\tIBD_num_wAM\tIBD_num_AE\tIBD_num_AJ\tIBD_num_AM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
+        head = head + 'IBD_num_eAeA\tIBD_num_wAwA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_eAwA\tIBD_num_eAE\tIBD_num_wAE\tIBD_num_eAJ\tIBD_num_wAJ\tIBD_num_eAM\tIBD_num_wAM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
         res.extend(IBDlengths_var)
-        head = head + 'IBD_var_eAeA\tIBD_var_wAwA\tIBD_var_AA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_eAwA\tIBD_var_eAE\tIBD_var_wAE\tIBD_var_eAJ\tIBD_var_wAJ\tIBD_var_eAM\tIBD_var_wAM\tIBD_var_AE\tIBD_var_AJ\tIBD_var_AM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
+        head = head + 'IBD_var_eAeA\tIBD_var_wAwA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_eAwA\tIBD_var_eAE\tIBD_var_wAE\tIBD_var_eAJ\tIBD_var_wAJ\tIBD_var_eAM\tIBD_var_wAM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
 
         res.extend(IBDlengths_mean30)
-        head = head + 'IBD30_mean_eAeA\tIBD30_mean_wAwA\tIBD30_mean_AA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_eAwA\tIBD30_mean_eAE\tIBD30_mean_wAE\tIBD30_mean_eAJ\tIBD30_mean_wAJ\tIBD30_mean_eAM\tIBD30_mean_wAM\tIBD30_mean_AE\tIBD30_mean_AJ\tIBD30_mean_AM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
+        head = head + 'IBD30_mean_eAeA\tIBD30_mean_wAwA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_eAwA\tIBD30_mean_eAE\tIBD30_mean_wAE\tIBD30_mean_eAJ\tIBD30_mean_wAJ\tIBD30_mean_eAM\tIBD30_mean_wAM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
         res.extend(IBDlengths_median30)
-        head = head + 'IBD30_median_eAeA\tIBD30_median_wAwA\tIBD30_median_AA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_eAwA\tIBD30_median_eAE\tIBD30_median_wAE\tIBD30_median_eAJ\tIBD30_median_wAJ\tIBD30_median_eAM\tIBD30_median_wAM\tIBD30_median_AE\tIBD30_median_AJ\tIBD30_median_AM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
+        head = head + 'IBD30_median_eAeA\tIBD30_median_wAwA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_eAwA\tIBD30_median_eAE\tIBD30_median_wAE\tIBD30_median_eAJ\tIBD30_median_wAJ\tIBD30_median_eAM\tIBD30_median_wAM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
         res.extend(IBDlengths_num30)
-        head = head + 'IBD30_num_eAeA\tIBD30_num_wAwA\tIBD30_num_AA\tIBD30_num_JJ\tIBD30_num_MM\tIBD30_num_EE\tIBD30_num_eAwA\tIBD30_num_eAE\tIBD30_num_wAE\tIBD30_num_eAJ\tIBD30_num_wAJ\tIBD30_num_eAM\tIBD30_num_wAM\tIBD30_num_AE\tIBD30_num_AJ\tIBD30_num_AM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
+        head = head + 'IBD30_num_eAeA\tIBD30_num_wAwA\tIBD30_num_JJ\tIBD30_num_MM\tIBD30_num_EE\tIBD30_num_eAwA\tIBD30_num_eAE\tIBD30_num_wAE\tIBD30_num_eAJ\tIBD30_num_wAJ\tIBD30_num_eAM\tIBD30_num_wAM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
         res.extend(IBDlengths_var30)
-        head = head + 'IBD30_var_eAeA\tIBD30_var_wAwA\tIBD30_var_AA\tIBD30_var_JJ\tIBD30_var_MM\tIBD30_var_EE\tIBD30_var_eAwA\tIBD30_var_eAE\tIBD30_var_wAE\tIBD30_var_eAJ\tIBD30_var_wAJ\tIBD30_var_eAM\tIBD30_var_wAM\tIBD30_var_AE\tIBD30_var_AJ\tIBD30_var_AM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
+        head = head + 'IBD30_var_eAeA\tIBD30_var_wAwA\tIBD30_var_JJ\tIBD30_var_MM\tIBD30_var_EE\tIBD30_var_eAwA\tIBD30_var_eAE\tIBD30_var_wAE\tIBD30_var_eAJ\tIBD30_var_wAJ\tIBD30_var_eAM\tIBD30_var_wAM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
 
     #########calculate summary stats from the ascertained SNPs
 
@@ -564,30 +564,11 @@ def main(arguments):
         res.extend(WA_asc)
         head = head + 'SegS_WA_ASC\tSing_WA_ASC\tDupl_WA_ASC\tPi_WA_ASC\tTajD_WA_ASC\t'
 
-
-        A_asc = []
-        ss_A_asc = afs_stats_bitarray.base_S_ss(seqA_asc_bits, nA)
-        if (ss_A_asc[0] == 0):
-            for i in xrange(5):
-                A_asc.append(0)
-            pi_A_asc = 0
-        else:
-            A_asc.extend(afs_stats_bitarray.base_S_ss(seqA_asc_bits, nA))
-            pi_A_asc = afs_stats_bitarray.Pi2(A_asc[3], nA)
-            A_asc.append(pi_A_asc)
-            A_asc.append(afs_stats_bitarray.Tajimas(pi_A_asc, A_asc[0], nA))
-            del (A_asc[3])
-        res.extend(A_asc)
-        head = head + 'SegS_A_ASC\tSing_A_ASC\tDupl_A_ASC\tPi_A_ASC\tTajD_A_ASC\t'
-
         res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
         res.append(afs_stats_bitarray.FST2(seqAf_asc_bits, pi_Af_asc, naf_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
         res.append(afs_stats_bitarray.FST2(seqEu_asc_bits, pi_Eu_asc, neu_CGI, seqAs_asc_bits, pi_As_asc, nas_CGI))
         head = head + 'FST_AfEu_ASC\tFST_AfAs_ASC_m\tFST_EuAs_ASC\t'
 
-        res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
-        res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqJ_asc_bits, pi_J_asc, nJ))
-        res.append(afs_stats_bitarray.FST2(seqA_asc_bits, pi_A_asc, nA, seqM_asc_bits, pi_M_asc, nM))
         res.append(afs_stats_bitarray.FST2(seqEA_asc_bits, pi_EA_asc, nEA, seqWA_asc_bits, pi_WA_asc, nWA))
         res.append(afs_stats_bitarray.FST2(seqEA_asc_bits, pi_EA_asc, nEA, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
         res.append(afs_stats_bitarray.FST2(seqEA_asc_bits, pi_EA_asc, nEA, seqJ_asc_bits, pi_J_asc, nJ))
@@ -596,7 +577,7 @@ def main(arguments):
         res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
         res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqJ_asc_bits, pi_J_asc, nJ))
         res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqM_asc_bits, pi_M_asc, nM))
-        head = head + 'FST_AEu_ASC\tFST_AJ_ASC\tFST_AM_ASC\tFST_eAwA_ASC\tFST_eAEu_ASC\tFST_eAJ_ASC\tFST_eAM_ASC\tFST_MJ_ASC\tFST_wAEu_ASC\tFST_wAJ_ASC\tFST_wAM_ASC\n'
+        head = head + 'FST_eAwA_ASC\tFST_eAEu_ASC\tFST_eAJ_ASC\tFST_eAM_ASC\tFST_MJ_ASC\tFST_wAEu_ASC\tFST_wAJ_ASC\tFST_wAM_ASC\n'
 
     print 'finished calculating ss'
 
@@ -607,7 +588,7 @@ def main(arguments):
     fileoutparam=open(param_file,'w')
 
     ##write parameter values
-    head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTm\tTAg\n'
+    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NAg\tLog10_NJ\tLog10_NM\tmE\tmW\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTmE\tTmW\tTAg\n'
     fileoutparam.write(head_param)
 
     for z in range(len(para_out)):

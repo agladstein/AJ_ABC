@@ -19,11 +19,14 @@ def main(arguments):
     run_germline = int(arguments[4]) # 0 to run GERMLINE, 1 to not run GERMLINE
     path = arguments[5] # Path for output files
 
+    if chr_number < 1 or chr_number > 22:
+        print 'Error: chromosome number must be an integer 1-22'
+        exit()
+
     #### Check if necessary directories exist.
-    sim_data_dir = str(path) + '/sim_data_AJ_M2'
-    germline_out_dir = str(path) + '/germline_out_AJ_M2'
-    sim_values_dir = str(path) + '/sim_values_AJ_M2'
-    results_sims_dir = str(path) + '/results_sims_AJ_M2'
+    sim_data_dir = str(path) + '/sim_data_AJ_M1'
+    germline_out_dir = str(path) + '/germline_out_AJ_M1'
+    results_dir = str(path) + '/results_AJ_M1'
 
     try:
         os.makedirs(sim_data_dir)
@@ -36,14 +39,9 @@ def main(arguments):
         if not os.path.isdir(germline_out_dir):
             raise
     try:
-        os.makedirs(sim_values_dir)
+        os.makedirs(results_dir)
     except OSError:
-        if not os.path.isdir(sim_values_dir):
-            raise
-    try:
-        os.makedirs(results_sims_dir)
-    except OSError:
-        if not os.path.isdir(results_sims_dir):
+        if not os.path.isdir(results_dir):
             raise
 
     macs_args = []
@@ -602,32 +600,16 @@ def main(arguments):
 
     ################
     #####write parameter values to file
+    head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTm\tTAg'
 
-    param_file=str(sim_values_dir)+'/sim_'+str(job)+'_values.txt'
-    fileoutparam=open(param_file,'w')
+    result = '{}/results_{}.txt'.format(results_dir, job)
+    out_file = open(result, 'w')
 
-    ##write parameter values
-    head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTm\tTAg\n'
-    fileoutparam.write(head_param)
+    header = 'chr\tlength\t'+str(head_param)+'\t'+str(head)
+    params = '\t'.join([str(r) for r in para_out])
+    stats = '\t'.join([str(r) for r in res])
 
-    for z in range(len(para_out)):
-        if z==(len(para_out)-1):
-            fileoutparam.write("%s\n" % para_out[z])
-        else:
-            fileoutparam.write("%s\t" % para_out[z])
-
-    fileoutparam.close()
-
-    filesummary=str(results_sims_dir)+'/ms_output_'+str(job)+'.summary'
-    filesumm=open(filesummary,'w')
-    filesumm.write(head)
-
-    out=''
-    for g in range(len(res)):
-        out=out+str(res[g])+'\t'
-    out=out[:-1]+'\n'
-
-    filesumm.write(out)
-    filesumm.close()
+    out_file.write(str(header)+'\n'+str(chr_number)+'\t'+str(length)+'\t'+str(params)+'\t'+str(stats))
+    out_file.close()
 
     return [res,para_out]

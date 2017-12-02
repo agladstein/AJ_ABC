@@ -1,37 +1,79 @@
 Created by Ariella Gladstein, based on code from Consuelo Quinto Cortes and Krishna Veeramah.
 agladstein@email.arizona.edu
 
-The main script run_sims_AJmodel1_chr1_all.py runs genome simulations and computes statistics on the simulation output, and is run with run_sims_AJmodel1_chr1_all.py  
-Version 1
+There are three scripts that 
+1. generates parameters for the simulation for 22 human chromosomes (gen_macsargs_AJmodel1.py) 
+2. runs one chromosome simulation and computes chromosome summary statistics (run_sims_AJmodel1_chr_all.py)
+3. combines summary statistics across chromosomes (calc_genome_stats.py)
 
+This allows for all 22 chromosomes to be simulated in parallel with the same parameter values and combine their summary statistics to one results file.
+
+Version 2
+
+
+## Usage
+
+### gen_macsargs_AJmodel1.py
 
 Run as  
-`python run_sims_AJmodel1_chr1_all.py jobID inputfile simsize seed param_distribution germline output_dir`
+```bash
+python gen_macsargs_AJmodel1.py jobID simsize param_distribution seed output_dir
+```
   
-jobID = can be any unique value to identify the output  
-simsize = full or the length of the locus to be simulated in base pairs  
-seed = a seed value, or 0 if no seed is to be used  
-param_distribution = prior, min, or max  
-* prior = simulations with parameter values given by prior distribution  
-* min = simulations with predetermined parameter values that will produce   simulations with shorter run times and less memory - only for testing and profiling purposes  
-* max = simulations with predetermined parameter values that will produce simulations with longer run times and more memory - only for testing and profiling purposes  
-germline = 0 to run GERMLINE, 1 to not run GERMLINE (will try to read GERMLINE output from file)  
+`jobID` = can be any unique value to identify the output  
+`simsize` = `full` or the length of the locus to be simulated in base pairs. If `full` is used, the full human chromosomes lengths will be used.     
+`param_distribution` = `prior`, `min`, or `max`  
+* `prior` = simulations with parameter values given by prior distribution  
+* `min` = simulations with predetermined parameter values that will produce simulations with shorter run times and less memory - only for testing and profiling purposes  
+* `max` = simulations with predetermined parameter values that will produce simulations with longer run times and more memory - only for testing and profiling purposes  
 
-output_dir = path to the directory to output to. No argument will use the default of current dir "."
+`seed` = a seed value, or 0 if no seed is to be used.  
+`output_dir` = path to the directory to output to. No argument will use the default of current dir `.`
+
+e.g.:
+```bash
+python gen_macsargs_AJmodel1.py 1 full prior 0 output_dir
+```
+
+Test simulation:
+```bash
+python gen_macsargs_AJmodel1.py 1 100000 prior 352121 output_dir
+```
+
+prints output file to `${output_dir}/macsargs_${jobID}.txt`
+
+### run_sims_AJmodel1_chr_all.py
+
+Run as  
+```bash
+python run_sims_AJmodel1_chr_all.py chr_number macsargs_file snp_file run_germline output_dir
+```
+  
+`chr_number` = chromosome number (1-22)  
+`macsargs_file` = output file from gen_macsargs_AJmodel1.py with macs_args.   
+`snp_file` = SNP array template (bed format)    
+`run_germline` = 0 to run GERMLINE, 1 to not run GERMLINE (will try to read GERMLINE output from file)  
+`output_dir` = path to the directory to output to. No argument will use the default of current dir `.`
 
 e.g.:  
-``python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir``
+```bash
+python run_sims_AJmodel1_chr_all.py 1 output_dir/macsargs_1.txt ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed 0 output_dir
+```
 
 Test simulation:  
-``python run_sims_AJmodel1_chr1_all.py 1 ill_650_test.bed 1000000 1278 prior 1 output_dir``
+``python run_sims_AJmodel1_chr_all.py 1 output_dir/macsargs_1.txt ill_650_test.bed 1000000 0 output_dir``
 
 Uses c++ programs macs and GERMLINE. For more information on these programs, see:  
 https://github.com/gchen98/macs  
 https://github.com/sgusev/GERMLINE  
 
 Intermediate files go to sim_data_AJ_M1 and germline_out_AJ_M1 and are NOT rm in python script.  
-Output files go to sim_values_AJ_M1 and results_sims_AJ_M1.
+Output files go to `${output_dir}/results_AJ_M1/results_${jobID}_chr${chr_number}.txt`.
 
+### calc_genome_stats.py
+
+
+## Environment Setup
 
 If using Vagrant:
 
@@ -48,7 +90,6 @@ virtualenv macss_env
 source macss_env/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
 ```
 
 Alternatively,
@@ -61,7 +102,6 @@ source macss_env/bin/activate
 pip install pip-tools
 pip-compile
 pip-sync
-macss_env/bin/python run_sims_AJmodel1_chr1_all.py 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 output_dir
 ```
 
 Having trouble getting Vagrant started? Make sure you are in the correct directory.

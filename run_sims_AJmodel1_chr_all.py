@@ -1,5 +1,5 @@
 from sys import argv
-from main_function_AJmodel1_chr1 import main
+from main_function_AJmodel1_chr import main
 
 
 if __name__ == '__main__':
