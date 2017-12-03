@@ -609,7 +609,7 @@ def main(arguments):
     params = '\t'.join([str(r) for r in para_out])
     stats = '\t'.join([str(r) for r in res])
 
-    out_file.write(str(header)+'\n'+str(chr_number)+'\t'+str(length)+'\t'+str(params)+'\t'+str(stats))
+    out_file.write(str(header)+str(chr_number)+'\t'+str(length)+'\t'+str(params)+'\t'+str(stats))
     out_file.close()
 
     return [res,para_out]
