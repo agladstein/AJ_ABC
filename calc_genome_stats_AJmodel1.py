@@ -28,12 +28,20 @@ def create_df(path, job):
 
 def standardize_stats(chr_stats_df):
     '''
-    standardize stats by chromosome length
+    standardize stats by relative chromosome length
     :param chr_stats_df: 
     :return: 
     '''
 
-    # return chr_stats_stand_df
+    chr_stats_stand_df = pd.DataFrame()
+    scalar = int(chr_stats_df.length[:1])
+    chr_stats_stand_df['chr_ratio'] = chr_stats_df['length']/scalar
+    for column in chr_stats_df:
+        if 'Seg' in column or 'Sing' in column or 'Dupl' in column or 'Pi' in column :
+            chr_stats_stand_df[str(column)+'_stand'] = chr_stats_df[column]/chr_stats_stand_df['chr_ratio']
+        else:
+            chr_stats_stand_df[column] = chr_stats_df[column]
+    return chr_stats_stand_df
 
 def combine_IBD_stats(path, job):
 
@@ -56,7 +64,7 @@ def main():
     out_file = open(genome_results_file, 'a')
 
     chr_stats_df = create_df(path, job)
-
+    chr_stats_stand_df = standardize_stats(chr_stats_df)
 
 if __name__ == '__main__':
     main()
