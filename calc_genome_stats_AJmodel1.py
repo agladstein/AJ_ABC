@@ -29,19 +29,47 @@ def create_df(path, job):
 def standardize_stats(chr_stats_df):
     '''
     standardize stats by relative chromosome length
-    :param chr_stats_df: 
-    :return: 
+    :param chr_stats_df: dataframe with statistics for each chromosome. 
+    :return: chr_stats_stand_df: dataframe with statistics for each chromosome, where number of segregating sites,
+     singletons, doubletons, and pi are scaled by chromosome size relative to chromosome 1.
     '''
 
     chr_stats_stand_df = pd.DataFrame()
     scalar = int(chr_stats_df.length[:1])
     chr_stats_stand_df['chr_ratio'] = chr_stats_df['length']/scalar
     for column in chr_stats_df:
-        if 'Seg' in column or 'Sing' in column or 'Dupl' in column or 'Pi' in column :
-            chr_stats_stand_df[str(column)+'_stand'] = chr_stats_df[column]/chr_stats_stand_df['chr_ratio']
+        if 'Seg' in column or 'Sing' in column or 'Dupl' in column or 'Pi' in column:
+            chr_stats_stand_df[str(column)+'_stand'] = chr_stats_df[column] / chr_stats_stand_df['chr_ratio']
         else:
             chr_stats_stand_df[column] = chr_stats_df[column]
     return chr_stats_stand_df
+
+def summarize_stats(chr_stats_stand_df):
+    '''
+    summarize standardize stats across chromosomes with mean and standard deviation
+    :param chr_stats_stand_df: dataframe with statistics for each chromosome, where number of segregating sites,
+     singletons, doubletons, and pi are scaled by chromosome size relative to chromosome 1.
+    :return: names: list of headers
+    :return: values: list of parameter values and mean and standard deviation of summary stats
+    '''
+
+    names = []
+    values = []
+    for column in chr_stats_stand_df.drop(['chr','chr_ratio','length'], axis=1):
+        if 'Seg' in column or 'Sing' in column or 'Dupl' in column or 'Pi' in column or 'TajD' in column or 'Pi' in column:
+            mean = chr_stats_stand_df[column].mean(axis=0)
+            names.append('{}_mean'.format(column))
+            values.append(mean)
+
+            std = chr_stats_stand_df[column].std(axis=0)
+            names.append('{}_std'.format(column))
+            values.append(std)
+        else:
+            value = chr_stats_stand_df[column].iloc[0]
+            names.append(column)
+            values.append(value)
+
+    return [names, values]
 
 def combine_IBD_stats(path, job):
 
@@ -56,15 +84,16 @@ def main():
 
     print 'JOB', job
 
+    chr_stats_df = create_df(path, job)
+    chr_stats_stand_df = standardize_stats(chr_stats_df)
+    [names, values] = summarize_stats(chr_stats_stand_df)
+
     genome_results_file = '{}/results_{}.txt'.format(path, job)
     try:
         os.remove(genome_results_file)
     except OSError:
         pass
     out_file = open(genome_results_file, 'a')
-
-    chr_stats_df = create_df(path, job)
-    chr_stats_stand_df = standardize_stats(chr_stats_df)
 
 if __name__ == '__main__':
     main()
