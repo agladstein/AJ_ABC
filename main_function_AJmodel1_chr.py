@@ -257,6 +257,10 @@ def main(arguments):
         ##Make ped file
         print 'Make ped and map files'
         filenameped = str(sim_data_dir) + '/macs_asc_' + str(job) + '.ped'
+        try:
+            os.remove(filenameped)
+        except OSError:
+            pass
         fileped = open(filenameped, 'w')
         for indiv in xrange(0, neu_CGI, 2):
             fileped.write('E ' + str(indiv / 2 + 1) + '_E 0 0 1 -9 ')
@@ -315,6 +319,10 @@ def main(arguments):
 
         ##Make map file
         filenamemap = str(sim_data_dir) + '/macs_asc_' + str(job) + '.map'
+        try:
+            os.remove(filenamemap)
+        except OSError:
+            pass
         filemap = open(filenamemap, 'a')
         map = ''
         for g in range(0, len(pos_asc)):
@@ -331,8 +339,12 @@ def main(arguments):
             print 'Running Germline on ' + str(filenameped) + ' ' + str(filenamemap)
 
             ###Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
-            print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"'
-            germline = Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"', shell=True))
+            if int(length) < 35178458:
+                print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 10000'
+                germline = Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 10000"', shell=True))
+            else:
+                print 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"'
+                germline = Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10 -min_m 3000000"',shell=True))
 
             print 'finished running germline'
 
