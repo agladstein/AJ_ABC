@@ -4,7 +4,7 @@ agladstein@email.arizona.edu
 There are three scripts that 
 1. generates parameters for the simulation for 22 human chromosomes (gen_macsargs_AJmodel1.py) 
 2. runs one chromosome simulation and computes chromosome summary statistics (run_sims_AJmodel1_chr_all.py)
-3. combines summary statistics across chromosomes (calc_genome_stats.py)
+3. combines summary statistics across chromosomes (calc_genome_stats_AJmodel1.py)
 
 This allows for all 22 chromosomes to be simulated in parallel with the same parameter values and combine their summary statistics to one results file.
 
@@ -70,8 +70,22 @@ https://github.com/sgusev/GERMLINE
 Intermediate files go to sim_data_AJ_M1 and germline_out_AJ_M1 and are NOT rm in python script.  
 Output files go to `${output_dir}/results_AJ_M1/results_${jobID}_chr${chr_number}.txt`.
 
-### calc_genome_stats.py
+### calc_genome_stats_AJmodel1.py
 
+Run as  
+```bash
+python calc_genome_stats_AJmodel1.py jobID output_dir
+```
+  
+`jobID` = the same `jobID` used in the original `gen_macsargs_AJmodel1.py`.
+`output_dir` = path to the directory to output to. No argument will use the default of current dir `.`
+
+e.g.:  
+```bash
+python calc_genome_stats_AJmodel1.py 1 output_dir
+```
+
+prints output file to `${output_dir}/results_${jobID}.txt`.
 
 ## Environment Setup
 
