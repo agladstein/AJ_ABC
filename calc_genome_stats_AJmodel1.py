@@ -158,6 +158,12 @@ def combine_IBD_lengths(path, job):
     return pairs
 
 def calc_IBS_stats(pairs):
+    '''
+    Calculate summary statistics on lengths of IBD segments shared between populations
+    :param pairs: list of lists of lengths of IBD segments shared between populations
+    :return: IBD_stats: list of IBD statistics
+    :return: IBD_head: list of names of IBD statistics, in the same order as the IBD_stats list.
+    '''
 
     print 'calculating IBD summary stats'
 
@@ -229,7 +235,7 @@ def main():
 
     if len(os.listdir('{}/germline_out_AJ_M1'.format(path))) > 0:
         pairs = combine_IBD_lengths(path, job)
-        IBD_stats = calc_IBS_stats(pairs)
+        [IBD_stats, IBD_head] = calc_IBS_stats(pairs)
     else:
         print '{}/results_AJ_M1 is empty. If you want IBD rerun run_sims_AJmodel1_chr_all.py with the germline option'.format(path)
 
@@ -240,6 +246,9 @@ def main():
     except OSError:
         pass
     out_file = open(genome_results_file, 'a')
+    out_file.write('sim\t{}\t{}\n'.format('\t'.join(names), '\t'.join(IBD_head)))
+    out_file.write('{}\t{}\t{}'.format(job, '\t'.join(map(str,values)), '\t'.join(map(str,IBD_stats))))
+    out_file.close()
 
 if __name__ == '__main__':
     main()
