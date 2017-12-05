@@ -2,6 +2,7 @@ from sys import argv
 import os
 import pandas as pd
 import numpy as np
+import shutil
 
 '''
 This script combines the summary stats from all the chromosomes into genome summary stats
@@ -239,8 +240,7 @@ def main():
     else:
         print '{}/results_AJ_M1 is empty. If you want IBD rerun run_sims_AJmodel1_chr_all.py with the germline option'.format(path)
 
-    results_dir = str(path) + '/results_AJ_M1'
-    genome_results_file = '{}/results_{}.txt'.format(results_dir, job)
+    genome_results_file = '{}/results_{}.txt'.format(path, job)
     try:
         os.remove(genome_results_file)
     except OSError:
@@ -249,6 +249,12 @@ def main():
     out_file.write('sim\t{}\t{}\n'.format('\t'.join(names), '\t'.join(IBD_head)))
     out_file.write('{}\t{}\t{}'.format(job, '\t'.join(map(str,values)), '\t'.join(map(str,IBD_stats))))
     out_file.close()
+
+    if os.path.getsize(genome_results_file) > 0:
+        shutil.rmtree('{}/germline_out_AJ_M1'.format(path))
+        shutil.rmtree('{}/results_AJ_M1'.format(path))
+        shutil.rmtree('{}/sim_data_AJ_M1'.format(path))
+        os.remove('{}/macsargs_{}.txt'.format(path, job))
 
 if __name__ == '__main__':
     main()
