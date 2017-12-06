@@ -10,6 +10,7 @@ SNP_FILE=$4
 # untar the model code
 tar xzf model.tar.gz
 cd model
+mv ../macsargs_*.txt .
 
 # set up the venv
 . /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
@@ -22,6 +23,7 @@ CMD="python $MODEL $CHR $MACS_ARGS_FILE $SNP_FILE 0 ."
 echo
 echo "Running: $CMD"
 $CMD
-
+mv results* ../
+mv *.match ../
 
 
