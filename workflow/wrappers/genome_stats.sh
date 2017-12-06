@@ -17,7 +17,7 @@ module load python/2.7
 virtualenv-2.7 workflow/macss_env
 . workflow/macss_env/bin/activate
 
-CMD="python calc_genome_stats_AJmodel${NUM}.py $JOB_ID ."
+CMD="python calc_genome_stats_${NUM}.py $JOB_ID ."
 echo
 echo "Running: $CMD"
 $CMD

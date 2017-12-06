@@ -18,7 +18,7 @@ module load python/2.7
 virtualenv-2.7 workflow/macss_env
 . workflow/macss_env/bin/activate
 
-CMD="python gen_macsargs_AJmodel${NUM}.py $JOB_ID $SIM_SIZE prior 0 ."
+CMD="python gen_macsargs_${NUM}.py $JOB_ID $SIM_SIZE prior 0 ."
 echo
 echo "Running: $CMD"
 $CMD
