@@ -22,4 +22,6 @@ CMD="python gen_macsargs_${NUM}.py $JOB_ID $SIM_SIZE prior 0 ."
 echo
 echo "Running: $CMD"
 $CMD
-
+mv macsargs_${JOB_ID}.txt ../
+echo "ls $PWD"
+ls

@@ -103,6 +103,7 @@ def main():
         macs_args = run_sim_M1_inst.run_sim(parameters, length, chr, total, total_naf, total_nas, total_neu, nJ, nM, nA, seed_option)
         out_file.write('macs_args_{}:{}\n'.format(chr,macs_args))
 
+    print 'gen_macsargs_AJmodel1.py Completed'
 
 if __name__ == '__main__':
     main()
