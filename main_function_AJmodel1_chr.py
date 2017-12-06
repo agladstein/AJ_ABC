@@ -23,27 +23,6 @@ def main(arguments):
         print 'Error: chromosome number must be an integer 1-22'
         exit()
 
-    #### Check if necessary directories exist.
-    sim_data_dir = str(path) + '/sim_data_AJ_M1'
-    germline_out_dir = str(path) + '/germline_out_AJ_M1'
-    results_dir = str(path) + '/results_AJ_M1'
-
-    try:
-        os.makedirs(sim_data_dir)
-    except OSError:
-        if not os.path.isdir(sim_data_dir):
-            raise
-    try:
-        os.makedirs(germline_out_dir)
-    except OSError:
-        if not os.path.isdir(germline_out_dir):
-            raise
-    try:
-        os.makedirs(results_dir)
-    except OSError:
-        if not os.path.isdir(results_dir):
-            raise
-
     macs_args = []
     if os.path.isfile(macsargs_name):
         macsargs_file = open(macsargs_name, 'r')
@@ -257,7 +236,7 @@ def main(arguments):
 
         ##Make ped file
         print 'Make ped and map files'
-        filenameped = str(sim_data_dir) + '/macs_asc_' + str(job) + '.ped'
+        filenameped = str(path) + '/macs_asc_' + str(job) + '.ped'
         try:
             os.remove(filenameped)
         except OSError:
@@ -319,7 +298,7 @@ def main(arguments):
         fileped.close()
 
         ##Make map file
-        filenamemap = str(sim_data_dir) + '/macs_asc_' + str(job) + '.map'
+        filenamemap = str(path) + '/macs_asc_' + str(job) + '.map'
         try:
             os.remove(filenamemap)
         except OSError:
@@ -333,7 +312,7 @@ def main(arguments):
         filemap.close()
 
         ########Use Germline to find IBD on pseduo array ped and map files
-        filenameout = str(germline_out_dir) + '/macs_asc_' + str(job)
+        filenameout = str(path) + '/macs_asc_' + str(job)
 
         print 'run germline? '+str(run_germline)
         if (run_germline == 0):
@@ -497,7 +476,7 @@ def main(arguments):
         #####write parameter values to file
         head_param='Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTm\tTAg'
 
-        result = '{}/results_{}.txt'.format(results_dir, job)
+        result = '{}/results_{}.txt'.format(path, job)
         out_file = open(result, 'w')
 
         header = 'chr\tlength\t'+str(head_param)+'\t'+str(head)

@@ -11,7 +11,7 @@ fi
 # did the user specify the number of jobs
 if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" -o "x$4" == "x" ]; then
     echo "Please specify model, job start id, end id, and if you want Comet."
-    echo "Example: ./submit run_sims_AJmodel2_chr1_all.py 100 300 False"
+    echo "Example: ./submit run_sims_AJmodel2_chr_all.py 100 300 False"
     exit 1
 fi
 MODEL=$1
@@ -24,7 +24,7 @@ module load stashcp
 
 TOP_DIR=`pwd`
 
-export RUN_ID=macsswig_simsaj_instant_`date +'%s'`
+export RUN_ID=macsswig_simsaj_genome_`date +'%s'`
 
 export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
 mkdir -p $RUN_DIR

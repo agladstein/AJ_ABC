@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 import shutil
+import glob
 
 '''
 This script combines the summary stats from all the chromosomes into genome summary stats
@@ -20,7 +21,7 @@ def create_df(path, job):
     chr_stats_df = pd.DataFrame()
     list_ = []
     for chr in range(1, 22+1):
-        file = '{}/results_AJ_M1/results_{}_chr{}.txt'.format(path, job, chr)
+        file = '{}/results_{}_chr{}.txt'.format(path, job, chr)
         if os.path.isfile(file):
             print(file)
             df = pd.read_csv(file, sep = '\t')
@@ -102,7 +103,7 @@ def combine_IBD_lengths(path, job):
     IBDlengths_ME = []
 
     for chr in range(1, 22+1):
-        germline_file_name = '{}/germline_out_AJ_M1/macs_asc_{}_chr{}.match'.format(path, job, chr)
+        germline_file_name = '{}/macs_asc_{}_chr{}.match'.format(path, job, chr)
         if os.path.isfile(germline_file_name):
             print 'reading Germline IBD output chr{}'.format(chr)
             filegermline = open(germline_file_name, 'r')
@@ -226,35 +227,37 @@ def main():
 
     print 'JOB', job
 
-    if len(os.listdir('{}/results_AJ_M1'.format(path))) == 0:
-        print '{}/results_AJ_M1 is empty. You probably need to run run_sims_AJmodel1_chr_all.py'.format(path)
-        exit()
-
-    chr_stats_df = create_df(path, job)
-    chr_stats_stand_df = standardize_stats(chr_stats_df)
-    [names, values] = summarize_stats(chr_stats_stand_df)
-
-    if len(os.listdir('{}/germline_out_AJ_M1'.format(path))) > 0:
-        pairs = combine_IBD_lengths(path, job)
-        [IBD_stats, IBD_head] = calc_IBS_stats(pairs)
-    else:
-        print '{}/results_AJ_M1 is empty. If you want IBD rerun run_sims_AJmodel1_chr_all.py with the germline option'.format(path)
 
     genome_results_file = '{}/results_{}.txt'.format(path, job)
     try:
         os.remove(genome_results_file)
     except OSError:
         pass
-    out_file = open(genome_results_file, 'a')
-    out_file.write('sim\t{}\t{}\n'.format('\t'.join(names), '\t'.join(IBD_head)))
-    out_file.write('{}\t{}\t{}'.format(job, '\t'.join(map(str,values)), '\t'.join(map(str,IBD_stats))))
-    out_file.close()
 
-    if os.path.getsize(genome_results_file) > 0:
-        shutil.rmtree('{}/germline_out_AJ_M1'.format(path))
-        shutil.rmtree('{}/results_AJ_M1'.format(path))
-        shutil.rmtree('{}/sim_data_AJ_M1'.format(path))
-        os.remove('{}/macsargs_{}.txt'.format(path, job))
+    results_files = '{}/results_{}_*.txt'.format(path, job)
+    if len(glob.glob(results_files)) < 1:
+        print '{}/{} does not exist. You probably need to run run_sims_AJmodel1_chr_all.py'.format(path, file)
+        exit()
+
+    chr_stats_df = create_df(path, job)
+    chr_stats_stand_df = standardize_stats(chr_stats_df)
+    [names, values] = summarize_stats(chr_stats_stand_df)
+
+    germline_files = '{}/macs_asc_{}_*.match'.format(path, job)
+    if len(germline_files) > 0:
+        pairs = combine_IBD_lengths(path, job)
+        [IBD_stats, IBD_head] = calc_IBS_stats(pairs)
+
+        out_file = open(genome_results_file, 'a')
+        out_file.write('sim\t{}\t{}\n'.format('\t'.join(names), '\t'.join(IBD_head)))
+        out_file.write('{}\t{}\t{}'.format(job, '\t'.join(map(str,values)), '\t'.join(map(str,IBD_stats))))
+        out_file.close()
+    else:
+        print '{} does not exist. If you want IBD rerun run_sims_AJmodel1_chr_all.py with the germline option'.format(germline_file_name)
+        out_file = open(genome_results_file, 'a')
+        out_file.write('sim\t{}\n'.format('\t'.join(names)))
+        out_file.write('{}\t{}'.format(job, '\t'.join(map(str,values))))
+        out_file.close()
 
 if __name__ == '__main__':
     main()

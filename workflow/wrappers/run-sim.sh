@@ -3,9 +3,9 @@
 set -e
 
 MODEL=$1
-JOB_ID=$2
-INPUT_FILE=$3
-SIM_SIZE=$4
+CHR=$2
+MACS_ARGS_FILE=$3
+SNP_FILE=$4
 
 # untar the model code
 tar xzf model.tar.gz
@@ -18,11 +18,10 @@ module load python/2.7
 virtualenv-2.7 workflow/macss_env
 . workflow/macss_env/bin/activate
 
-CMD="python $MODEL $JOB_ID $INPUT_FILE $SIM_SIZE 0 prior 0"
+CMD="python $MODEL $CHR $MACS_ARGS_FILE $SNP_FILE 0 ."
 echo
 echo "Running: $CMD"
 $CMD
 
-# output files need unique names in the top level dir
-tar czf ../outputs-$JOB_ID.tar.gz results_sims_* sim_values_*
+
 

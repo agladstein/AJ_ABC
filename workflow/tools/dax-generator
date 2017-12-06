@@ -19,9 +19,9 @@ def add_merge_job(chunk, level, job_number, final):
     adds a merge job
     """
     j = Job(name="merge.sh")
-    out_file = File("merged-%d-%d.tar.gz" %(level, job_number))
+    out_file = File("merged-%d-%d.txt" %(level, job_number))
     if final:
-        out_file = File("merged-all.tar.gz")
+        out_file = File("final_results.txt")
     j.uses(out_file, link=Link.OUTPUT, transfer=final)
     j.addArguments(out_file)
     for f in chunk:
@@ -89,46 +89,73 @@ model_file = File("model.tar.gz")
 model_file.addPFN(PFN("file://" + run_dir + "/model.tar.gz", "local"))
 dax.addFile(model_file)
 
-input_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed")
-input_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed", "local"))
-dax.addFile(input_file)
+snp_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed")
+snp_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed", "local"))
+dax.addFile(snp_file)
 
-current_outputs = []
+genome_results_out = []
 input_id = 0
 for job_id in range(job_start, job_end + 1):
-    # the real work
-    sim_job = Job(name="run-sim.sh")
-    sim_job.uses(model_file, link=Link.INPUT)
-    sim_job.uses(input_file, link=Link.INPUT)
-    sim_job.addArguments(model, str(job_id), input_file, "full")
+    
+    #step one
+    macsargs_job = Job(name="macsargs.sh") ##### CREATE THIS WRAPPER
+    macsargs_job.uses(model_file, link=Link.INPUT)
+    macsargs_job.addArguments(model, str(job_id), "full")
 
     # output files
-    f1 = File("outputs-" + str(job_id) + ".tar.gz")
-    sim_job.uses(f1, link=Link.OUTPUT, transfer=False)
+    macsargs_file = File("macsargs_" + str(job_id) + ".txt")
+    macsargs_job.uses(macsargs_file, link=Link.OUTPUT, transfer=False)
+    
+    dax.addJob(macsargs_job)
+    
+    #step two
+    # the real work
+    current_germline_out= []
+    current_results_out = []
+    for chr in range(1, 22+1):
+        sim_job = Job(name="run-sim.sh") ### NEED TO UPDATE WRAPPER
+        sim_job.uses(model_file, link=Link.INPUT)
+        sim_job.uses(macsargs_file, link=Link.INPUT)
+        sim_job.uses(snp_file, link=Link.INPUT)
+        sim_job.addArguments(model, str(chr), macsargs_file, snp_file)
 
-    # set a priority to the jobs run in the order the wf was submitted
-    sim_job.addProfile(Profile(Namespace.CONDOR, "priority", base_priority))
+        # output files
+        germline_chr_file = File("macs_asc_" + str(job_id) + "_chr" + str(chr) + ".match") ## MOVE OUT OF DIR
+        sim_job.uses(germline_chr_file, link=Link.OUTPUT, transfer=False)
+        results_chr_file = File("results_" + str(job_id) + "_chr" + str(chr) + ".txt") ## MOVE OUT OF DIR
+        sim_job.uses(results_chr_file, link=Link.OUTPUT, transfer=False)
 
-    dax.addJob(sim_job)
+        # set a priority to the jobs run in the order the wf was submitted
+        sim_job.addProfile(Profile(Namespace.CONDOR, "priority", base_priority))
 
-    # keep a list of all the outputs - in the next step we will group them and process
-    # recursivly
-    current_outputs.append(f1)
+        dax.addJob(sim_job)
+
+        # keep a list of all the outputs - in the next step we will group them and process
+        # recursivly
+        current_germline_out.append(germline_chr_file)
+        current_results_out.append(results_chr_file)
+
+    #step three
+    genome_stats_job = Job(name="genome_stats.sh")  ##### CREATE THIS WRAPPER
+    genome_stats_job.uses(model_file, link=Link.INPUT)
+    for germline_file in current_germline_out:
+        genome_stats_job.uses(germline_file, link=Link.INPUT)
+    for results_file in current_results_out:
+        genome_stats_job.uses(results_file, link=Link.INPUT)
+    genome_stats_job.addArguments(str(job_id))
+
+    # output files
+    genome_results_file = File("results_" + str(job_id) + ".txt")
+    genome_stats_job.uses(genome_results_file, link=Link.OUTPUT, transfer=True)
+
+    dax.addJob(genome_stats_job)
+
+    genome_results_out.append(genome_results_file)
+
 
 # recurisvly process the outputs - this is so that we can handle the large amount of files
-final_out_file = merge_outputs(current_outputs, 0)
+final_out_file = merge_outputs(genome_results_out, 0)
 
-# generate the .txt summary files
-j = Job(name="summarize.sh")
-j.uses(final_out_file, link=Link.INPUT)
-j.addArguments(final_out_file)
-out1 = File("results_sims.txt")
-j.uses(out1, link=Link.OUTPUT, transfer=True)
-out2 = File("sim_values.txt")
-j.uses(out2, link=Link.OUTPUT, transfer=True)
-# set a priority to the jobs run in the order the wf was submitted
-j.addProfile(Profile(Namespace.CONDOR, "priority", base_priority + 10))
-dax.addJob(j)
 
 # Write the DAX to stdout
 f = open("dax.xml", "w")
