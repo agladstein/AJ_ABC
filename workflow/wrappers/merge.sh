@@ -2,7 +2,7 @@
 
 set -e
 
-OUT_FILE=$1 #output file
+OUTFILE=$1 #output file
 shift
 
 # use the header from the first file

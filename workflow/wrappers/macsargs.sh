@@ -23,5 +23,3 @@ echo
 echo "Running: $CMD"
 $CMD
 mv macsargs_${JOB_ID}.txt ../
-echo "ls $PWD"
-ls

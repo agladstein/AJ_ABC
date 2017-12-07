@@ -23,12 +23,6 @@ CMD="python $MODEL $CHR $MACS_ARGS_FILE $SNP_FILE 0 ."
 echo
 echo "Running: $CMD"
 $CMD
-echo "ls $PWD"
-ls
-echo "ls results*"
-ls results*
-echo "ls *.match"
-ls *.match
 mv results* ../
 mv *.match ../
 

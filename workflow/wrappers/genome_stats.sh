@@ -12,8 +12,6 @@ cd model
 
 mv ../result* .
 mv ../*match .
-echo "ls $PWD"
-ls
 
 # set up the venv
 . /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
