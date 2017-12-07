@@ -141,7 +141,7 @@ for job_id in range(job_start, job_end + 1):
         genome_stats_job.uses(germline_file, link=Link.INPUT)
     for results_file in current_results_out:
         genome_stats_job.uses(results_file, link=Link.INPUT)
-    genome_stats_job.addArguments(str(job_id))
+    genome_stats_job.addArguments(model, str(job_id))
 
     # output files
     genome_results_file = File("results_" + str(job_id) + ".txt")
