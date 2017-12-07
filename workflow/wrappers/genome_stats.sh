@@ -10,6 +10,11 @@ NUM=$(echo $MODEL | cut -d "_" -f3)
 tar xzf model.tar.gz
 cd model
 
+mv ../result* .
+mv ../*match .
+echo "ls $PWD"
+ls
+
 # set up the venv
 . /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
 module load python/2.7
@@ -21,4 +26,6 @@ CMD="python calc_genome_stats_${NUM}.py $JOB_ID ."
 echo
 echo "Running: $CMD"
 $CMD
+
+mv result* ../
 
