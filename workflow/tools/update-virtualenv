@@ -2,13 +2,29 @@
 
 set -e
 
-. /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
+TOP_DIR=$PWD
 
-# python 2.7 or up is required for our version of numpy
-module load python/2.7
+rm -rf Python-* macss_env
+wget -nv https://www.python.org/ftp/python/2.7.14/Python-2.7.14.tgz
+tar xzf Python-2.7.14.tgz
+cd Python-2.7.14
+./configure --prefix=$TOP_DIR/macss_env
+make
+make install
 
-virtualenv-2.7 macss_env
-. macss_env/bin/activate
+export PATH=$TOP_DIR/macss_env/bin:$PATH
+
+wget -nv https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
+
+which -a pip
+
+pip install virtualenv
+
+cd ..
+
+#virtualenv-2.7 --relocatable macss_env
+#. macss_env/bin/activate
 
 pip install --upgrade pip
 pip install --upgrade pip-tools
@@ -18,8 +34,9 @@ pip-compile --output-file requirements.txt ../../requirements.in
 pip install -r requirements.txt
 cd ..
 
-deactivate
+#deactivate
 
 tar czf macss_env.tar.gz macss_env
 
+rm -rf Python-* macss_env
 

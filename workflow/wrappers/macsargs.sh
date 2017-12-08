@@ -11,12 +11,9 @@ NUM=$(echo $MODEL | cut -d "_" -f3)
 tar xzf model.tar.gz
 cd model
 
-# set up the venv
-. /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
-module load python/2.7
-# update the venv to the new location
-virtualenv-2.7 workflow/macss_env
-. workflow/macss_env/bin/activate
+# set up the env
+export PATH=$PWD/workflow/macss_env/bin:$PATH
+which -a python
 
 CMD="python gen_macsargs_${NUM}.py $JOB_ID $SIM_SIZE prior 0 ."
 echo

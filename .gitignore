@@ -23,6 +23,7 @@ workflow/dax.xml
 workflow/macss_env
 workflow/macss_env.tar.gz
 workflow/model.tar.gz
+workflow/runs
 *estStatisticsForModelChoice.*
 input*.txt
 *ABCtoolbox*
