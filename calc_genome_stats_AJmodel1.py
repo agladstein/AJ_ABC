@@ -250,13 +250,13 @@ def main():
 
         out_file = open(genome_results_file, 'a')
         out_file.write('sim\t{}\t{}\n'.format('\t'.join(names), '\t'.join(IBD_head)))
-        out_file.write('{}\t{}\t{}'.format(job, '\t'.join(map(str,values)), '\t'.join(map(str,IBD_stats))))
+        out_file.write('{}\t{}\t{}\n'.format(job, '\t'.join(map(str,values)), '\t'.join(map(str,IBD_stats))))
         out_file.close()
     else:
         print '{} does not exist. If you want IBD rerun run_sims_AJmodel1_chr_all.py with the germline option'.format(germline_file_name)
         out_file = open(genome_results_file, 'a')
         out_file.write('sim\t{}\n'.format('\t'.join(names)))
-        out_file.write('{}\t{}'.format(job, '\t'.join(map(str,values))))
+        out_file.write('{}\t{}\n'.format(job, '\t'.join(map(str,values))))
         out_file.close()
 
 if __name__ == '__main__':
