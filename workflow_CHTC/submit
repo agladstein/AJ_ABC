@@ -9,28 +9,26 @@ if [ ! -e sites.xml.template ]; then
 fi
 
 # did the user specify the number of jobs
-if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" -o "x$4" == "x" ]; then
-    echo "Please specify model, job start id, end id, and if you want Comet."
-    echo "Example: ./submit run_sims_AJmodel2_chr_all.py 100 300 False"
+if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" ]; then
+    echo "Please specify model, job start id, end id"
+    echo "Example: ./submit run_sims_AJmodel2_chr_all.py 100 300"
     exit 1
 fi
 MODEL=$1
 JOB_START=$2
 JOB_END=$3
-export WANTS_COMET=$4
 
-module load pegasus
-module load stashcp
+########################
+module load pegasus ############### What is CHTC equivalent?
+module load stashcp #probably don't need this
+#######################
 
 TOP_DIR=`pwd`
 
 export RUN_ID=macsswig_simsaj_genome_`date +'%s'`
 
-export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
+export RUN_DIR=/home/$USER/workflows/$RUN_ID
 mkdir -p $RUN_DIR
-
-# makeing sure we have current venv
-make
 
 # we need a full tarball of the model code 
 # do this by a copy first so we can clean up before tar

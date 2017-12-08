@@ -1,21 +1,29 @@
 #!/bin/bash
 
+# Only run this job once to build the virtual environment
+
 set -e
 
-. /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
+# untar prebuilt_python
+tar -zxf prebuilt_python2.tar.gz
 
-# python 2.7 or up is required for our version of numpy
-module load python/2.7
+# put python in path
+export PATH=$(pwd)/python2/bin:$PATH
 
-virtualenv-2.7 macss_env
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
+
+which -a pip
+
+pip install virtualenv
+
+virtualenv-2.7 --relocatable macss_env
 . macss_env/bin/activate
 
 pip install --upgrade pip
-pip install --upgrade pip-tools
 
 cd macss_env
-pip-compile --output-file requirements.txt ../../requirements.in
-pip install -r requirements.txt
+pip install -r ../../requirements.txt
 cd ..
 
 deactivate
