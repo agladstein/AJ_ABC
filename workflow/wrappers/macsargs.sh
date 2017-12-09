@@ -12,6 +12,7 @@ tar xzf model.tar.gz
 cd model
 
 # set up the env
+export LD_LIBRARY_PATH=$PWD/workflow/macss_env/lib
 export PATH=$PWD/workflow/macss_env/bin:$PATH
 which -a python
 

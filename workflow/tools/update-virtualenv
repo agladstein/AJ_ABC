@@ -8,7 +8,7 @@ rm -rf Python-* macss_env
 wget -nv https://www.python.org/ftp/python/2.7.14/Python-2.7.14.tgz
 tar xzf Python-2.7.14.tgz
 cd Python-2.7.14
-./configure --prefix=$TOP_DIR/macss_env
+./configure --prefix=$TOP_DIR/macss_env --disable-shared
 make
 make install
 
