@@ -2,26 +2,38 @@ from sys import argv
 import os
 import pandas as pd
 import numpy as np
-import shutil
 import glob
 
 '''
 This script combines the summary stats from all the chromosomes into genome summary stats
 '''
 
+
+def string_starts_with_any(candidate, starting_strings):
+    """
+    check to see if a string starts with any of a sequence of strings
+    :param candidate: string to search in
+    :param starting_strings: string that you want candidate to start with
+    :return: potential_matches: return True when at least one of the elements is Truthy
+    """
+    potential_matches = [candidate.startswith(starting_string) for starting_string in starting_strings]
+    return any(potential_matches)
+
+
 def create_df(path, job):
-    '''
+    """
     Create a pandas dataframe containing the stats from all chromosomes
     :param path: path to output directory
     :param job: job id (not including chr)
     :return: dataframe containing stats from all chromosomes
-    '''
+    """
+
     print 'creating dataframe of stats from all chromosomes'
 
     chr_stats_df = pd.DataFrame()
     list_ = []
-    for chr in range(1, 22+1):
-        file = '{}/results_{}_chr{}.txt'.format(path, job, chr)
+    for chr_number in range(1, 22+1):
+        file = '{}/results_{}_chr{}.txt'.format(path, job, chr_number)
         if os.path.isfile(file):
             print(file)
             df = pd.read_csv(file, sep = '\t')
@@ -29,37 +41,41 @@ def create_df(path, job):
     chr_stats_df = pd.concat(list_)
     return chr_stats_df
 
+
 def standardize_stats(chr_stats_df):
-    '''
+    """
     standardize stats by relative chromosome length
     :param chr_stats_df: dataframe with statistics for each chromosome. 
     :return: chr_stats_stand_df: dataframe with statistics for each chromosome, where number of segregating sites,
      singletons, doubletons, and pi are scaled by chromosome size relative to chromosome 1.
-    '''
+    """
 
     chr_stats_stand_df = pd.DataFrame()
+    columns_start_for_stand = ('Seg', 'Sing', 'Dupl', 'Pi')
     scalar = int(chr_stats_df.length[:1])
     chr_stats_stand_df['chr_ratio'] = chr_stats_df['length']/scalar
     for column in chr_stats_df:
-        if 'Seg' in column or 'Sing' in column or 'Dupl' in column or 'Pi' in column:
-            chr_stats_stand_df[str(column)+'_stand'] = chr_stats_df[column] / chr_stats_stand_df['chr_ratio']
+        if string_starts_with_any(column, columns_start_for_stand):
+            chr_stats_stand_df[str(column) + '_stand'] = chr_stats_df[column] / chr_stats_stand_df['chr_ratio']
         else:
             chr_stats_stand_df[column] = chr_stats_df[column]
     return chr_stats_stand_df
 
+
 def summarize_stats(chr_stats_stand_df):
-    '''
+    """
     summarize standardize stats across chromosomes with mean and standard deviation
     :param chr_stats_stand_df: dataframe with statistics for each chromosome, where number of segregating sites,
      singletons, doubletons, and pi are scaled by chromosome size relative to chromosome 1.
     :return: names: list of headers
     :return: values: list of parameter values and mean and standard deviation of summary stats
-    '''
+    """
 
     names = []
     values = []
+    columns_start_for_summarize = ('Seg', 'Sing', 'Dupl', 'Pi', 'TajD')
     for column in chr_stats_stand_df.drop(['chr','chr_ratio','length'], axis=1):
-        if 'Seg' in column or 'Sing' in column or 'Dupl' in column or 'Pi' in column or 'TajD' in column or 'Pi' in column:
+        if string_starts_with_any(column, columns_start_for_summarize):
             mean = chr_stats_stand_df[column].mean(axis=0)
             names.append('{}_mean'.format(column))
             values.append(mean)
@@ -74,13 +90,14 @@ def summarize_stats(chr_stats_stand_df):
 
     return [names, values]
 
+
 def combine_IBD_lengths(path, job):
-    '''
+    """
     gather IBD lengths from .match germline output for all chromosomes
     :param path: path to output directory
     :param job: job id (not including chr)
     :return: pairs: list of lists of lengths of IBD segments shared between populations
-    '''
+    """
 
     IBDlengths_eAeA = []
     IBDlengths_wAwA = []
@@ -102,10 +119,10 @@ def combine_IBD_lengths(path, job):
     IBDlengths_JE = []
     IBDlengths_ME = []
 
-    for chr in range(1, 22+1):
-        germline_file_name = '{}/macs_asc_{}_chr{}.match'.format(path, job, chr)
+    for chr_number in range(1, 22+1):
+        germline_file_name = '{}/macs_asc_{}_chr{}.match'.format(path, job, chr_number)
         if os.path.isfile(germline_file_name):
-            print 'reading Germline IBD output chr{}'.format(chr)
+            print 'reading Germline IBD output chr{}'.format(chr_number)
             filegermline = open(germline_file_name, 'r')
             for line in filegermline:
                 pop1 = line.split()[0]
@@ -159,13 +176,14 @@ def combine_IBD_lengths(path, job):
              IBDlengths_AM, IBDlengths_JM, IBDlengths_JE, IBDlengths_ME]
     return pairs
 
+
 def calc_IBS_stats(pairs):
-    '''
+    """
     Calculate summary statistics on lengths of IBD segments shared between populations
     :param pairs: list of lists of lengths of IBD segments shared between populations
     :return: IBD_stats: list of IBD statistics
     :return: IBD_head: list of names of IBD statistics, in the same order as the IBD_stats list.
-    '''
+    """
 
     print 'calculating IBD summary stats'
 
@@ -253,7 +271,7 @@ def main():
         out_file.write('{}\t{}\t{}\n'.format(job, '\t'.join(map(str,values)), '\t'.join(map(str,IBD_stats))))
         out_file.close()
     else:
-        print '{} does not exist. If you want IBD rerun run_sims_AJmodel1_chr_all.py with the germline option'.format(germline_file_name)
+        print 'germline .match files do not exist. If you want IBD, rerun run_sims_AJmodel1_chr_all.py with the germline option'
         out_file = open(genome_results_file, 'a')
         out_file.write('sim\t{}\n'.format('\t'.join(names)))
         out_file.write('{}\t{}\n'.format(job, '\t'.join(map(str,values))))
