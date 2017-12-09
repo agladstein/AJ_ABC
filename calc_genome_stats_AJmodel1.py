@@ -83,7 +83,7 @@ def standardize_count_stats(chr_stats_df):
     return chr_stats_stand_df
 
 
-def summarize_stats(chr_stats_stand_df):
+def mean_sd_stats(chr_stats_stand_df):
     """
     summarize standardize stats across chromosomes with mean and standard deviation
     :param chr_stats_stand_df: dataframe with statistics for each chromosome, where number of segregating sites,
@@ -94,7 +94,7 @@ def summarize_stats(chr_stats_stand_df):
 
     names = []
     values = []
-    columns_start_for_summarize = ('Seg', 'Sing', 'Dupl', 'Pi', 'TajD')
+    columns_start_for_summarize = ('Seg', 'Sing', 'Dupl', 'Pi', 'TajD', 'FST')
     for column in chr_stats_stand_df.drop(['chr','chr_ratio','length'], axis=1):
         if string_starts_with_any(column, columns_start_for_summarize):
             mean = chr_stats_stand_df[column].mean(axis=0)
@@ -104,6 +104,31 @@ def summarize_stats(chr_stats_stand_df):
             std = chr_stats_stand_df[column].std(axis=0)
             names.append('{}_std'.format(column))
             values.append(std)
+        else:
+            value = chr_stats_stand_df[column].iloc[0]
+            names.append(column)
+            values.append(value)
+
+    return [names, values]
+
+
+def sum_stats(chr_stats_stand_df):
+    """
+    sum each stat (or standardized stat) across all chromosomes
+    :param chr_stats_stand_df: dataframe with statistics for each chromosome, where Tajima's D, Fst, and pi 
+    are scaled by chromosome size relative to genome size.
+    :return: names: list of headers
+    :return: values: list of parameter values and sum of summary stats
+    """
+
+    names = []
+    values = []
+    columns_start_for_sum = ('Seg', 'Sing', 'Dupl', 'Pi', 'TajD', 'FST')
+    for column in chr_stats_stand_df.drop(['chr', 'genome_fraction', 'length'], axis=1):
+        if string_starts_with_any(column, columns_start_for_sum):
+            sum_stat = chr_stats_stand_df[column].sum(axis=0)
+            names.append('{}_sum'.format(column))
+            values.append(sum_stat)
         else:
             value = chr_stats_stand_df[column].iloc[0]
             names.append(column)
@@ -278,9 +303,8 @@ def main():
         exit()
 
     chr_stats_df = create_df(path, job)
-    # chr_stats_stand_df = standardize_count_stats(chr_stats_df)
     chr_stats_stand_df = standardize_relative_stats(chr_stats_df)
-    [names, values] = summarize_stats(chr_stats_stand_df)
+    [names, values] = sum_stats(chr_stats_stand_df)
 
     germline_files = '{}/macs_asc_{}_*.match'.format(path, job)
     if len(germline_files) > 0:
