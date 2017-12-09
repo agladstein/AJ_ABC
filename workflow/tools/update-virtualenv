@@ -38,5 +38,5 @@ cd ..
 
 tar czf macss_env.tar.gz macss_env
 
-rm -rf Python-* macss_env
+rm -rf Python-*
 
