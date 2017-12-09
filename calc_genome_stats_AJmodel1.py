@@ -42,7 +42,28 @@ def create_df(path, job):
     return chr_stats_df
 
 
-def standardize_stats(chr_stats_df):
+def standardize_relative_stats(chr_stats_df):
+    """
+    standardize 'relative' stats by multiplying by chromosome length divided by genome length
+    :param chr_stats_df: dataframe with statistics for each chromosome. 
+    :return: chr_stats_stand_df: dataframe with statistics for each chromosome, where Tajima's D, Fst, and pi 
+    are scaled by chromosome size relative to genome size.
+    """
+
+    chr_stats_stand_df = pd.DataFrame()
+    columns_start_for_stand = ('TajD', 'FST', 'Pi')
+    genome_length = int(chr_stats_df.length.sum(axis=0))
+    chr_stats_stand_df['genome_fraction'] = chr_stats_df['length']/genome_length
+    for column in chr_stats_df:
+        if string_starts_with_any(column, columns_start_for_stand):
+            chr_stats_stand_df[str(column) + '_stand'] = chr_stats_df[column] * chr_stats_stand_df['genome_fraction']
+        else:
+            chr_stats_stand_df[column] = chr_stats_df[column]
+    print chr_stats_stand_df
+    return chr_stats_stand_df
+
+
+def standardize_count_stats(chr_stats_df):
     """
     standardize stats by relative chromosome length
     :param chr_stats_df: dataframe with statistics for each chromosome. 
@@ -245,7 +266,6 @@ def main():
 
     print 'JOB', job
 
-
     genome_results_file = '{}/results_{}.txt'.format(path, job)
     try:
         os.remove(genome_results_file)
@@ -258,7 +278,8 @@ def main():
         exit()
 
     chr_stats_df = create_df(path, job)
-    chr_stats_stand_df = standardize_stats(chr_stats_df)
+    # chr_stats_stand_df = standardize_count_stats(chr_stats_df)
+    chr_stats_stand_df = standardize_relative_stats(chr_stats_df)
     [names, values] = summarize_stats(chr_stats_stand_df)
 
     germline_files = '{}/macs_asc_{}_*.match'.format(path, job)
