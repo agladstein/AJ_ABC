@@ -11,7 +11,8 @@ SNP_FILE=$4
 tar xzf model.tar.gz
 cd model
 
-# set up the env
+# set up the env (HOME is due to some CHTC machines not having our user)
+export HOME=$PWD
 export LD_LIBRARY_PATH=$PWD/workflow/macss_env/lib
 export PATH=$PWD/workflow/macss_env/bin:$PATH
 which -a python
