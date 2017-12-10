@@ -1,5 +1,6 @@
 from bisect import bisect_right
 import hashlib
+from random import randint
 
 def find2(a, x):
     """This function receives the array with available sites (sites that passed the frequency cut-off)"""
