@@ -6,7 +6,7 @@
 # rsync the final_results from OSG to Atmo
 
 VERSION=$1
-OSG_DIR=${OSG_PATH}/macsswig_simsaj_$VERSION
+OSG_DIR=/local-scratch/agladstein/workflows/macsswig_simsaj_$VERSION
 ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}/OSG
 
 HOST_NAME=login02.osgconnect.net
