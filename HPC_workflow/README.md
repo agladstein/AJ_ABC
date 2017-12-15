@@ -18,7 +18,7 @@ Where `GOAL` is the number of simulations you want to complete,
 
 for example:
 ```bash
-/home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 200 genome 1 cluster
+/home/u15/agladstein/ABC/macsSwig_AJmodels/HPC_workflow/checkque_ice.sh 500000 200 genome 1 cluster
 ```
 
 In order to run the switch files must be present in the `HPC_workflow` directory,
@@ -26,7 +26,19 @@ In order to run the switch files must be present in the `HPC_workflow` directory
 /home/u15/agladstein/ABC/macsSwig_AJmodels/HPC_workflow/switch1.txt
 /home/u15/agladstein/ABC/macsSwig_AJmodels/HPC_workflow/switch2.txt
 /home/u15/agladstein/ABC/macsSwig_AJmodels/HPC_workflow/switch3.txt
-
 ```
+
+`checkque_ice.sh` -> `main_function_AJmodel_j2.sh` -> `chain_pbs.j2`
+
+### Template PBS
+
+`main_function_AJmodel_j2.sh` uses jinja templates to create the appropriate PBS scripts
+
+There are four jinja templates:  
+`chain_pbs.j2`  
+`macsargs_pbs.j2`  
+`run-sim_pbs.j2`  
+`genome_stats_pbs.j2`
+
 
 ## Ocelote

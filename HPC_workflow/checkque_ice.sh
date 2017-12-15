@@ -3,6 +3,8 @@ cd /home/u15/agladstein/ABC/macsSwig_AJmodels/HPC_workflow
 
 ## This script should only be used on ICE
 
+set -e # quits at first error
+
 GOAL=$1
 QUEMAX=$2
 VERSION=genome #$3
@@ -17,7 +19,7 @@ set -f
 
 if [ -e switch${MODEL}.txt ] ; then
 
-    IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/8bfef8b8f3f7c43fd99832a323ef7130f98571bb/atmo_instance_ip.txt)
+    IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/669a0e602306776ffa8d8be33e63574dfa2d1766/atmo_instance_ip.txt)
 
     echo ""
     echo "#################"
@@ -75,7 +77,7 @@ if [ -e switch${MODEL}.txt ] ; then
         else
 	        #create PBS scripts
             echo "./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}"
-#            ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}
+            ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}
 
             exit
 

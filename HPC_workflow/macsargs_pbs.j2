@@ -1,0 +1,39 @@
+#!/bin/bash
+#PBS -N macsargs{{ MODEL }}
+#PBS -W group_list=mfh
+#PBS -J {{ JNUM }}
+#PBS -q {{ QUE }}
+#PBS -l cput={{ TIME }}:00:00
+#PBS -l walltime={{ TIME }}:00:00
+{% if JOBTYPE | default(False) -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb:pcmem={{ MEM }}gb
+#PBS -l jobtype={{ JOBTYPE }}
+{% else -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
+{% endif -%}
+#PBS -m abe 
+#PBS -M agladstein@email.arizona.edu
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load {{ PYTHONMOD }}
+
+cd $PBS_O_WORKDIR
+
+SYSTEM=$(echo {{ JOBTYPE }} | cut -d "_" -f1)
+
+PBS_ID=$(echo ${PBS_JOBID} | cut -d '[' -f1)
+echo "PBS_ID: ${PBS_ID}"
+
+JOB_ID=${PBS_ID}_${PBS_ARRAY_INDEX}
+echo "JOB_ID: ${JOB_ID}"
+
+BUCKET_OUT_PATH={{ OUT_PATH }}/${PBS_ID}
+BUCKET_OE_PATH=${PBS_O_WORKDIR}/outerror/${PBS_ID}
+
+mkdir -p ${BUCKET_OUT_PATH}
+{#mkdir -p ${BUCKET_OE_PATH}#}
+
+echo "{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID full prior 0 ${BUCKET_OUT_PATH}>& /dev/null"
+
+echo "/usr/pbs/bin/qsub -v JOB_ID=$JOB_ID,PBS_ARRAY_INDEX=${PBS_ARRAY_INDEX},PBS_ID=${PBS_ID} ${PBS_O_WORKDIR}/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs"
