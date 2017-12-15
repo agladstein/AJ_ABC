@@ -29,11 +29,26 @@ JOB_ID=${PBS_ID}_${PBS_ARRAY_INDEX}
 echo "JOB_ID: ${JOB_ID}"
 
 BUCKET_OUT_PATH={{ OUT_PATH }}/${PBS_ID}
-BUCKET_OE_PATH=${PBS_O_WORKDIR}/outerror/${PBS_ID}
-
+echo "BUCKET_OUT_PATH: ${BUCKET_OUT_PATH}"
 mkdir -p ${BUCKET_OUT_PATH}
+
+BUCKET_OE_PATH=${PBS_O_WORKDIR}/outerror/${PBS_ID}
+echo "BUCKET_OE_PATH: ${BUCKET_OE_PATH}"
 {#mkdir -p ${BUCKET_OE_PATH}#}
 
-echo "{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID full prior 0 ${BUCKET_OUT_PATH}>& /dev/null"
 
-echo "/usr/pbs/bin/qsub -v JOB_ID=$JOB_ID,PBS_ARRAY_INDEX=${PBS_ARRAY_INDEX},PBS_ID=${PBS_ID} ${PBS_O_WORKDIR}/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs"
+{#echo "{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID full prior 0 ${BUCKET_OUT_PATH}"#}
+
+{#echo "/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs"#}
+
+
+echo "{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}"
+{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}
+
+echo "SECOND=$(/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)"
+echo ${SECOND}
+
+echo "THIRD=$(/usr/pbs/bin/qsub -W depend=afterok:${SECOND} -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/genome_stats_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)"
+echo ${THIRD}
+
+
