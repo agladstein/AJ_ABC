@@ -77,7 +77,7 @@ if [ "$SUBMIT_ENV" = "OSG_Connect" ]; then
         --relative-dir $RUN_ID \
         --sites osg \
         --staging-site stash \
-        --output-site atmosphere_vm \
+        --output-site local \
         --cleanup inplace \
         --dir $RUN_DIR/workflow \
         --dax $RUN_DIR/dax.xml \
@@ -89,7 +89,7 @@ else
         --conf pegasus.conf \
         --relative-dir $RUN_ID \
         --sites condorpool \
-        --output-site atmosphere_vm \
+        --output-site local \
         --cleanup inplace \
         --dir $RUN_DIR/workflow \
         --dax $RUN_DIR/dax.xml \
