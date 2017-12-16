@@ -14,7 +14,6 @@ SYSTEM=$5 #smp, cluster, htc
 
 RESULTS=${OUT}/results_sims_AJ_M${MODEL}
 
-
 set -f
 
 if [ -e switch${MODEL}.txt ] ; then
@@ -24,6 +23,7 @@ if [ -e switch${MODEL}.txt ] ; then
     echo ""
     echo "#################"
     date
+    echo "pwd: ${PWD}"
     echo "Goal: ${GOAL}"
     echo "Que max: ${QUEMAX} "
     echo "Version: ${VERSION}"
@@ -60,15 +60,9 @@ if [ -e switch${MODEL}.txt ] ; then
         fi
         echo $JOBS
         n=0
-        m=0
-        p=0
         for j in $JOBS; do
 	        q=$($qstat -t $j | grep -w "Q" | wc -l)
 	        n=$(($n + $q))
-	        r=$($qstat -t $j | grep "stan" | grep -w "R" | wc -l)
-	        m=$(($m + $r))
-	        s=$($qstat -t $j | grep "qual" | wc -l)
-	        p=$(($p + $s))
         done
         echo "You have $n jobs in the que"
         if [ "$n" -ge "$QUEMAX" ]; then
@@ -79,44 +73,14 @@ if [ -e switch${MODEL}.txt ] ; then
             echo "./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}"
             ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}
 
-            exit
+            cd /home/u15/agladstein/ABC
+            echo "rsync -za macsSwig_AJmodels /xdisk/agladstein/macsSwig_AJmodels; cd /xdisk/agladstein/macsSwig_AJmodels"
+            rsync -za macsSwig_AJmodels /xdisk/agladstein/
+            cd /xdisk/agladstein/macsSwig_AJmodels
 
-            #check standard hrs left in group
-            SHRS=$(va | cut -f2 | tail -1 | cut -d ":" -f1)
-	        DAYS=$(( $(($(cal | wc -w) - 9)) - $(($(date | cut -d " " -f3))) ))
-	        SBOUND=$(( $DAYS * 1 + $n + $m))
-
-	        echo "${SHRS} mfh standard hrs are left"
-	        echo "There are $DAYS days left in the month"
-            echo "You should leave $SBOUND for the rest of the lab"
-
-            if [ "$SHRS" -le "$SBOUND" ]; then
-                echo "There are no standard hrs left to use"
-
-                if [ "$SYSTEM" == "smp" ] || [ "$SYSTEM" == "ocelote" ] ; then
-                    #check qualified hrs left in group
-                    QHRS=$(va | cut -f3 | tail -1 | cut -d ":" -f1)
-                    QBOUND=$p
-                    echo "${QHRS} mfh qualified hrs are left"
-                    if [ "$QHRS" -gt "$QBOUND" ]; then
-                        echo "Submit to qualified"
-                        echo "$qsub model${MODEL}_${SYSTEM}_qualified.pbs"
-                        $qsub model${MODEL}_${SYSTEM}_qualified.pbs
-                        exit
-                    else
-                        echo "There are no qualified hrs left to use"
-                    fi
-                fi
-
-                echo "Submit to windfall"
-                echo "$qsub model${MODEL}_${SYSTEM}_windfall.pbs"
-                $qsub model${MODEL}_${SYSTEM}_windfall.pbs
-
-            else
-                echo "Submit to standard"
-	            echo "$qsub model${MODEL}_${SYSTEM}_standard.pbs"
-	            $qsub model${MODEL}_${SYSTEM}_standard.pbs
-	        fi
+            echo "Submit to windfall"
+            echo "$qsub HPC_workflow/PBS/macsargs_model${MODEL}_${SYSTEM}_windfall.pbs"
+            $qsub HPC_workflow/PBS/macsargs_model${MODEL}_${SYSTEM}_windfall.pbs
         fi
     fi
 else

@@ -12,7 +12,6 @@
 #PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
 {% endif -%}
 #PBS -m abe 
-#PBS -M agladstein@email.arizona.edu
 #PBS -l place=pack:shared
 #PBS -j oe
 
@@ -32,23 +31,27 @@ BUCKET_OUT_PATH={{ OUT_PATH }}/${PBS_ID}
 echo "BUCKET_OUT_PATH: ${BUCKET_OUT_PATH}"
 mkdir -p ${BUCKET_OUT_PATH}
 
-BUCKET_OE_PATH=${PBS_O_WORKDIR}/outerror/${PBS_ID}
+BUCKET_OE_PATH=/xdisk/agladstein/outerror/${PBS_ID}
 echo "BUCKET_OE_PATH: ${BUCKET_OE_PATH}"
-{#mkdir -p ${BUCKET_OE_PATH}#}
+mkdir -p $BUCKET_OE_PATH
+#PBS -o /xdisk/agladstein/outerror/${PBS_ID}
 
+RUN_DIR=/xdisk/agladstein/macsSwig_AJmodels
+
+cd $RUN_DIR
 
 {#echo "{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID full prior 0 ${BUCKET_OUT_PATH}"#}
 
 {#echo "/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs"#}
 
 
-echo "{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}"
-{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}
+echo "{{ PYTHONENV }} ${RUN_DIR}/gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}"
+{{ PYTHONENV }} ${RUN_DIR}/gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}
 
-echo "SECOND=$(/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)"
+SECOND=$(/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID,RUN_DIR=$RUN_DIR ${PBS_O_WORKDIR}/HPC_workflow/PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)
 echo ${SECOND}
 
-echo "THIRD=$(/usr/pbs/bin/qsub -W depend=afterok:${SECOND} -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/genome_stats_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)"
+THIRD=$(/usr/pbs/bin/qsub -W depend=afterok:${SECOND} -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID,RUN_DIR=$RUN_DIR ${PBS_O_WORKDIR}/HPC_workflow/PBS/genome_stats_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)
 echo ${THIRD}
 
 

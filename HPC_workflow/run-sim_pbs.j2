@@ -12,13 +12,13 @@
 #PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
 {% endif -%}
 #PBS -m abe 
-#PBS -M agladstein@email.arizona.edu
 #PBS -l place=pack:shared
 #PBS -j oe
 
 module load {{ PYTHONMOD }}
 
-cd $PBS_O_WORKDIR
+
+cd $RUN_DIR
 
 SYSTEM=$(echo {{ JOBTYPE }} | cut -d "_" -f1)
 
@@ -32,8 +32,8 @@ CHR=$PBS_ARRAY_INDEX
 {#echo "/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/genome_stats_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs"#}
 
 
-echo "{{ PYTHONENV }} run_sims_AJmodel{{ MODEL }}_chr_all.py ${CHR} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt test_genome.bed 0 ${BUCKET_OUT_PATH}"
-{{ PYTHONENV }} run_sims_AJmodel{{ MODEL }}_chr_all.py ${CHR} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt test_genome.bed 0 ${BUCKET_OUT_PATH}
+echo "{{ PYTHONENV }} ${RUN_DIR}/run_sims_AJmodel{{ MODEL }}_chr_all.py ${CHR} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt ${RUN_DIR}/test_genome.bed 0 ${BUCKET_OUT_PATH}"
+{{ PYTHONENV }} ${RUN_DIR}/run_sims_AJmodel{{ MODEL }}_chr_all.py ${CHR} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt ${RUN_DIR}/test_genome.bed 0 ${BUCKET_OUT_PATH}
 echo "rm ${BUCKET_OUT_PATH}/sim_data_AJ_M{{ MODEL }}/macs_asc_${JOB_ID}_chr${CHR}.ped"
 echo "rm ${BUCKET_OUT_PATH}/sim_data_AJ_M{{ MODEL }}/macs_asc_${JOB_ID}_chr${CHR}.map"
 

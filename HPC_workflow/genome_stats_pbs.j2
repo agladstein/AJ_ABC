@@ -11,16 +11,15 @@
 #PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
 {% endif -%}
 #PBS -m abe 
-#PBS -M agladstein@email.arizona.edu
 #PBS -l place=pack:shared
 #PBS -j oe
 
 module load {{ PYTHONMOD }}
 
-cd $PBS_O_WORKDIR
+cd $RUN_DIR
 
-echo "{{ PYTHONENV }} calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}"
-{{ PYTHONENV }} calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}
+echo "{{ PYTHONENV }} ${RUN_DIR}/calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}"
+{{ PYTHONENV }} ${RUN_DIR}/calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}
 echo "rm ${BUCKET_OUT_PATH}/germline_out_AJ_M{{ MODEL }}/*${JOB_ID}*"
 
 {#echo "./drive_rsync_rm.sh {{ MODEL }} ${BUCKET_OUT_PATH} ${SIM} ${RESULTS} ${PBS_ID}"#}
