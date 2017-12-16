@@ -1,0 +1,27 @@
+#!/bin/bash
+#PBS -N stats{{ MODEL }}
+#PBS -W group_list=mfh
+#PBS -q {{ QUE }}
+#PBS -l cput=1:00:00
+#PBS -l walltime=1:00:00
+{% if JOBTYPE | default(False) -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb:pcmem={{ MEM }}gb
+#PBS -l jobtype={{ JOBTYPE }}
+{% else -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
+{% endif -%}
+#PBS -m abe 
+#PBS -M agladstein@email.arizona.edu
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load {{ PYTHONMOD }}
+
+cd $PBS_O_WORKDIR
+
+echo "{{ PYTHONENV }} calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}"
+{{ PYTHONENV }} calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}
+echo "rm ${BUCKET_OUT_PATH}/germline_out_AJ_M{{ MODEL }}/*${JOB_ID}*"
+
+{#echo "./drive_rsync_rm.sh {{ MODEL }} ${BUCKET_OUT_PATH} ${SIM} ${RESULTS} ${PBS_ID}"#}
+

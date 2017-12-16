@@ -59,7 +59,6 @@ def standardize_relative_stats(chr_stats_df):
             chr_stats_stand_df[str(column) + '_stand'] = chr_stats_df[column] * chr_stats_stand_df['genome_fraction']
         else:
             chr_stats_stand_df[column] = chr_stats_df[column]
-    print chr_stats_stand_df
     return chr_stats_stand_df
 
 

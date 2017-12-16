@@ -1,0 +1,46 @@
+#!/bin/bash
+#PBS -N chain{{ MODEL }}
+#PBS -W group_list=mfh
+#PBS -q {{ QUE }}
+#PBS -J {{ JNUM }}
+#PBS -l cput=60:00:00
+#PBS -l walltime=60:00:00
+{% if JOBTYPE | default(False) -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb:pcmem={{ MEM }}gb
+#PBS -l jobtype={{ JOBTYPE }}
+{% else -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
+{% endif -%}
+#PBS -m abe 
+#PBS -M agladstein@email.arizona.edu
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load {{ PYTHONMOD }}
+
+cd $PBS_O_WORKDIR
+echo PBS_ARRAY_INDEX=$PBS_ARRAY_INDEX
+NOW=$(date +%m%d%y%s)
+ID=$NOW"_"$PBS_ARRAY_INDEX
+
+PBS_ID=$(echo ${PBS_JOBID} | cut -d '[' -f1)
+SIM=sim_${ID}_values.txt
+RESULTS=ms_output_${ID}.summary
+BUCKET_OUT_PATH={{ OUT_PATH }}/${PBS_ID}
+BUCKET_OE_PATH=${PBS_O_WORKDIR}/outerror/${PBS_ID}
+
+SYSTEM = $(echo {{ JOBTYPE }} | cut -d "_" -f1)
+
+mkdir -p ${BUCKET_OUT_PATH}
+mkdir -p ${BUCKET_OE_PATH}
+
+FIRST=$(qsub PBS/macsargs_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)
+echo ${FIRST}
+
+SECOND=$(qsub -w depend=afterok:${FIRST} PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)
+echo ${SECOND}
+
+THIRD=$(qsub -w depend=afterok:${SECOND} genome_stats_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)
+echo ${THIRD}
+
+
