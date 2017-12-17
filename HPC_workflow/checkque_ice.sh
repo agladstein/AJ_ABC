@@ -14,6 +14,8 @@ SYSTEM=$5 #smp, cluster, htc
 
 RESULTS=${OUT}/results_sims_AJ_M${MODEL}
 
+ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}/HPC
+
 set -f
 
 if [ -e switch${MODEL}.txt ] ; then
@@ -41,8 +43,7 @@ if [ -e switch${MODEL}.txt ] ; then
 
     #check number of completed simulations
     echo "Check for ${GOAL} completed runs in $RESULTS"
-#    COMP=$(ssh agladstein@${IP_ADDRESS} find /vol_c/results_macsSwig_AJmodels_${VERSION}/HPC/sim_values_AJ_M${MODEL} -type f | wc -l)
-    COMP=5
+    COMP=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR} -type f | wc -l)
     echo "${COMP} runs have completed"
     if [ "$COMP" -ge "$GOAL" ]; then
         echo "Goal completed"
