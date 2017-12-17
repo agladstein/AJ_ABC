@@ -3,7 +3,7 @@
 set -e # quits at first error
 
 VERSION=$1
-HPC_DIR=/rsgrps/mfh4/Ariella/macsSwig_AJmodels_genome/${VERSION}
+HPC_DIR=/rsgrps/mfh4/Ariella/macsSwig_AJmodels_${VERSION}
 ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}/HPC
 
 HOST_NAME=sftp.hpc.arizona.edu
@@ -14,4 +14,7 @@ echo "ATMO ${ATMO_DIR}"
 echo "HPC ${HPC_DIR}"
 
 
-rsync -avzn agladstein@${HOST_NAME}
+echo "rsync -az --remove-source-files --exclude '*chr*' --exclude '*ped' --exclude '*map' --exclude '*match' --exclude '*log' agladstein@${HOST_NAME}:${HPC_DIR} ${ATMO_DIR}"
+rsync -az --remove-source-files --exclude '*chr*' --exclude '*ped' --exclude '*map' --exclude '*match' --exclude '*log' agladstein@${HOST_NAME}:${HPC_DIR} ${ATMO_DIR}
+
+echo "Finished transfer"
