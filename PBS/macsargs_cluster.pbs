@@ -1,0 +1,36 @@
+#!/bin/bash
+#PBS -N macsargs
+#PBS -m bea
+#PBS -M agladstein@email.arizona.edu
+#PBS -W group_list=mfh
+#PBS -q windfall
+#PBS -l cput=1:0:0
+#PBS -l walltime=1:0:0
+#PBS -l jobtype=cluster_only
+#PBS -j oe
+#PBS -l select=1:ncpus=1:mem=4gb:pcmem=4gb
+
+module load
+
+MODEL=$1
+JOB_ID=$2
+SIM_SIZE=$3
+OUT_PATH=$4
+NUM=$(echo $MODEL | cut -d "_" -f3)
+
+cd $PBS_O_WORKDIR
+echo PBS_ARRAY_INDEX=$PBS_ARRAY_INDEX
+NOW=$(date +%m%d%y%s)
+ID=$NOW"_"$PBS_ARRAY_INDEX
+
+PBS_ID=$(echo ${PBS_JOBID} | cut -d '[' -f1)
+SIM=sim_${ID}_values.txt
+RESULTS=ms_output_${ID}.summary
+BUCKET_OUT_PATH=${OUT_PATH}/${PBS_ID}
+BUCKET_OE_PATH=${PBS_O_WORKDIR}/outerror/${PBS_ID}
+
+mkdir -p ${BUCKET_OUT_PATH}
+mkdir -p ${BUCKET_OE_PATH}
+
+macss_env_ice/bin/python gen_macsargs_${NUM}.py $JOB_ID $SIM_SIZE prior 0 ${BUCKET_OUT_PATH}
+

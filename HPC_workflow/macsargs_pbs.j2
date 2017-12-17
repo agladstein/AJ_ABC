@@ -36,13 +36,8 @@ RUN_DIR=/xdisk/agladstein/macsSwig_AJmodels
 
 cd $RUN_DIR
 
-{#echo "{{ PYTHONENV }} gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID full prior 0 ${BUCKET_OUT_PATH}"#}
-
-{#echo "/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID ${PBS_O_WORKDIR}/HPC_workflow/PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs"#}
-
-
-echo "{{ PYTHONENV }} ${RUN_DIR}/gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}"
-{{ PYTHONENV }} ${RUN_DIR}/gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID 100000 prior 0 ${BUCKET_OUT_PATH}
+echo "{{ PYTHONENV }} ${RUN_DIR}/gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID full prior 0 ${BUCKET_OUT_PATH}"
+{{ PYTHONENV }} ${RUN_DIR}/gen_macsargs_AJmodel{{ MODEL }}.py $JOB_ID full prior 0 ${BUCKET_OUT_PATH}
 
 SECOND=$(/usr/pbs/bin/qsub -v BUCKET_OUT_PATH=$BUCKET_OUT_PATH,BUCKET_OE_PATH=$BUCKET_OE_PATH,JOB_ID=$JOB_ID,RUN_DIR=$RUN_DIR ${PBS_O_WORKDIR}/HPC_workflow/PBS/run-sim_model{{ MODEL }}_${SYSTEM}_{{ QUE }}.pbs)
 echo ${SECOND}
