@@ -16,11 +16,23 @@
 
 module load {{ PYTHONMOD }}
 
+VERSION=$(echo {{ OUT_PATH }} | rev | cut -d "_" -f1 | rev)
+
 cd $RUN_DIR
 
 echo "{{ PYTHONENV }} ${RUN_DIR}/calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}"
 {{ PYTHONENV }} ${RUN_DIR}/calc_genome_stats_AJmodel{{ MODEL }}.py ${JOB_ID} ${BUCKET_OUT_PATH}
-echo "rm ${BUCKET_OUT_PATH}/germline_out_AJ_M{{ MODEL }}/*${JOB_ID}*"
 
-{#echo "./drive_rsync_rm.sh {{ MODEL }} ${BUCKET_OUT_PATH} ${SIM} ${RESULTS} ${PBS_ID}"#}
+
+echo "rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.match"
+rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.match
+echo "rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.ped; rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.map"
+rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.ped; rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.map
+echo "rm ${BUCKET_OUT_PATH}/*${JOB_ID}*chr*"
+rm ${BUCKET_OUT_PATH}/*${JOB_ID}*chr*
+echo "rm ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt"
+rm ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt
+
+echo "backup_transfer/rsync_HPC.sh ${VERSION} ${JOB_ID} ${BUCKET_OUT_PATH}"
+
 
