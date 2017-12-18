@@ -29,7 +29,7 @@ else
     else
         ICE_MEM=4
     fi
-	PYTHONMOD=${PYTHONMOD} QUE=windfall JNUM=1-5 TIME=1 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 macsargs_pbs.j2 >PBS/macsargs_model${MODEL}_${SYSTEM}_windfall.pbs
+	PYTHONMOD=${PYTHONMOD} QUE=windfall JNUM=1-1000 TIME=1 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 macsargs_pbs.j2 >PBS/macsargs_model${MODEL}_${SYSTEM}_windfall.pbs
 	PYTHONMOD=${PYTHONMOD} QUE=windfall JNUM=1-22 TIME=60 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 run-sim_pbs.j2 >PBS/run-sim_model${MODEL}_${SYSTEM}_windfall.pbs
 	PYTHONMOD=${PYTHONMOD} QUE=windfall TIME=5 NODE=1 CORE=1 MEM=${ICE_MEM} PYTHONENV=${VIRTUAL_ENV}/bin/python MODEL=${MODEL} JOBTYPE=${SYSTEM}_only OUT_PATH=${OUT} j2 genome_stats_pbs.j2 >PBS/genome_stats_model${MODEL}_${SYSTEM}_windfall.pbs
 fi
