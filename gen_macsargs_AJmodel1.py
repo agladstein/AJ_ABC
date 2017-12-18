@@ -2,6 +2,7 @@ import random
 from sys import argv
 from simulation import def_params_M1_inst, run_sim_M1_inst
 import os
+import macsSwig
 
 '''
 This script picks parameter values from priors for 22 chromosomes
@@ -88,6 +89,14 @@ def main():
     ###Total number of chromosomes
     total_asc = asc_nb_af + asc_nb_eu + asc_nb_as
     total = total_CGI + total_asc
+
+
+    ###Test parameters for simulation before printing file
+    macs_args_test = run_sim_M1_inst.run_sim(parameters, 100, 1, total, total_naf, total_nas, total_neu, nJ, nM, nA,seed_option)
+    print 'running test simulation'
+    print macs_args_test
+    sim = macsSwig.swigMain(len(macs_args_test), macs_args_test)
+    print 'finished test simulation'
 
 
     ##Length of chromosomes
