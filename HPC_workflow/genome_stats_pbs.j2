@@ -10,7 +10,6 @@
 {% else -%}
 #PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
 {% endif -%}
-#PBS -m abe 
 #PBS -l place=pack:shared
 #PBS -j oe
 
