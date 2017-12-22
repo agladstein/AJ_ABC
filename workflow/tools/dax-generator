@@ -19,9 +19,9 @@ def add_merge_job(chunk, level, job_number, final):
     adds a merge job
     """
     j = Job(name="merge.sh")
-    out_file = File("merged-%d-%d.tar.gz" %(level, job_number))
+    out_file = File("merged-%d-%d.txt" %(level, job_number))
     if final:
-        out_file = File("merged-all.tar.gz")
+        out_file = File("final_results.txt")
     j.uses(out_file, link=Link.OUTPUT, transfer=final)
     j.addArguments(out_file)
     for f in chunk:
@@ -89,8 +89,8 @@ model_file = File("model.tar.gz")
 model_file.addPFN(PFN("file://" + run_dir + "/model.tar.gz", "local"))
 dax.addFile(model_file)
 
-input_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed")
-input_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed", "local"))
+input_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed")
+input_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed", "local"))
 dax.addFile(input_file)
 
 current_outputs = []
@@ -118,17 +118,6 @@ for job_id in range(job_start, job_end + 1):
 # recurisvly process the outputs - this is so that we can handle the large amount of files
 final_out_file = merge_outputs(current_outputs, 0)
 
-# generate the .txt summary files
-j = Job(name="summarize.sh")
-j.uses(final_out_file, link=Link.INPUT)
-j.addArguments(final_out_file)
-out1 = File("results_sims.txt")
-j.uses(out1, link=Link.OUTPUT, transfer=True)
-out2 = File("sim_values.txt")
-j.uses(out2, link=Link.OUTPUT, transfer=True)
-# set a priority to the jobs run in the order the wf was submitted
-j.addProfile(Profile(Namespace.CONDOR, "priority", base_priority + 10))
-dax.addJob(j)
 
 # Write the DAX to stdout
 f = open("dax.xml", "w")

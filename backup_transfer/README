@@ -1,0 +1,4 @@
+To find IP address use
+```
+curl ifconfig.co
+```

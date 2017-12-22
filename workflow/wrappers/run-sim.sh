@@ -11,18 +11,17 @@ SIM_SIZE=$4
 tar xzf model.tar.gz
 cd model
 
-# set up the venv
-. /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
-module load python/2.7
-# update the venv to the new location
-virtualenv-2.7 workflow/macss_env
-. workflow/macss_env/bin/activate
+# set up the env (HOME is due to some CHTC machines not having our user)
+export HOME=$PWD
+export LD_LIBRARY_PATH=$PWD/workflow/macss_env/lib
+export PATH=$PWD/workflow/macss_env/bin:$PATH
+which -a python
 
 CMD="python $MODEL $JOB_ID $INPUT_FILE $SIM_SIZE 0 prior 0"
 echo
 echo "Running: $CMD"
 $CMD
+mv results* ../
+mv *.match ../
 
-# output files need unique names in the top level dir
-tar czf ../outputs-$JOB_ID.tar.gz results_sims_* sim_values_*
 

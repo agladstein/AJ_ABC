@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -N runsim{{ MODEL }}
+#PBS -W group_list=mfh
+#PBS -q {{ QUE }}
+#PBS -J {{ JNUM }}
+#PBS -l cput=60:00:00
+#PBS -l walltime=60:00:00
+{% if JOBTYPE | default(False) -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb:pcmem={{ MEM }}gb
+#PBS -l jobtype={{ JOBTYPE }}
+{% else -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
+{% endif -%}
+#PBS -m abe 
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load {{ PYTHONMOD }}
+
+
+cd $RUN_DIR
+
+SYSTEM=$(echo {{ JOBTYPE }} | cut -d "_" -f1)
+
+CHR=$PBS_ARRAY_INDEX
+
+echo "{{ PYTHONENV }} ${RUN_DIR}/run_sims_AJmodel{{ MODEL }}_chr_all.py ${CHR} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt ${RUN_DIR}/ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed 0 ${BUCKET_OUT_PATH}"
+{{ PYTHONENV }} ${RUN_DIR}/run_sims_AJmodel{{ MODEL }}_chr_all.py ${CHR} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt ${RUN_DIR}/ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed 0 ${BUCKET_OUT_PATH}

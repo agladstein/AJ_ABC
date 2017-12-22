@@ -1,5 +1,6 @@
 from bisect import bisect_right
 import hashlib
+from random import randint
 
 def find2(a, x):
     """This function receives the array with available sites (sites that passed the frequency cut-off)"""
@@ -157,6 +158,7 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
         i=i+1
 
     nb_avail_sites = len(avail_sites)
+    print 'available sites for pseudo array: '+str(nb_avail_sites)
     if (len(avail_sites) == len(snps)):
         print "number of avail_sites is equal to the number of Array snps"
         pos_asc = []

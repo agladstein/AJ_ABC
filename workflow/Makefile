@@ -2,7 +2,7 @@
 
 all: macss_env.tar.gz
 
-macss_env.tar.gz: ../requirements.in
+macss_env.tar.gz: ../requirements.in tools/update-virtualenv
 	echo "Creating a virtual env for Python ..."
 	rm -rf macss_env
 	./tools/update-virtualenv

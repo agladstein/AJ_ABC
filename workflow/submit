@@ -14,40 +14,45 @@ if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" -o "x$4" == "x" ]; then
     echo "Example: ./submit run_sims_AJmodel2_chr1_all.py 100 300 False"
     exit 1
 fi
+
 MODEL=$1
 JOB_START=$2
 JOB_END=$3
 export WANTS_COMET=$4
-
-module load pegasus
-module load stashcp
-
 TOP_DIR=`pwd`
+HOSTNAME=`hostname -f`
 
-export RUN_ID=macsswig_simsaj_instant_`date +'%s'`
+export RUN_ID=macsswig_simsaj_genome_`date +'%s'`
 
-export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
+# where are we submitting from?
+if [ -e /stash2 ]; then
+    # OSG Connect
+    SUBMIT_ENV="OSG_Connect"
+
+    module load pegasus
+    module load stashcp
+
+    export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
+
+else
+    # Default - CondorIO from a subdir
+    SUBMIT_ENV="Default"
+
+    export RUN_DIR=$PWD/runs/$RUN_ID
+fi
+
 mkdir -p $RUN_DIR
 
 # makeing sure we have current venv
 make
 
-# we need a full tarball of the model code 
-# do this by a copy first so we can clean up before tar
+# we need a full tarball of the model code - ignore some dirs
 echo
 echo "Creating a model tarball ..."
-(DIR=`mktemp -d -q /tmp/model.XXXXXX` && \
-    mkdir $DIR/model && \
-    cd .. && \
-    cp -r * $DIR/model/ && \
-    cd $DIR/model && \
-    rm -rf workflow/model.tar.gz && \
-    cd .. && \
-    tar czf $TOP_DIR/model.tar.gz model && \
-    cd $TOP_DIR && \
-    rm -rf $DIR)
-
-mv model.tar.gz $RUN_DIR/
+(cd .. && tar --transform 's;^\.;model;' \
+              --exclude ./workflow/macss_env.tar.gz \
+              --exclude ./workflow/runs \
+              -czhf $RUN_DIR/model.tar.gz . )
 
 # generate the site catalog
 SC=$RUN_DIR/sites.xml
@@ -61,18 +66,35 @@ mv dax.xml $RUN_DIR/
 echo
 echo "An outputs directory will be created within the base of the workflow directory."
 echo "Directory: $RUN_DIR/outputs"
+echo
 
 # plan and submit the  workflow
-echo
-pegasus-plan \
-    -Dpegasus.catalog.site.file=$SC \
-    --conf pegasus.conf \
-    --relative-dir $RUN_ID \
-    --sites condorpool \
-    --staging-site stash \
-    --output-site local \
-    --cleanup leaf \
-    --dir $RUN_DIR/workflow \
-    --dax $RUN_DIR/dax.xml \
-    --submit
+if [ "$SUBMIT_ENV" = "OSG_Connect" ]; then
+
+    pegasus-plan \
+        -Dpegasus.catalog.site.file=$SC \
+        -Dpegasus.data.configuration=nonsharedfs \
+        --conf pegasus.conf \
+        --relative-dir $RUN_ID \
+        --sites osg \
+        --staging-site stash \
+        --output-site local \
+        --cleanup inplace \
+        --dir $RUN_DIR/workflow \
+        --dax $RUN_DIR/dax.xml \
+        --submit
+else
+    pegasus-plan \
+        -Dpegasus.catalog.site.file=$SC \
+        -Dpegasus.data.configuration=condorio \
+        --conf pegasus.conf \
+        --relative-dir $RUN_ID \
+        --sites condorpool \
+        --output-site local \
+        --cleanup inplace \
+        --dir $RUN_DIR/workflow \
+        --dax $RUN_DIR/dax.xml \
+        --submit
+fi
+
 

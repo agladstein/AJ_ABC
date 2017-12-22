@@ -1,0 +1,45 @@
+#!/bin/bash
+#PBS -N AJmodel{{ MODEL }}
+#PBS -W group_list=mfh
+#PBS -q {{ QUE }}
+#PBS -J {{ JNUM }}
+#PBS -l cput=60:00:00
+#PBS -l walltime=60:00:00
+{% if JOBTYPE | default(False) -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb:pcmem={{ MEM }}gb
+#PBS -l jobtype={{ JOBTYPE }}
+{% else -%}
+#PBS -l select={{ NODE }}:ncpus={{ CORE }}:mem={{ MEM }}gb
+{% endif -%}
+#PBS -m abe 
+#PBS -M agladstein@email.arizona.edu
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load {{ PYTHONMOD }}
+
+cd $PBS_O_WORKDIR
+echo PBS_ARRAY_INDEX=$PBS_ARRAY_INDEX
+NOW=$(date +%m%d%y%s)
+ID=$NOW"_"$PBS_ARRAY_INDEX
+
+PBS_ID=$(echo ${PBS_JOBID} | cut -d '[' -f1)
+SIM=sim_${ID}_values.txt
+RESULTS=ms_output_${ID}.summary
+BUCKET_OUT_PATH={{ OUT_PATH }}/${PBS_ID}
+BUCKET_OE_PATH=${PBS_O_WORKDIR}/outerror/${PBS_ID}
+
+mkdir -p ${BUCKET_OUT_PATH}
+mkdir -p ${BUCKET_OE_PATH}
+
+#PBS -o ${BUCKET_OE_PATH}/AJmodel{{ MODEL }}.o${PBS_ID}.$PBS_ARRAY_INDEX
+##PBS -e ${BUCKET_OE_PATH}/AJmodel{{ MODEL }}.e${PBS_ID}.$PBS_ARRAY_INDEX
+
+{{ PYTHONENV }} run_sims_AJmodel{{ MODEL }}_chr1_all.py $ID ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed full 0 prior 0 ${BUCKET_OUT_PATH}>& /dev/null
+rm ${BUCKET_OUT_PATH}/sim_data_AJ_M{{ MODEL }}/macs_asc_${ID}_chr1.ped
+rm ${BUCKET_OUT_PATH}/sim_data_AJ_M{{ MODEL }}/macs_asc_${ID}_chr1.map
+rm ${BUCKET_OUT_PATH}/germline_out_AJ_M{{ MODEL }}/*${ID}*
+
+echo ./drive_rsync_rm.sh {{ MODEL }} ${BUCKET_OUT_PATH} ${SIM} ${RESULTS} ${PBS_ID}
+./drive_rsync_rm.sh {{ MODEL }} ${BUCKET_OUT_PATH} ${SIM} ${RESULTS} ${PBS_ID}
+
