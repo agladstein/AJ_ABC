@@ -76,7 +76,8 @@ base_priority = int(round(hours))
 dax = ADAG("macsswig_simsaj")
 
 # email notificiations for when the state of the workflow changes
-dax.invoke('all',  base_dir + "/tools/email-notify")
+dax.invoke('all', base_dir + "/tools/email-notify")
+dax.invoke('all', base_dir + "/tools/data-backup " + os.environ["RUN_ID"] + " " + os.environ["SUBMIT_ENV"]) 
 
 # Add executables to the DAX-level replica catalog
 for exe_name in os.listdir("./wrappers/"):

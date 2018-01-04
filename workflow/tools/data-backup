@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+RUN_ID=$1
+SUBMIT_ENV=$2
+
+# pick up submit dir from environment, and cd the output dir (if exists)
+cd $PEGASUS_SUBMIT_DIR
+
+if [ ! -e ../../outputs ]; then
+    echo "No outputs yet"
+    exit 0
+fi
+
+cd ../../outputs
+
+VERSION=`echo $RUN_ID | sed 's/.*_//'`
+ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}/$SUBMIT_ENV
+
+HOST_NAME=128.196.142.9
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $HOME/.ssh/workflow agladstein@${HOST_NAME} "mkdir -p $ATMO_DIR"
+rsync -a -v -e "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $HOME/.ssh/workflow" . agladstein@${HOST_NAME}:${ATMO_DIR}/.
+
