@@ -96,7 +96,10 @@ def main():
     print 'running test simulation'
     print macs_args_test
     sim = macsSwig.swigMain(len(macs_args_test), macs_args_test)
-    print 'finished test simulation'
+    if sim is None:
+        print "simulation failed"
+        exit()
+    print 'passed test simulation'
 
 
     ##Length of chromosomes
