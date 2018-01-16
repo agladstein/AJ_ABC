@@ -15,7 +15,8 @@ echo "#########################"
 echo "ATMO ${ATMO_DIR}"
 echo "OSG ${OSG_DIR}"
 
-ssh agladstein@${HOST_NAME} find ${OSG_DIR}*/ -maxdepth 1 -type d -name "outputs" | rev | cut -d "_" -f1 | rev | cut -d "/" -f1 | xargs -n 1 -I % echo "mkdir -p ${ATMO_DIR}/% && rsync -avz agladstein@${HOST_NAME}:${OSG_DIR}_%/outputs/final_results.txt ${ATMO_DIR}/%/" | bash
+ssh agladstein@${HOST_NAME} find ${OSG_DIR}*/outputs -maxdepth 1 -type f -name "final_results.txt" | cut -d "/" -f5 | rev | cut -d "_" -f1 | rev | xargs -n 1 -I % echo "mkdir -p ${ATMO_DIR}/macsswig_simsaj_$VERSION_% && rsync -avz agladstein@${HOST_NAME}:${OSG_DIR}_%/outputs/final_results.txt ${ATMO_DIR}/macsswig_simsaj_$VERSION_%/" | bash
+
 
 
 
