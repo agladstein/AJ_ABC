@@ -228,7 +228,7 @@ Submit a pbs script by:
 
 -------------------------
 
-## Running as a Workflow on Open Science Grid
+## Running as a Workflow on Open Science Grid and Wisconsin CHTC
 
 The workflow creates a Python virtual environment according to the requirements.in file, and then tars up this whole
 directory. That tarball is then shipped with the jobs, with the result being that wherever the jobs start up, they 
@@ -283,7 +283,7 @@ The output of the command is something similar to:
 Note how Pegasus uses a directory as "handle" to the workflow. This directory path can be used with various Pegasus commands.
 
 
-### Monitoring
+### Monitoring on OSG
 
 The system will send email notifications when the workflow changes state, but if you want to see the current state, use the
 `pegasus-status` command. For example:
@@ -321,11 +321,27 @@ To see if workflows are configured to run with Comet/Jetstream/Bridges resources
 To see how many jobs are currently running on Comet/Jetstream/Bridges  
 `condor_q -const 'Owner == "agladstein" && JobUniverse == 5' -af Iwd -af RemoteHost | egrep -i 'jetstream|bridges|comet' | awk '{print $1;}' | sort | uniq -c`
 
+### Monitoring on CHTC
+Get status of all jobs
+```
+cd /home/nu_agladstein/macsswig_simsaj/workflow/runs
+ls | xargs -I % pegasus-status --noqueue /home/nu_agladstein/macsswig_simsaj/workflow/runs/%/workflow/%
+```
+
+Find dagid of jobs
+```bash
+pegasus-status -v | grep macsswig_simsaj-0
+```
+
 ### Statistics / Debugging
 
 For successful workflows, you can generate statistics such as cumulative runtimes using the `pegasus-statistics -s all [dir]`
 command. For failed workflows, `pegasus-analyzer [dir]` can help pinpoint the failures.
 
+look for jobs which have been retried multiple times (in the workflow directory):
+```bash
+find . -name \*.002
+```
 
 ### Stopping / Restarting
 

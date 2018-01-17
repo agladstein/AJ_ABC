@@ -34,8 +34,6 @@ def main():
         os.remove(para_macsargs_file)
     except OSError:
         pass
-    out_file = open(para_macsargs_file, 'a')
-    out_file.write('job:{}\n'.format(job))
 
     if seed_option > int(0):
         print 'seed: ', seed_option
@@ -54,9 +52,6 @@ def main():
     parameters = param_model[0]
     para_out = param_model[1]
     daf = param_model[3]
-
-    out_file.write('para_out:{}\n'.format(para_out))
-    out_file.write('daf:{}\n'.format(daf))
 
     ####Samples to be simulated
 
@@ -101,6 +96,12 @@ def main():
         exit()
     print 'passed test simulation'
 
+
+    out_file = open(para_macsargs_file, 'a')
+    out_file.write('job:{}\n'.format(job))
+
+    out_file.write('para_out:{}\n'.format(para_out))
+    out_file.write('daf:{}\n'.format(daf))
 
     ##Length of chromosomes
     lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069,
