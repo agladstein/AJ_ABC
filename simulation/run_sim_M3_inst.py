@@ -126,7 +126,5 @@ def run_sim(parameters, length, chr_number, total, total_naf, total_nas, total_n
         seasons[i][1] = str((seasons[i][1]))
         macs_args.extend(seasons[i])
 
-    print('final macs_args:')
-    print macs_args
-    sim = macsSwig.swigMain(len(macs_args), macs_args)
-    return sim
+    return macs_args
+

@@ -1,4 +1,3 @@
-import macsSwig
 
 def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_neu,nJ,nM,nEA,nWA,seed_option):
 
@@ -244,7 +243,4 @@ def run_sim(parameters,case,length,chr_number,total,total_naf,total_nas,total_ne
                          '4', '-ej', str(scaled_TMJ), '5', '4', '-ej', str(scaled_TEM), '4', '3', '-ej',
                          str(scaled_Teu_as), '3', '2', '-ej', str(scaled_Taf), '2', '1']
 
-    print macs_args
-    sim=macsSwig.swigMain(len(macs_args),macs_args)
-
-    return sim
+    return macs_args
