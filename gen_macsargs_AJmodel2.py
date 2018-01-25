@@ -51,6 +51,7 @@ def main():
     ###parameters is a dictionary with the parameter values
     parameters = param_model[0]
     para_out = param_model[1]
+    case = param_model[2]
     daf = param_model[3]
 
     ####Samples to be simulated
@@ -89,7 +90,7 @@ def main():
 
 
     ###Test parameters for simulation before printing file
-    macs_args_test = run_sim_M2_inst.run_sim(parameters, 100, 1, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
+    macs_args_test = run_sim_M2_inst.run_sim(parameters, case, 100, 1, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
     print 'running test simulation'
     print macs_args_test
     sim = macsSwig.swigMain(len(macs_args_test), macs_args_test)
@@ -115,7 +116,7 @@ def main():
         if size != "full":
             length = int(size)
 
-        macs_args = run_sim_M2_inst.run_sim(parameters, length, chr, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
+        macs_args = run_sim_M2_inst.run_sim(parameters, case, length, chr, total, total_naf, total_nas, total_neu, nJ, nM, nEA, nWA, seed_option)
         out_file.write('macs_args_{}:{}\n'.format(chr,macs_args))
 
     print 'gen_macsargs_AJmodel2.py Completed'
