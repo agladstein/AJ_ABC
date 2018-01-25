@@ -35,7 +35,7 @@
         <profile namespace="condor" key="universe" >vanilla</profile>
         <profile namespace="condor" key="requirements" >OpSysAndVer == "SL6"</profile>
         <profile namespace="condor" key="periodic_hold" >(JobStatus == 2) &amp;&amp; ((time() - JobCurrentStartDate) &gt; (50*60*60))</profile>
-        <profile namespace="condor" key="request_memory" >2500 MB</profile>
+        <profile namespace="condor" key="request_memory" >4000 MB</profile>
         <profile namespace="condor" key="request_disk" >3 GB</profile>
     </site>
     
