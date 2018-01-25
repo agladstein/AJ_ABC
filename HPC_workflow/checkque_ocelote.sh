@@ -13,13 +13,13 @@ MODEL=$4
 
 RESULTS=${OUT}/results_sims_AJ_M${MODEL}
 
-ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}/HPC
+ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}
 
 set -f
 
 if [ -e switch${MODEL}.txt ] ; then
 
-    IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/72953da9732d22dfb1228916d93d90e0af2df639/atmo_instance_ip.txt)
+    IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/atmo_instance_ip.txt)
 
     echo ""
     echo "#################"
@@ -36,7 +36,10 @@ if [ -e switch${MODEL}.txt ] ; then
 
     #check number of completed simulations
     echo "Check for ${GOAL} completed runs in $RESULTS"
-    COMP=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR} -type f | wc -l)
+    COMP_HPC=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR}/HPC -type f | wc -l)
+    COMP_OSG=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR}/OSG -type f | xargs ssh agladstein@${IP_ADDRESS} cat | wc -l)
+    COMP_CHTC=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR}/CHTC -type f | xargs ssh agladstein@${IP_ADDRESS} cat | wc -l)
+    COMP=$(($COMP_CHTC + $COMP_HPC + $COMP_OSG))
     echo "${COMP} runs have completed"
 
     if [ "$COMP" -ge "$GOAL" ]; then
