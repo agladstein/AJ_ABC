@@ -343,6 +343,17 @@ look for jobs which have been retried multiple times (in the workflow directory)
 find . -name \*.002
 ```
 
+Find bad macsargs.txt files (run in workflow directory) 
+```bash
+BASENAME=`basename $PWD`; for SH_FILE in `pegasus-analyzer | grep "error file:" | sed 's/.*: //' | sed 's/\.err.*/.sh/'`; do cat $SH_FILE | grep stash | grep macsargs_ | perl -p -i -e 's/.*\/(\w+\/\w+\/macsargs_[0-9]*.txt).*/$1/'; done | sort | uniq | while read -r line; do echo "~/stash/public/$BASENAME/$line"; done
+```
+
+Find bad macsargs.txt files with timestamp (run in workflow directory)
+```bash
+BASENAME=`basename $PWD`; for SH_FILE in `pegasus-analyzer | grep "error file:" | sed 's/.*: //' | sed 's/\.err.*/.sh/'`; do cat $SH_FILE | grep stash | grep macsargs_ | perl -p -i -e 's/.*\/(\w+\/\w+\/macsargs_[0-9]*.txt).*/$1/'; done | sort | uniq | while read -r line; do ls -l $HOME/stash/public/$BASENAME/$line; done
+```
+
+
 ### Stopping / Restarting
 
 If you want to stop a workflow, use the `pegasus-remove [dir]` command. Workflows which have stopped for some reason (removed
