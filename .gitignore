@@ -29,3 +29,5 @@ input*.txt
 *ABCtoolbox*
 real_data/
 output_dir/
+tests/test_data
+tests/test_data/*
