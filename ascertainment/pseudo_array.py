@@ -159,6 +159,10 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
 
     nb_avail_sites = len(avail_sites)
     print 'available sites for pseudo array: '+str(nb_avail_sites)
+    if (len(avail_sites) < len(snps)):
+        print "Error: Number of available sites less than number of SNPs on array. Try increasing the locus size."
+        exit()
+
     if (len(avail_sites) == len(snps)):
         print "number of avail_sites is equal to the number of Array snps"
         pos_asc = []
