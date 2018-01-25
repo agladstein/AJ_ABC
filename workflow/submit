@@ -21,7 +21,9 @@ JOB_END=$3
 TOP_DIR=`pwd`
 HOSTNAME=`hostname -f`
 
-export RUN_ID=macsswig_simsaj_genome_`date +'%s'`
+NUM=$(echo $MODEL | cut -d "_" -f3)
+
+export RUN_ID=macsswig_simsaj_genome_M${NUM}_`date +'%s'`
 
 # where are we submitting from?
 if [ -e /stash2 ]; then
