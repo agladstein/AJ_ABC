@@ -58,17 +58,12 @@ def run_sim(parameters, length, chr_number, total, total_naf, total_nas, total_n
     scaled_TmW = float(TmW / (4 * NANC))
     scaled_TAg = float(TAg / (4 * NANC))
 
-    print "scaled_TmE:", scaled_TmE
-    print "scaled_TmW:", scaled_TmW
-    print "scaled_TAg:", scaled_TAg
     adjust = random.uniform(0.0000010, 0.0000099)
     if scaled_TmE == scaled_TmW:
         scaled_TmE = float(scaled_TmE + adjust)
-        print "new scaled_TmE:", scaled_TmE
     adjust = random.uniform(0.0000010, 0.0000099)
     if scaled_TmE == scaled_TAg or scaled_TmW == scaled_TAg:
         scaled_TAg = float(scaled_TAg + adjust)
-        print "new scaled_TAg:", scaled_TAg
 
     adjust = random.uniform(0.00000000010, 0.00000000099)
     scaled_TmE2 = float(scaled_TmE + adjust)
