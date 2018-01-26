@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -N runsim3Prl
+#PBS -W group_list=mfh
+#PBS -q standard
+#PBS -l cput=3000:00:00
+#PBS -l walltime=240:00:00
+#PBS -l select=1:ncpus=22:mem=168gb
+#PBS -m abe
+#PBS -M agladstein@email.arizona.edu
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load python/2/2.7.11
+module load parallel
+
+cd $RUN_DIR
+
+echo "seq 1 22 | parallel -j 22 /home/u15/agladstein/env/macss_env_ocelote_2.7.11/bin/python ${RUN_DIR}/run_sims_AJmodel3_chr_all.py {} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt ${RUN_DIR}/ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed 0 ${BUCKET_OUT_PATH}"
+seq 1 22 | parallel -j 22 /home/u15/agladstein/env/macss_env_ocelote_2.7.11/bin/python ${RUN_DIR}/run_sims_AJmodel3_chr_all.py {} ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt ${RUN_DIR}/ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed 0 ${BUCKET_OUT_PATH}
+
+
+echo "/home/u15/agladstein/env/macss_env_ocelote_2.7.11/bin/python ${RUN_DIR}/calc_genome_stats_AJmodel3.py ${JOB_ID} ${BUCKET_OUT_PATH}"
+/home/u15/agladstein/env/macss_env_ocelote_2.7.11/bin/python ${RUN_DIR}/calc_genome_stats_AJmodel3.py ${JOB_ID} ${BUCKET_OUT_PATH}
+
+
+echo "rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.match"
+rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.match
+echo "rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.ped; rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.map"
+rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.ped; rm ${BUCKET_OUT_PATH}/*${JOB_ID}*.map
+echo "rm ${BUCKET_OUT_PATH}/*${JOB_ID}*chr*"
+rm ${BUCKET_OUT_PATH}/*${JOB_ID}*chr*
+echo "rm ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt"
+rm ${BUCKET_OUT_PATH}/macsargs_${JOB_ID}.txt

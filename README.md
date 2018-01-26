@@ -321,6 +321,13 @@ To see if workflows are configured to run with Comet/Jetstream/Bridges resources
 To see how many jobs are currently running on Comet/Jetstream/Bridges  
 `condor_q -const 'Owner == "agladstein" && JobUniverse == 5' -af Iwd -af RemoteHost | egrep -i 'jetstream|bridges|comet' | awk '{print $1;}' | sort | uniq -c`
 
+If workflow fails, use the following commands to rescue results that haven't been merged
+```bash
+find . -type f -path \*.txt | head -1 | xargs head -1 >final.out
+find . -type f -path \*.txt | xargs -L 1 tail -n +2 >>final.out
+mv final.out final_results.txt
+```
+
 ### Monitoring on CHTC
 Get status of all jobs
 ```

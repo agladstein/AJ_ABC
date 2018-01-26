@@ -36,7 +36,7 @@ if [ -e switch${MODEL}.txt ] ; then
 
     #check number of completed simulations
     echo "Check for ${GOAL} completed runs in $RESULTS"
-    COMP_HPC=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR}/HPC -type f | wc -l)
+    COMP_HPC=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR}/HPC/model${MODEL} -type f | wc -l)
     COMP_OSG=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR}/OSG -type f | xargs ssh agladstein@${IP_ADDRESS} cat | wc -l)
     COMP_CHTC=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR}/CHTC -type f | xargs ssh agladstein@${IP_ADDRESS} cat | wc -l)
     COMP=$(($COMP_CHTC + $COMP_HPC + $COMP_OSG))
