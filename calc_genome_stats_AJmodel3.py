@@ -224,10 +224,20 @@ def calc_IBS_stats(pairs):
     IBDlengths_median = []
     IBDlengths_num = []
     IBDlengths_var = []
+    IBDlengths_q10 = []
+    IBDlengths_q25 = []
+    IBDlengths_q50 = []
+    IBDlengths_q75 = []
+    IBDlengths_q90 = []
     IBDlengths_mean30 = []
     IBDlengths_median30 = []
     IBDlengths_num30 = []
     IBDlengths_var30 = []
+    IBDlengths_30q10 = []
+    IBDlengths_30q25 = []
+    IBDlengths_30q50 = []
+    IBDlengths_30q75 = []
+    IBDlengths_30q90 = []
 
     for p in pairs:
         IBDlengths_num.append(len(p))
@@ -236,6 +246,11 @@ def calc_IBS_stats(pairs):
         IBDlengths_mean.append(np.mean(p))
         IBDlengths_median.append(np.median(p))
         IBDlengths_var.append(np.var(p))
+        IBDlengths_q10.append(np.percentile(p, 10))
+        IBDlengths_q25.append(np.percentile(p, 25))
+        IBDlengths_q50.append(np.percentile(p, 50))
+        IBDlengths_q75.append(np.percentile(p, 75))
+        IBDlengths_q90.append(np.percentile(p, 90))
         #### Get IBD greater than 30 Mb
         IBDlengths30 = []
         for l in p:
@@ -247,6 +262,11 @@ def calc_IBS_stats(pairs):
         IBDlengths_mean30.append(np.mean(IBDlengths30))
         IBDlengths_median30.append(np.median(IBDlengths30))
         IBDlengths_var30.append(np.var(IBDlengths30))
+        IBDlengths_30q10.append(np.percentile(IBDlengths30, 10))
+        IBDlengths_30q25.append(np.percentile(IBDlengths30, 25))
+        IBDlengths_30q50.append(np.percentile(IBDlengths30, 50))
+        IBDlengths_30q75.append(np.percentile(IBDlengths30, 75))
+        IBDlengths_30q90.append(np.percentile(IBDlengths30, 90))
 
     IBD_stats.extend(IBDlengths_mean)
     IBD_head.extend(['IBD_mean_eAeA', 'IBD_mean_wAwA', 'IBD_mean_JJ', 'IBD_mean_MM', 'IBD_mean_EE', 'IBD_mean_eAwA', 'IBD_mean_eAE',
@@ -264,6 +284,26 @@ def calc_IBS_stats(pairs):
     IBD_head.extend(['IBD_var_eAeA', 'IBD_var_wAwA', 'IBD_var_JJ', 'IBD_var_MM', 'IBD_var_EE', 'IBD_var_eAwA', 'IBD_var_eAE',
          'IBD_var_wAE', 'IBD_var_eAJ', 'IBD_var_wAJ', 'IBD_var_eAM', 'IBD_var_wAM', 'IBD_var_JM', 'IBD_var_JE',
          'IBD_var_ME'])
+    IBD_stats.extend(IBDlengths_q10)
+    IBD_head.extend(['IBD_q10_eAeA', 'IBD_q10_wAwA', 'IBD_q10_JJ', 'IBD_q10_MM', 'IBD_q10_EE', 'IBD_q10_eAwA', 'IBD_q10_eAE',
+         'IBD_q10_wAE', 'IBD_q10_eAJ', 'IBD_q10_wAJ', 'IBD_q10_eAM', 'IBD_q10_wAM', 'IBD_q10_JM', 'IBD_q10_JE',
+         'IBD_q10_ME'])
+    IBD_stats.extend(IBDlengths_q25)
+    IBD_head.extend(['IBD_q25_eAeA', 'IBD_q25_wAwA', 'IBD_q25_JJ', 'IBD_q25_MM', 'IBD_q25_EE', 'IBD_q25_eAwA', 'IBD_q25_eAE',
+         'IBD_q25_wAE', 'IBD_q25_eAJ', 'IBD_q25_wAJ', 'IBD_q25_eAM', 'IBD_q25_wAM', 'IBD_q25_JM', 'IBD_q25_JE',
+         'IBD_q25_ME'])
+    IBD_stats.extend(IBDlengths_q50)
+    IBD_head.extend(['IBD_q50_eAeA', 'IBD_q50_wAwA', 'IBD_q50_JJ', 'IBD_q50_MM', 'IBD_q50_EE', 'IBD_q50_eAwA', 'IBD_q50_eAE',
+         'IBD_q50_wAE', 'IBD_q50_eAJ', 'IBD_q50_wAJ', 'IBD_q50_eAM', 'IBD_q50_wAM', 'IBD_q50_JM', 'IBD_q50_JE',
+         'IBD_q50_ME'])
+    IBD_stats.extend(IBDlengths_q75)
+    IBD_head.extend(['IBD_q75_eAeA', 'IBD_q75_wAwA', 'IBD_q75_JJ', 'IBD_q75_MM', 'IBD_q75_EE', 'IBD_q75_eAwA', 'IBD_q75_eAE',
+         'IBD_q75_wAE', 'IBD_q75_eAJ', 'IBD_q75_wAJ', 'IBD_q75_eAM', 'IBD_q75_wAM', 'IBD_q75_JM', 'IBD_q75_JE',
+         'IBD_q75_ME'])
+    IBD_stats.extend(IBDlengths_q90)
+    IBD_head.extend(['IBD_q90_eAeA', 'IBD_q90_wAwA', 'IBD_q90_JJ', 'IBD_q90_MM', 'IBD_q90_EE', 'IBD_q90_eAwA', 'IBD_q90_eAE',
+         'IBD_q90_wAE', 'IBD_q90_eAJ', 'IBD_q90_wAJ', 'IBD_q90_eAM', 'IBD_q90_wAM', 'IBD_q90_JM', 'IBD_q90_JE',
+         'IBD_q90_ME'])
     IBD_stats.extend(IBDlengths_mean30)
     IBD_head.extend(['IBD30_mean_eAeA', 'IBD30_mean_wAwA', 'IBD30_mean_JJ', 'IBD30_mean_MM', 'IBD30_mean_EE', 'IBD30_mean_eAwA',
          'IBD30_mean_eAE', 'IBD30_mean_wAE', 'IBD30_mean_eAJ', 'IBD30_mean_wAJ', 'IBD30_mean_eAM', 'IBD30_mean_wAM',
@@ -281,6 +321,26 @@ def calc_IBS_stats(pairs):
     IBD_head.extend(['IBD30_var_eAeA', 'IBD30_var_wAwA', 'IBD30_var_JJ', 'IBD30_var_MM', 'IBD30_var_EE', 'IBD30_var_eAwA',
          'IBD30_var_eAE', 'IBD30_var_wAE', 'IBD30_var_eAJ', 'IBD30_var_wAJ', 'IBD30_var_eAM', 'IBD30_var_wAM',
          'IBD30_var_JM', 'IBD30_var_JE', 'IBD30_var_ME'])
+    IBD_stats.extend(IBDlengths_30q10)
+    IBD_head.extend(['IBD_30q10_eAeA', 'IBD_30q10_wAwA', 'IBD_30q10_JJ', 'IBD_30q10_MM', 'IBD_30q10_EE', 'IBD_30q10_eAwA', 'IBD_30q10_eAE',
+         'IBD_30q10_wAE', 'IBD_30q10_eAJ', 'IBD_30q10_wAJ', 'IBD_30q10_eAM', 'IBD_30q10_wAM', 'IBD_30q10_JM', 'IBD_30q10_JE',
+         'IBD_30q10_ME'])
+    IBD_stats.extend(IBDlengths_30q25)
+    IBD_head.extend(['IBD_30q25_eAeA', 'IBD_30q25_wAwA', 'IBD_30q25_JJ', 'IBD_30q25_MM', 'IBD_30q25_EE', 'IBD_30q25_eAwA', 'IBD_30q25_eAE',
+         'IBD_30q25_wAE', 'IBD_30q25_eAJ', 'IBD_30q25_wAJ', 'IBD_30q25_eAM', 'IBD_30q25_wAM', 'IBD_30q25_JM', 'IBD_30q25_JE',
+         'IBD_30q25_ME'])
+    IBD_stats.extend(IBDlengths_30q50)
+    IBD_head.extend(['IBD_30q50_eAeA', 'IBD_30q50_wAwA', 'IBD_30q50_JJ', 'IBD_30q50_MM', 'IBD_30q50_EE', 'IBD_30q50_eAwA', 'IBD_30q50_eAE',
+         'IBD_30q50_wAE', 'IBD_30q50_eAJ', 'IBD_30q50_wAJ', 'IBD_30q50_eAM', 'IBD_30q50_wAM', 'IBD_30q50_JM', 'IBD_30q50_JE',
+         'IBD_30q50_ME'])
+    IBD_stats.extend(IBDlengths_30q75)
+    IBD_head.extend(['IBD_30q75_eAeA', 'IBD_30q75_wAwA', 'IBD_30q75_JJ', 'IBD_30q75_MM', 'IBD_30q75_EE', 'IBD_30q75_eAwA', 'IBD_30q75_eAE',
+         'IBD_30q75_wAE', 'IBD_30q75_eAJ', 'IBD_30q75_wAJ', 'IBD_30q75_eAM', 'IBD_30q75_wAM', 'IBD_30q75_JM', 'IBD_30q75_JE',
+         'IBD_30q75_ME'])
+    IBD_stats.extend(IBDlengths_30q90)
+    IBD_head.extend(['IBD_30q90_eAeA', 'IBD_30q90_wAwA', 'IBD_30q90_JJ', 'IBD_30q90_MM', 'IBD_30q90_EE', 'IBD_30q90_eAwA', 'IBD_30q90_eAE',
+         'IBD_30q90_wAE', 'IBD_30q90_eAJ', 'IBD_30q90_wAJ', 'IBD_30q90_eAM', 'IBD_30q90_wAM', 'IBD_30q90_JM', 'IBD_30q90_JE',
+         'IBD_30q90_ME'])
 
     return [IBD_stats, IBD_head]
 
