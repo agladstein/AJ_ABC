@@ -110,6 +110,8 @@ for job_id in range(job_start, job_end + 1):
     macsargs_file = File("macsargs_" + str(job_id) + ".txt")
     macsargs_job.uses(macsargs_file, link=Link.OUTPUT, transfer=False)
     
+    macsargs_job.addProfile(Profile(Namespace.CONDOR, "priority", base_priority))
+    
     dax.addJob(macsargs_job)
     
     #step two
@@ -150,6 +152,9 @@ for job_id in range(job_start, job_end + 1):
     # output files
     genome_results_file = File("results_" + str(job_id) + ".txt")
     genome_stats_job.uses(genome_results_file, link=Link.OUTPUT, transfer=True)
+
+    # set a priority to the jobs run in the order the wf was submitted
+    genome_stats_job.addProfile(Profile(Namespace.CONDOR, "priority", base_priority))
 
     dax.addJob(genome_stats_job)
 
