@@ -516,6 +516,32 @@ Run as
 or  
 `subset_stats/main_subset_sim.py ABC_estimate_OSG_100_50000_100.log input_ABCtoolbox_M1_8.txt remove`
 
+# Analyzing ABCtoolbox results
+
+Environment Setup
+
+If using Vagrant:
+
+```bash
+vagrant up
+vagrant ssh
+```
+
+```bash
+virtualenv -p python3 pweave_env
+source pweave_env/bin/activate
+sudo apt-get install python3-dev
+pip install --upgrade pip
+pip install --upgrade Pweave
+pip install --upgrade pandas
+pip install --upgrade ggplot
+```
+
+## Reformat ABCtoolbox output of posterior density characteristics
+```bash
+pweave_env/bin/python assess_ABC_results.py test_ABC_estimate_PLS.txt
+```
+
 ## Plotting the posterior distribution
 To plot the prior, marginal, and posterior distribution use the script `plot_posterior_ABtoolbox_new.R`.
 
@@ -523,3 +549,4 @@ e.g.
 ```
 Rscript /vol_c/src/macsswig_simsaj/plot_posterior_ABtoolbox_new.R keepPowerStats_input_ABCtoolbox_M2_HPC_OSG_2.txt ABC_correlatedstats6_1446125_pruneCorStats_90_model0_MarginalPosteriorDensities_Obs0.txt ABC_correlatedstats6_1446125_pruneCorStats_90_model0_BestSimsParamStats_Obs0.txt
 ```
+
