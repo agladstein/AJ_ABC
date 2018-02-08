@@ -531,6 +531,7 @@ vagrant ssh
 virtualenv -p python3 pweave_env
 source pweave_env/bin/activate
 sudo apt-get install python3-dev
+sudo apt-get install python3-tk
 pip install --upgrade pip
 pip install --upgrade Pweave
 pip install --upgrade pandas
