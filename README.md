@@ -380,59 +380,44 @@ command.
 ## Post Processing
 
 ### Rsync OSG output to Atmosphere
-After a workflow has completed, use the script `OSG_rsync_atmo.sh` to transfer OSG output to Atmosphere.
-This should be run on OSG. It takes 1 argument - the workflow version (e.g. `instant`, `mfloat`, `rscale`).  
-e.g.  
-`~/macsswig_simsaj/OSG_rsync_atmo.sh instant`
+Use a crontab on Atmosphere to rsync completed workflows from Ocelote, OSG, and CHTC.
 
-### Combining OSG output
-The Pegasus workflow outputs concatenated results_sims and sim_values for all the simulations in the workflow. 
-The number of lines in the final output equals the number of simulations plus one for the header.  
-To combine results_sims and sim_values across multiple workflows to create the input for ABCtoolbox use the shell script `combine_OSG_final.sh`  
-e.g.  
-`/vol_c/src/macsswig_simsaj/combine_OSG_final.sh /vol_c/results_macsSwig_AJmodels_instant/OSG`
-
-### Fixing incorrect Headers
-The following scripts use the Python package `multiprocessing` and should be run with all the cores of a node.  
-
-First use `find_broken_headers.py` to find any results output files with incorrect headers. This will specifically look for files that have a duplicate of IBD_var_EE in the header. This will create a list of the files with incorrect headers.  
-`find_broken_headers.py dir model >>files_to_fix.txt`
-Then use `correct_header.py` to fix the results files with incorrect headers. This will create new files with the correct headers in `dir/results_AJ_M${model}_fixed`. Once these files are double checked, they should be moved to the original directory and overwrite incorrect files.     
-`correct_header.py files_to_fix.txt`
-
-### Tarring, backing up, transfering, and removing output files
-
-1. tar output directories on HPC
-2. upload tar files to google drive
-3. transfer tar files to Atmosphere
-4. remove files that have been tarred and transferred from HPC
-
-Use crontab to automatically run `tar_rsync_rm.sh` script every hour.
-```
-MAILTO="agladstein@email.arizona.edu"
-0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 1
-0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 2
-0 * * * * /rsgrps/mfh4/Ariella/macsSwig_AJmodels/tar_rsync_rm.sh 3
-```
-#### Google drive
-We are using the program `drive` from  
-https://github.com/odeke-em/drive
-
-There is an executable version in my bin on HPC, Atmosphere, and OSG.
-Initialize drive by mounting your Google Drive directory on your local file system.  Must be perfomed the directory you are backing up (does not apply to subdirectories).  
-```
-drive init
-```
-
-To back up all of OSG local-scratch     
-```
-tar cf - /local-scratch/agladstein | drive push -exclude-ops "delete,update" -no-prompt -piped backup_OSG_local-scratch/backup_OSG_local-scratch_$(date +"%m-%d-%Y-"%T"").tar.gz
-```
-
-Back up complete Atmosphere volume
 ```bash
-tar cf - /vol_c | drive push -exclude-ops "delete,update" -no-prompt -piped backup_atmo_vol_1T/backup_atmo_vol_1T_$(date +%m%d%Y%T).tar
+0 */1 * * * /vol_c/src/macsswig_simsaj/backup_transfer/rsync_HPC.sh genome
+0 */6 * * * /vol_c/src/macsswig_simsaj/backup_transfer/rsync_OSG.sh genome
+0 */6 * * * /vol_c/src/macsswig_simsaj/backup_transfer/rsync_CHTC.sh genome
 ```
+#### CHTC Tikal proxy
+In order to rsync on Atmosphere from CHTC, we use Tikal as a proxy.
+
+Set up `~/.ssh/config`:
+```bash
+host chtc
+  HostName submit-4.chtc.wisc.edu
+  User nu_agladstein
+  ProxyCommand ssh -W %h:%p tikal
+  ControlMaster auto
+  ControlPath /tmp/ssh_mux_%h_%p_%r
+  ControlPersist 4h
+
+host tikal
+  HostName tikal.arl.arizona.edu
+  User agladstein
+  ControlMaster auto
+  ControlPath /tmp/ssh_mux_%h_%p_%r
+  ControlPersist 4h
+```
+
+
+### Combining OSG and CHTC output
+The Pegasus workflow outputs `final_results.txt` for all the simulations in the workflow. 
+The number of lines in the final output equals the number of simulations plus one for the header.  
+To combine `final_results.txt` across multiple workflows to create the input for ABCtoolbox use the shell script `combine_Pegasus_final.sh`  
+e.g.  
+`/vol_c/src/macsswig_simsaj/combine_Pegasus_final.sh genome 2`
+
+*This script will overwrite the file `/vol_c/ABC_AJmodels_${VERSION}` if it already exists.*  
+*DO NOT RUN THIS SCRIPT IF THE ORIGINAL RESULTS FILES ARE NOT IN THE DIRECTORY `/vol_c/results_macsSwig_AJmodels_${VERSION}`*
 
 ### Combining HPC output files
 This should be run on Atmosphere, but can also be run with a pbs script on HPC, as the I/O operations are slow on HPC.
@@ -464,6 +449,39 @@ To combine all post processed bucket files for ABCtoolbox input use `combine_HPC
 Takes one arguement, `output_path`  
 e.g.  
 `combine_HPC_final.sh /vol_c/results_macsSwig_AJmodels_instant/intermediate`
+
+### Backing up Atmosphere files
+
+- backup entire /vol_c to google drive
+- backup results directory to google drive
+
+
+Use crontab to automatically run backup scripts every day.
+```
+0 1 * * * /vol_c/src/macsswig_simsaj/backup_transfer/backup_drive_volc.sh
+0 1 * * * /vol_c/src/macsswig_simsaj/backup_transfer/backup_drive_results.sh genome
+```
+#### Google drive
+We are using the program `drive` from  
+https://github.com/odeke-em/drive
+
+There is an executable version in my bin on HPC, Atmosphere, and OSG.
+Initialize drive by mounting your Google Drive directory on your local file system.  Must be perfomed the directory you are backing up (does not apply to subdirectories).  
+```
+drive init
+```
+
+To back up all of OSG local-scratch     
+```
+tar cf - /local-scratch/agladstein | drive push -exclude-ops "delete,update" -no-prompt -piped backup_OSG_local-scratch/backup_OSG_local-scratch_$(date +"%m-%d-%Y-"%T"").tar.gz
+```
+
+Back up complete Atmosphere volume
+```bash
+cd /vol_c
+tar cf - /vol_c | /vol_c/bin/drive push -exclude-ops delete,update -no-prompt -piped backup_atmo_vol_1T/backup_atmo_vol_1T_$(date +%m%d%Y%T).tar
+```
+
 _____________________________
 
 
@@ -535,7 +553,7 @@ sudo apt-get install python3-tk
 pip install --upgrade pip
 pip install --upgrade Pweave
 pip install --upgrade pandas
-pip install --upgrade ggplot
+pip install --user ggplot
 ```
 
 ## Reformat ABCtoolbox output of posterior density characteristics
