@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
 
-OUT_PATH=$1
+VERSION=$1
+MODEL=$2
 
-for bucket in $(ls ${OUT_PATH})
-do
-    PRE=$(echo $bucket | cut -d "_" -f1-3)
-    BUCKET_FILE=${OUT_PATH}/$bucket
-    FILE=${OUT_PATH}/../${PRE}_HPC.txt
-    if [ -e ${FILE} ] ; then
-        grep -v "Asc_NAF" ${BUCKET_FILE} >>${FILE}
-    else
-        cp ${BUCKET_FILE} ${FILE}
-    fi
-done
+RESULTS_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}
+ABC_DIR=/vol_c/ABC_AJmodels_${VERSION}
+
+find ${RESULTS_DIR}/HPC/model${MODEL} -type f | head -1 | xargs head -1 >${ABC_DIR}/input_ABC_HPC_${MODEL}.txt
+find ${RESULTS_DIR}/HPC/model${MODEL} -type f | xargs -I % tail -n +2 % >>${ABC_DIR}/input_ABC_HPC_${MODEL}.txt
