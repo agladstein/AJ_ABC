@@ -33,3 +33,5 @@ tests/test_data
 tests/test_data/*
 retry
 retry/*
+ABC_M2_estimate*
+test_ABC_estimate_PLS.txt
