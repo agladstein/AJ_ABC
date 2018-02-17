@@ -7,7 +7,7 @@ from bitarray import bitarray
 import itertools
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from ascertainment.pseudo_array import pseudo_array_bits
-from simulation import def_params_M2_inst, run_sim_M2_inst
+from simulation import def_params_M2_inst, run_sim_M2_inst, update_priors
 from summary_statistics import afs_stats_bitarray
 
 # from memory_profiler import profile
@@ -38,6 +38,10 @@ def main(arguments):
         param_model = def_params_M2_inst.param_sim_asc_min()
     if arguments[5] == 'max':
         param_model = def_params_M2_inst.param_sim_asc_max()
+    if arguments[5] == 'update':
+        histogram_name = "ABC_M2_estimate_1446125_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt"
+        histogram_df = update_priors.create_hist_df(histogram_name)
+        param_model = update_priors.assign_param_value(histogram_df)
     ###parameters is a dictionary with the parameter values
     parameters = param_model[0]
     ###case is an integer that indicates which topology/model is going to be simulated
