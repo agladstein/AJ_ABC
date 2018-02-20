@@ -3,8 +3,8 @@
 #PBS -W group_list=mfh
 #PBS -q windfall
 #PBS -l cput=100:00:00
-#PBS -l walltime=240:00:00
-#PBS -l select=1:ncpus=22:mem=168gb
+#PBS -l walltime=100:00:00
+#PBS -l select=1:ncpus=22:mem=132gb
 #PBS -l place=pack:shared
 #PBS -j oe
 
