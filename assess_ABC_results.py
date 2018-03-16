@@ -13,6 +13,7 @@ import numpy as np
 # from ggplot import *
 # import functools
 
+
 def read_abc_config(abc_config_name):
     """
     Get input files used for ABC and results files output by ABC.
@@ -52,6 +53,7 @@ def read_abc_config(abc_config_name):
 
     return [simName, obsName, outputPrefix]
 
+
 def get_results_files(outputPrefix):
     """
     Define names of ABCtoolbox results files
@@ -70,6 +72,7 @@ def get_results_files(outputPrefix):
             MarginalPosteriorCharacteristics_name,
             jointPosterior_name,
             MarginalPosteriorCharacteristics_reformat_name]
+
 
 def reformat_Characteristics(MarginalPosteriorCharacteristics_name):
     """
@@ -108,7 +111,8 @@ def reformat_Characteristics(MarginalPosteriorCharacteristics_name):
         print('Did you run ABCtoolbox in this directory?')
         exit()
 
-    return df_table
+    return [df_table, df]
+
 
 def create_joint_df(jointPosterior_name):
 
@@ -120,6 +124,19 @@ def create_joint_df(jointPosterior_name):
         exit()
 
     return joint_NEA_NWA_df
+
+
+def get_prob_NEA_grtr_NWA(joint_NEA_NWA_df):
+    total_density = sum(joint_NEA_NWA_df['density'])
+    NEA_grtr_density = joint_NEA_NWA_df[joint_NEA_NWA_df['Log10_NEA'] > joint_NEA_NWA_df['Log10_NWA']]['density']
+    prob = sum(NEA_grtr_density)/total_density
+    return prob
+
+
+def print_to_characteristic(prob, df_chrs, MarginalPosteriorCharacteristics_name):
+    df_chrs['NEA_NWA_prob'] = prob
+    df_chrs.to_csv(MarginalPosteriorCharacteristics_name, sep='\t')
+    return
 
 def plot_joint_mtpltlb(jointPosterior_name, df_chrs_reformat):
 
@@ -180,10 +197,12 @@ def main():
      jointPosterior_name,
      MarginalPosteriorCharacteristics_reformat_name] = get_results_files(outputPrefix)
 
-    df_chrs_reformat = reformat_Characteristics(MarginalPosteriorCharacteristics_name)
+    [df_chrs_reformat, df_chrs] = reformat_Characteristics(MarginalPosteriorCharacteristics_name)
     df_chrs_reformat.to_csv(MarginalPosteriorCharacteristics_reformat_name, sep='\t')
 
     joint_NEA_NWA_df = create_joint_df(jointPosterior_name)
+    prob = get_prob_NEA_grtr_NWA(joint_NEA_NWA_df)
+    print_to_characteristic(prob, df_chrs, MarginalPosteriorCharacteristics_name)
 
     plot_joint_mtpltlb(jointPosterior_name, df_chrs_reformat)
 
