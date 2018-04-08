@@ -122,6 +122,22 @@ Having trouble getting Vagrant started? Make sure you are in the correct directo
 * start up vagrant in working directory
 * once in vagrant, go to `/vagrant` to find original working directory
 
+## Calculating stats on real data
+
+Use the script `main_function_realdata_M23.py` to calculate summary stats on one chromosome.
+It takes 6 arguments:
+1. chromosome number
+2. directory with real data
+3. Genome (CGI or 1000 Genomes) of HapMap pops file name (.tped format)
+4. Pseudo array data of HapMap pops file name (.tped format)
+5. Array data of AJ, Jews, Middle Eastern pops file name (.tped format)
+6. Germline option (0 = run germline, 1 == don't run germline)
+
+e.g.:
+```bash
+1 tests/test_data YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005.tped YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA.tped Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset_21509.tped 1
+```
+
 -------------------------
 
 ## Running on University of Arizona HPC

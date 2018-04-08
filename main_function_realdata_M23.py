@@ -5,17 +5,18 @@ from sys import argv
 from alleles_generator.real_file import AllelesReal
 from summary_statistics import afs_stats_bitarray
 
+
 def main():
     """This takes in 3 real PLINK .tped files.
     PLINK .tped with CGI or 1000 genomes HapMap populations.
     PLINK .tped snp array data made from same HapMap individuals with PLINK exclude.
     PLINK .tped snp array data with populations of interest."""
 
-    test = argv[1]
-    if test == 'test':
-        dir_data = 'tests/test_data/'
-    elif test == 'real':
-        dir_data = 'real_data/'
+    chrom = int(argv[1])
+    lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069,
+               135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222,
+               62887650, 37234222, 35178458]
+    chrom_length = lengths[chrom-1]
 
     naf_CGI = 18
     neu_CGI = 18
@@ -33,24 +34,34 @@ def main():
     print 'nJ ' + str(nJ)
     print 'nM ' + str(nM)
 
-    CGI_file = str(dir_data)+'YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005'
-    CGIarray_file = str(dir_data)+'YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA'
-    array_file = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset_21509'
+    dir_data = argv[2]
+
+    CGI_name = argv[3]
+    CGIarray_name = argv[4]
+    array_name = argv[5]
+
+    CGI_file = '{}/{}'.format(dir_data, CGI_name)
+    CGIarray_file = '{}/{}'.format(dir_data, CGIarray_name)
+    array_file = '{}/{}'.format(dir_data, array_name)
     print CGI_file
     print CGIarray_file
     print array_file
 
-    seq_real_CGI_file = AllelesReal(str(CGI_file)+'.tped')
+    if not all([CGI_file.endswith('.tped'), CGIarray_file.endswith('.tped'), array_file.endswith('.tped')]):
+        print('ERROR: Data must be in PLINK .tped format')
+        exit()
+
+    seq_real_CGI_file = AllelesReal(str(CGI_file))
     seqAF_CGI_bits = seq_real_CGI_file.make_bitarray_seq(0, naf_CGI)
     seqEu_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
     seqAs_CGI_bits = seq_real_CGI_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
-    seq_real_CGIarray_file = AllelesReal(str(CGIarray_file)+'.tped')
+    seq_real_CGIarray_file = AllelesReal(str(CGIarray_file))
     seqAf_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(0, naf_CGI)
     seqEu_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI, naf_CGI + neu_CGI)
     seqAs_asc_bits = seq_real_CGIarray_file.make_bitarray_seq(naf_CGI + neu_CGI, naf_CGI + neu_CGI + nas_CGI)
 
-    seq_real_array_file = AllelesReal(str(array_file)+'.tped')
+    seq_real_array_file = AllelesReal(str(array_file))
     seqJ_asc_bits = seq_real_array_file.make_bitarray_seq(0, nJ)
     seqM_asc_bits = seq_real_array_file.make_bitarray_seq(nJ, nJ + nM)
     seqEA_asc_bits = seq_real_array_file.make_bitarray_seq(nJ + nM, nJ + nM + nEA)
@@ -58,6 +69,9 @@ def main():
 
 
     res = []
+    head = 'chr\tlength\t'
+    res.extend([chrom])
+    res.extend([chrom_length])
 
     Af_res = []
     Af_res.extend(afs_stats_bitarray.base_S_ss(seqAF_CGI_bits, naf_CGI))
@@ -65,7 +79,7 @@ def main():
     Af_res.append(afs_stats_bitarray.Tajimas(pi_AfCGI, Af_res[0], naf_CGI))
     del (Af_res[3])
     res.extend(Af_res)
-    head = 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
+    head = head + 'SegS_Af_CGI\tSing_Af_CGI\tDupl_Af_CGI\tTajD_Af_CGI\t'
 
     Eu_res = []
     Eu_res.extend(afs_stats_bitarray.base_S_ss(seqEu_CGI_bits, neu_CGI))
@@ -90,7 +104,7 @@ def main():
     head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
     ########Use Germline to find IBD on pseduo array ped and map files
-    run_germline = int(argv[2])
+    run_germline = int(argv[6])
     filenameped = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1.ped'
     filenamemap = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1.map'
     filenameout = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1'
@@ -336,10 +350,10 @@ def main():
     filesumm=open(filesummary,'w')
     filesumm.write(head)
 
-    out=''
+    out = ''
     for g in range(len(res)):
-        out=out+str(res[g])+'\t'
-    out=out[:-1]+'\n'
+        out = out+str(res[g])+'\t'
+    out = out[:-1]+'\n'
 
     filesumm.write(out)
     filesumm.close()
