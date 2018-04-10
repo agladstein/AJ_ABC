@@ -135,7 +135,7 @@ It takes 6 arguments:
 
 e.g.:
 ```bash
-1 tests/test_data YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005.tped YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA.tped Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset_21509.tped 1
+python main_function_real_data_M23.py 1 tests/test_data YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005.tped YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA.tped Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset_21509.tped 1
 ```
 
 -------------------------

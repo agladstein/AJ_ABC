@@ -105,9 +105,10 @@ def main():
 
     ########Use Germline to find IBD on pseduo array ped and map files
     run_germline = int(argv[6])
-    filenameped = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1.ped'
-    filenamemap = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1.map'
-    filenameout = str(dir_data)+'Behar_HGDP_FtDNA_Jews_MidEast_YRI9.CEU9.CHB4.chr1'
+
+    filenameped = array_file.replace('.tped', '.ped')
+    filenamemap = array_file.replace('.tped', '.map')
+    filenameout = array_file.replace('.tped', '')
 
     print 'run germline? '+str(run_germline)
     if (run_germline == 0):
@@ -346,7 +347,7 @@ def main():
     res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqM_asc_bits, pi_M_asc, nM))
     head = head + 'FST_eAwA_ASC\tFST_eAEu_ASC\tFST_eAJ_ASC\tFST_eAM_ASC\tFST_MJ_ASC\tFST_wAEu_ASC\tFST_wAJ_ASC\tFST_wAM_ASC\n'
 
-    filesummary='real_output_M23.summary'
+    filesummary='{}/real_output_M23.summary'.format(dir_data)
     filesumm=open(filesummary,'w')
     filesumm.write(head)
 
