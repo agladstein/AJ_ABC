@@ -136,7 +136,7 @@ def sum_stats(chr_stats_stand_df):
     return [names, values]
 
 
-def combine_IBD_lengths(path, job):
+def combine_IBD_lengths(path, job, germline_files):
     """
     gather IBD lengths from .match germline output for all chromosomes
     :param path: path to output directory
@@ -160,15 +160,14 @@ def combine_IBD_lengths(path, job):
     IBDlengths_JE = []
     IBDlengths_ME = []
 
-    for chr_number in range(1, 22+1):
-        germline_file_name = '{}/macs_asc_{}_chr{}.match'.format(path, job, chr_number)
+    for germline_file_name in germline_files:
         if os.path.isfile(germline_file_name):
-            print 'reading Germline IBD output chr{}'.format(chr_number)
+            print 'reading Germline IBD output {}'.format(germline_file_name)
             filegermline = open(germline_file_name, 'r')
             for line in filegermline:
                 pop1 = line.split()[0]
                 pop2 = line.split()[2]
-                segment = float(line.split()[10]) / 1000000
+                segment = float(line.split()[10])
                 pair = str(pop1) + '_' + str(pop2)
                 if pair == 'EA_EA':
                     IBDlengths_eAeA.append(segment)
@@ -367,9 +366,9 @@ def main():
     chr_stats_stand_df = standardize_relative_stats(chr_stats_df)
     [names, values] = sum_stats(chr_stats_stand_df)
 
-    germline_files = '{}/*.match'.format(path, job)
-    if len(glob.glob(germline_files)) > 0:
-        pairs = combine_IBD_lengths(path, job)
+    germline_files = glob.glob('{}/*.match'.format(path, job))
+    if len(germline_files) > 0:
+        pairs = combine_IBD_lengths(path, job, germline_files)
         [IBD_stats, IBD_head] = calc_IBS_stats(pairs)
 
         out_file = open(genome_results_file, 'a')

@@ -131,11 +131,21 @@ It takes 6 arguments:
 3. Genome (CGI or 1000 Genomes) of HapMap pops file name (.tped format)
 4. Pseudo array data of HapMap pops file name (.tped format)
 5. Array data of AJ, Jews, Middle Eastern pops file name (.tped format)
-6. Germline option (0 = run germline, 1 == don't run germline)
+6. Germline input file (.ped or .map format)
 
 e.g.:
 ```bash
-python main_function_real_data_M23.py 1 tests/test_data YRI9.CEU9.CHB4.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes_snpsonly_maf0.005.tped YRI9.CEU9.CHB4.chr1.atDNA.biAllelicSNPnoDI.genotypes_hg18_Behar_HGDP_FtDNA.tped Behar_HGDP_FtDNA_Jews_MidEast_chr1_subset_21509.tped 1
+python main_function_real_data_M23.py 1 /rsgrps/mfh/agladstein/ABC_data/chr1 ALL.atDNA.biAllelicSNPnoDI.genotypes_maf0.005_YRI9_CEU9_CHB4_chr1.tped ALL.atDNA.biAllelicSNPnoDI.genotypes_maf0.005_YRI9_CEU9_CHB4_hg18_Behar_HGDP_FtDNA_chr1.tped Behar_HGDP_FtDNA_Jews_MidEast_subset_chr1.tped Behar_HGDP_FtDNA_Jews_MidEast_subset_YRI9_CEU9_CHB4_chr1.ped
+```   
+
+Use the script `calc_genome_stats_AJmodel2.py` to summarize the stats across the chromosomes.
+It takes 2 arguments:
+1. job ID
+2. path to all chromosome results
+
+e.g.:
+```bash
+python calc_genome_stats_realdata_M23.py real_output_M23 /rsgrps/mfh/agladstein/ABC_data/results
 ```
 
 -------------------------

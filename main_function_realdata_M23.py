@@ -104,127 +104,135 @@ def main():
     head = head + 'FST_AfEu_CGI\tFST_AfAs_CGI\tFST_EuAs_CGI\t'
 
     ########Use Germline to find IBD on pseduo array ped and map files
-    run_germline = int(argv[6])
+    if len(argv) == 7:
+        germline_name = argv[6]
+        germline_file = '{}/{}'.format(dir_data, germline_name)
+        print germline_file
+        if not germline_file.endswith('.ped') and not germline_file.endswith('.map'):
+            print('ERROR: GERMLINE input file must be in PLINK .ped or .map format')
+            exit()
+        if germline_file.endswith('.ped'):
+            filenameped = germline_file
+            filenamemap = germline_file.replace('.ped', '.map')
+            filenameout = germline_file.replace('.ped', '')
+        elif germline_file.endswith('.map'):
+            filenameped = germline_file.replace('.map', '.ped')
+            filenamemap = germline_file
+            filenameout = germline_file.replace('.map', '')
 
-    filenameped = array_file.replace('.tped', '.ped')
-    filenamemap = array_file.replace('.tped', '.map')
-    filenameout = array_file.replace('.tped', '')
-
-    print 'run germline? '+str(run_germline)
-    if (run_germline == 0):
         print 'Running Germline on ' + str(filenameped) + ' ' + str(filenamemap)
         print 'p  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10"'
         germline = Popen.wait(Popen('bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ' + str(filenameped) + ' ' + str(filenamemap) + ' ' + str(filenameout) + ' "-bits 10"', shell=True))
 
         print 'finished running germline'
 
-    ########Get IBD stats from Germline output
-    if os.path.isfile(str(filenameout) + '.match'):
-        print 'reading Germline IBD output'
-        filegermline = open(str(filenameout) + '.match', 'r')
-        IBDlengths_eAeA = []
-        IBDlengths_wAwA = []
-        IBDlengths_JJ = []
-        IBDlengths_MM = []
-        IBDlengths_EE = []
-        IBDlengths_eAwA = []
-        IBDlengths_eAE = []
-        IBDlengths_wAE = []
-        IBDlengths_eAJ = []
-        IBDlengths_wAJ = []
-        IBDlengths_eAM = []
-        IBDlengths_wAM = []
-        IBDlengths_JM = []
-        IBDlengths_JE = []
-        IBDlengths_ME = []
-        for line in filegermline:
-            pop1 = line.split()[0]
-            pop2 = line.split()[2]
-            segment = float(line.split()[10])
-            pair = str(pop1) + '_' + str(pop2)
-            if pair == 'EA_EA':
-                IBDlengths_eAeA.append(segment)
-            if pair == 'WA_WA':
-                IBDlengths_wAwA.append(segment)
-            if pair == 'J_J':
-                IBDlengths_JJ.append(segment)
-            if pair == 'M_M':
-                IBDlengths_MM.append(segment)
-            if pair == 'E_E':
-                IBDlengths_EE.append(segment)
-            if pair == 'EA_WA' or pair == 'WA_EA':
-                IBDlengths_eAwA.append(segment)
-            if pair == 'EA_E' or pair == 'E_EA':
-                IBDlengths_eAE.append(segment)
-            if pair == 'WA_E' or pair == 'E_WA':
-                IBDlengths_wAE.append(segment)
-            if pair == 'EA_J' or pair == 'J_EA':
-                IBDlengths_eAJ.append(segment)
-            if pair == 'WA_J' or pair == 'J_WA':
-                IBDlengths_wAJ.append(segment)
-            if pair == 'EA_M' or pair == 'M_EA':
-                IBDlengths_eAM.append(segment)
-            if pair == 'WA_M' or pair == 'M_WA':
-                IBDlengths_wAM.append(segment)
-            if pair == 'J_M' or pair == 'M_J':
-                IBDlengths_JM.append(segment)
-            if pair == 'J_E' or pair == 'E_J':
-                IBDlengths_JE.append(segment)
-            if pair == 'M_E' or pair == 'E_M':
-                IBDlengths_ME.append(segment)
-        filegermline.close()
-
-        print 'calculating summary stats'
-
-        IBDlengths_mean = []
-        IBDlengths_median = []
-        IBDlengths_num = []
-        IBDlengths_var = []
-        IBDlengths_mean30 = []
-        IBDlengths_median30 = []
-        IBDlengths_num30 = []
-        IBDlengths_var30 = []
-
-        pairs = [IBDlengths_eAeA, IBDlengths_wAwA, IBDlengths_JJ, IBDlengths_MM, IBDlengths_EE, IBDlengths_eAwA,
-                 IBDlengths_eAE, IBDlengths_wAE, IBDlengths_eAJ, IBDlengths_wAJ, IBDlengths_eAM, IBDlengths_wAM,
-                 IBDlengths_JM, IBDlengths_JE, IBDlengths_ME]
-        for p in pairs:
-            IBDlengths_num.append(len(p))
-            if len(p) < 1:
-                p.append(0)
-            IBDlengths_mean.append(np.mean(p))
-            IBDlengths_median.append(np.median(p))
-            IBDlengths_var.append(np.var(p))
-            #### Get IBD greater than 30 Mb
-            IBDlengths30 = []
-            for l in p:
-                if l > 30:
-                    IBDlengths30.append(l)
-            IBDlengths_num30.append(len(IBDlengths30))
-            if len(IBDlengths30) == 0:
-                IBDlengths30.append(0)
-            IBDlengths_mean30.append(np.mean(IBDlengths30))
-            IBDlengths_median30.append(np.median(IBDlengths30))
-            IBDlengths_var30.append(np.var(IBDlengths30))
-
-
-        res.extend(IBDlengths_mean)
-        head = head + 'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
-        res.extend(IBDlengths_median)
-        head = head + 'IBD_median_eAeA\tIBD_median_wAwA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_eAwA\tIBD_median_eAE\tIBD_median_wAE\tIBD_median_eAJ\tIBD_median_wAJ\tIBD_median_eAM\tIBD_median_wAM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
-        res.extend(IBDlengths_num)
-        head = head + 'IBD_num_eAeA\tIBD_num_wAwA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_eAwA\tIBD_num_eAE\tIBD_num_wAE\tIBD_num_eAJ\tIBD_num_wAJ\tIBD_num_eAM\tIBD_num_wAM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
-        res.extend(IBDlengths_var)
-        head = head + 'IBD_var_eAeA\tIBD_var_wAwA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_eAwA\tIBD_var_eAE\tIBD_var_wAE\tIBD_var_eAJ\tIBD_var_wAJ\tIBD_var_eAM\tIBD_var_wAM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
-
-        res.extend(IBDlengths_mean30)
-        head = head + 'IBD30_mean_eAeA\tIBD30_mean_wAwA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_eAwA\tIBD30_mean_eAE\tIBD30_mean_wAE\tIBD30_mean_eAJ\tIBD30_mean_wAJ\tIBD30_mean_eAM\tIBD30_mean_wAM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
-        res.extend(IBDlengths_median30)
-        head = head + 'IBD30_median_eAeA\tIBD30_median_wAwA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_eAwA\tIBD30_median_eAE\tIBD30_median_wAE\tIBD30_median_eAJ\tIBD30_median_wAJ\tIBD30_median_eAM\tIBD30_median_wAM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
-        res.extend(IBDlengths_num30)
-        head = head + 'IBD30_num_eAeA\tIBD30_num_wAwA\tIBD30_num_JJ\tIBD30_num_MM\tIBD30_num_EE\tIBD30_num_eAwA\tIBD30_num_eAE\tIBD30_num_wAE\tIBD30_num_eAJ\tIBD30_num_wAJ\tIBD30_num_eAM\tIBD30_num_wAM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
-        res.extend(IBDlengths_var30)
-        head = head + 'IBD30_var_eAeA\tIBD30_var_wAwA\tIBD30_var_JJ\tIBD30_var_MM\tIBD30_var_EE\tIBD30_var_eAwA\tIBD30_var_eAE\tIBD30_var_wAE\tIBD30_var_eAJ\tIBD30_var_wAJ\tIBD30_var_eAM\tIBD30_var_wAM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
+    # ########Get IBD stats from Germline output
+    # if os.path.isfile(str(filenameout) + '.match'):
+    #     print 'reading Germline IBD output'
+    #     filegermline = open(str(filenameout) + '.match', 'r')
+    #     IBDlengths_eAeA = []
+    #     IBDlengths_wAwA = []
+    #     IBDlengths_JJ = []
+    #     IBDlengths_MM = []
+    #     IBDlengths_EE = []
+    #     IBDlengths_eAwA = []
+    #     IBDlengths_eAE = []
+    #     IBDlengths_wAE = []
+    #     IBDlengths_eAJ = []
+    #     IBDlengths_wAJ = []
+    #     IBDlengths_eAM = []
+    #     IBDlengths_wAM = []
+    #     IBDlengths_JM = []
+    #     IBDlengths_JE = []
+    #     IBDlengths_ME = []
+    #     for line in filegermline:
+    #         pop1 = line.split()[0]
+    #         pop2 = line.split()[2]
+    #         segment = float(line.split()[10])
+    #         pair = str(pop1) + '_' + str(pop2)
+    #         if pair == 'EA_EA':
+    #             IBDlengths_eAeA.append(segment)
+    #         if pair == 'WA_WA':
+    #             IBDlengths_wAwA.append(segment)
+    #         if pair == 'J_J':
+    #             IBDlengths_JJ.append(segment)
+    #         if pair == 'M_M':
+    #             IBDlengths_MM.append(segment)
+    #         if pair == 'E_E':
+    #             IBDlengths_EE.append(segment)
+    #         if pair == 'EA_WA' or pair == 'WA_EA':
+    #             IBDlengths_eAwA.append(segment)
+    #         if pair == 'EA_E' or pair == 'E_EA':
+    #             IBDlengths_eAE.append(segment)
+    #         if pair == 'WA_E' or pair == 'E_WA':
+    #             IBDlengths_wAE.append(segment)
+    #         if pair == 'EA_J' or pair == 'J_EA':
+    #             IBDlengths_eAJ.append(segment)
+    #         if pair == 'WA_J' or pair == 'J_WA':
+    #             IBDlengths_wAJ.append(segment)
+    #         if pair == 'EA_M' or pair == 'M_EA':
+    #             IBDlengths_eAM.append(segment)
+    #         if pair == 'WA_M' or pair == 'M_WA':
+    #             IBDlengths_wAM.append(segment)
+    #         if pair == 'J_M' or pair == 'M_J':
+    #             IBDlengths_JM.append(segment)
+    #         if pair == 'J_E' or pair == 'E_J':
+    #             IBDlengths_JE.append(segment)
+    #         if pair == 'M_E' or pair == 'E_M':
+    #             IBDlengths_ME.append(segment)
+    #     filegermline.close()
+    #
+    #     print 'calculating summary stats'
+    #
+    #     IBDlengths_mean = []
+    #     IBDlengths_median = []
+    #     IBDlengths_num = []
+    #     IBDlengths_var = []
+    #     IBDlengths_mean30 = []
+    #     IBDlengths_median30 = []
+    #     IBDlengths_num30 = []
+    #     IBDlengths_var30 = []
+    #
+    #     pairs = [IBDlengths_eAeA, IBDlengths_wAwA, IBDlengths_JJ, IBDlengths_MM, IBDlengths_EE, IBDlengths_eAwA,
+    #              IBDlengths_eAE, IBDlengths_wAE, IBDlengths_eAJ, IBDlengths_wAJ, IBDlengths_eAM, IBDlengths_wAM,
+    #              IBDlengths_JM, IBDlengths_JE, IBDlengths_ME]
+    #     for p in pairs:
+    #         IBDlengths_num.append(len(p))
+    #         if len(p) < 1:
+    #             p.append(0)
+    #         IBDlengths_mean.append(np.mean(p))
+    #         IBDlengths_median.append(np.median(p))
+    #         IBDlengths_var.append(np.var(p))
+    #         #### Get IBD greater than 30 Mb
+    #         IBDlengths30 = []
+    #         for l in p:
+    #             if l > 30:
+    #                 IBDlengths30.append(l)
+    #         IBDlengths_num30.append(len(IBDlengths30))
+    #         if len(IBDlengths30) == 0:
+    #             IBDlengths30.append(0)
+    #         IBDlengths_mean30.append(np.mean(IBDlengths30))
+    #         IBDlengths_median30.append(np.median(IBDlengths30))
+    #         IBDlengths_var30.append(np.var(IBDlengths30))
+    #
+    #
+    #     res.extend(IBDlengths_mean)
+    #     head = head + 'IBD_mean_eAeA\tIBD_mean_wAwA\tIBD_mean_JJ\tIBD_mean_MM\tIBD_mean_EE\tIBD_mean_eAwA\tIBD_mean_eAE\tIBD_mean_wAE\tIBD_mean_eAJ\tIBD_mean_wAJ\tIBD_mean_eAM\tIBD_mean_wAM\tIBD_mean_JM\tIBD_mean_JE\tIBD_mean_ME\t'
+    #     res.extend(IBDlengths_median)
+    #     head = head + 'IBD_median_eAeA\tIBD_median_wAwA\tIBD_median_JJ\tIBD_median_MM\tIBD_median_EE\tIBD_median_eAwA\tIBD_median_eAE\tIBD_median_wAE\tIBD_median_eAJ\tIBD_median_wAJ\tIBD_median_eAM\tIBD_median_wAM\tIBD_median_JM\tIBD_median_JE\tIBD_median_ME\t'
+    #     res.extend(IBDlengths_num)
+    #     head = head + 'IBD_num_eAeA\tIBD_num_wAwA\tIBD_num_JJ\tIBD_num_MM\tIBD_num_EE\tIBD_num_eAwA\tIBD_num_eAE\tIBD_num_wAE\tIBD_num_eAJ\tIBD_num_wAJ\tIBD_num_eAM\tIBD_num_wAM\tIBD_num_JM\tIBD_num_JE\tIBD_num_ME\t'
+    #     res.extend(IBDlengths_var)
+    #     head = head + 'IBD_var_eAeA\tIBD_var_wAwA\tIBD_var_JJ\tIBD_var_MM\tIBD_var_EE\tIBD_var_eAwA\tIBD_var_eAE\tIBD_var_wAE\tIBD_var_eAJ\tIBD_var_wAJ\tIBD_var_eAM\tIBD_var_wAM\tIBD_var_JM\tIBD_var_JE\tIBD_var_ME\t'
+    #
+    #     res.extend(IBDlengths_mean30)
+    #     head = head + 'IBD30_mean_eAeA\tIBD30_mean_wAwA\tIBD30_mean_JJ\tIBD30_mean_MM\tIBD30_mean_EE\tIBD30_mean_eAwA\tIBD30_mean_eAE\tIBD30_mean_wAE\tIBD30_mean_eAJ\tIBD30_mean_wAJ\tIBD30_mean_eAM\tIBD30_mean_wAM\tIBD30_mean_JM\tIBD30_mean_JE\tIBD30_mean_ME\t'
+    #     res.extend(IBDlengths_median30)
+    #     head = head + 'IBD30_median_eAeA\tIBD30_median_wAwA\tIBD30_median_JJ\tIBD30_median_MM\tIBD30_median_EE\tIBD30_median_eAwA\tIBD30_median_eAE\tIBD30_median_wAE\tIBD30_median_eAJ\tIBD30_median_wAJ\tIBD30_median_eAM\tIBD30_median_wAM\tIBD30_median_JM\tIBD30_median_JE\tIBD30_median_ME\t'
+    #     res.extend(IBDlengths_num30)
+    #     head = head + 'IBD30_num_eAeA\tIBD30_num_wAwA\tIBD30_num_JJ\tIBD30_num_MM\tIBD30_num_EE\tIBD30_num_eAwA\tIBD30_num_eAE\tIBD30_num_wAE\tIBD30_num_eAJ\tIBD30_num_wAJ\tIBD30_num_eAM\tIBD30_num_wAM\tIBD30_num_JM\tIBD30_num_JE\tIBD30_num_ME\t'
+    #     res.extend(IBDlengths_var30)
+    #     head = head + 'IBD30_var_eAeA\tIBD30_var_wAwA\tIBD30_var_JJ\tIBD30_var_MM\tIBD30_var_EE\tIBD30_var_eAwA\tIBD30_var_eAE\tIBD30_var_wAE\tIBD30_var_eAJ\tIBD30_var_wAJ\tIBD30_var_eAM\tIBD30_var_wAM\tIBD30_var_JM\tIBD30_var_JE\tIBD30_var_ME\t'
 
 
     Af_asc = []
