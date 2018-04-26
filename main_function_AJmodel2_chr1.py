@@ -27,27 +27,16 @@ def main(arguments):
     print 'JOB', job
 
     ####Get parameter values from priors
-    seed_option = int(arguments[4])
+    seed_option = int(arguments[5])
     print seed_option
 
     if seed_option > int(0):
         random.seed(seed_option)
-    if arguments[5] == 'prior':
-        param_model = def_params_M2_inst.param_sim_asc_rand()
-    if arguments[5] == 'min':
-        param_model = def_params_M2_inst.param_sim_asc_min()
-    if arguments[5] == 'max':
-        param_model = def_params_M2_inst.param_sim_asc_max()
-    if arguments[5] == 'update':
-        histogram_name = "ABC_M2_estimate_1446125_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt"
-        histogram_df = update_priors.create_hist_df(histogram_name)
-        param_model = update_priors.assign_param_value(histogram_df)
-    ###parameters is a dictionary with the parameter values
-    parameters = param_model[0]
-    ###case is an integer that indicates which topology/model is going to be simulated
-    para_out = param_model[1]
-    case = param_model[2]
-    daf = param_model[3]
+
+    histogram_name = arguments[6]
+    # histogram_name = "ABC_M2_estimate_1446125_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt"
+    histogram_df = update_priors.create_hist_df(histogram_name)
+    [parameters, para_out, case, daf] = update_priors.assign_param_value(histogram_df)
 
 
     ####Samples to be simulated
@@ -72,9 +61,9 @@ def main(arguments):
     print 'total samples ' + str(total_CGI)
 
     ###Discovery panel
-    asc_nb_af = para_out[0]
-    asc_nb_eu = para_out[1]
-    asc_nb_as = para_out[2]
+    asc_nb_af = int(parameters['ASC_NAF'])
+    asc_nb_eu = int(parameters['ASC_NEU'])
+    asc_nb_as = int(parameters['ASC_NCHB'])
 
     total_naf = naf_CGI + asc_nb_af
     total_neu = neu_CGI + asc_nb_eu
@@ -84,9 +73,9 @@ def main(arguments):
     total_asc = asc_nb_af + asc_nb_eu + asc_nb_as
     total = total_CGI + total_asc
 
-    chr_number=1
+    chr_number = arguments[3]
 
-    path = arguments[7]
+    path = arguments[8]
 
     #### Check if necessary directories exist.
     sim_data_dir = str(path)+'/sim_data_AJ_M2'
@@ -142,7 +131,7 @@ def main(arguments):
     print 'nb Array snps', len(snps)
 
     ###define simulation size
-    size = arguments[3]
+    size = arguments[4]
     if size == "full":
         length = lengths[chr_number - 1]
     else:
@@ -341,7 +330,7 @@ def main(arguments):
     filemap.close()
 
     ########Use Germline to find IBD on pseduo array ped and map files
-    run_germline = int(arguments[6])
+    run_germline = int(arguments[7])
     filenameout = str(germline_out_dir) + '/macs_asc_' + str(job) + '_chr' + str(chr_number)
 
     print 'run germline? '+str(run_germline)

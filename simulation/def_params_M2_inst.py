@@ -15,8 +15,11 @@ def param_sim_asc_rand():
     high = 20
 
     asc_nb_af = randint(low, high)
+    parameters['ASC_NAF'] = asc_nb_af
     asc_nb_eu = randint(low, high)
+    parameters['ASC_NEU'] = asc_nb_eu
     asc_nb_as = randint(low, high)
+    parameters['ASC_NCHB'] = asc_nb_as
 
     daf = random.uniform(0.05, 0.10)
 
@@ -155,7 +158,7 @@ def param_sim_asc_rand():
 
     parameters['Tgrowth_Af'] = modified_Tgrowth_Af
 
-    return [parameters, para_out, case, daf]
+    return [parameters, para_out, daf]
 
 def param_sim_asc_min():
     """Define the parameters for macs simulation Model 2.
@@ -468,48 +471,48 @@ def choose_case(parameters):
     if (parameters['Tgrowth_Af'] > parameters['Taf']):
         case = 1
 
-    if (parameters['Tgrowth_Af'] == parameters['Taf']):
+    elif (parameters['Tgrowth_Af'] == parameters['Taf']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 1
 
     ################
 
-    if (parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as']):
+    elif (parameters['Taf'] > parameters['Tgrowth_Af'] > parameters['Teu_as']):
         case = 2
 
-    if (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as']):
+    elif (parameters['Taf'] > parameters['Tgrowth_Af'] == parameters['Teu_as']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 2
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM']):
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] > parameters['TEM']):
         case = 3
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM']):
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['Tgrowth_Af'] == parameters['TEM']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 3
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ']):
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] > parameters['TMJ']):
         case = 4
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ']):
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['Tgrowth_Af'] == parameters['TMJ']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 4
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] >
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] >
             parameters['TA']):
         case = 5
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] ==
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['Tgrowth_Af'] ==
             parameters['TA']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
@@ -517,11 +520,11 @@ def choose_case(parameters):
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
             parameters['Tgrowth_Af'] > parameters['Tm']):
         case = 6
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
             parameters['Tgrowth_Af'] == parameters['Tm']):
         Tgrowth_Af += 0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
@@ -529,11 +532,11 @@ def choose_case(parameters):
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
             parameters['Tm'] > parameters['Tgrowth_Af']):
         case = 7
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
             parameters['Tm'] == parameters['Tgrowth_Af']):
         Tgrowth_Af += -0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
@@ -541,14 +544,17 @@ def choose_case(parameters):
 
     ################
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
             parameters['Tm'] > parameters['TAEW'] > parameters['Tgrowth_Af']):
         case = 8
 
-    if (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
+    elif (parameters['Taf'] > parameters['Teu_as'] > parameters['TEM'] > parameters['TMJ'] > parameters['TA'] >
             parameters['Tm'] > parameters['TAEW'] == parameters['Tgrowth_Af']):
         Tgrowth_Af += -0.00001
         parameters['Tgrowth_Af'] = Tgrowth_Af
         case = 8
+
+    else:
+        case = None
 
     return case, Tgrowth_Af
