@@ -99,68 +99,10 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### Automatically Submit PBS with crontab
-Contab will run commands at timed intervals. See http://crontab-generator.org/
-
-`crontab -e` to edit the crontab file.  
-`crontab -l` to view the crontab file.  
-`crontab -r` to remove the crontab file.  
-
-You should use two seperate crontab files.    
-Ocelote:
+### Submit Update job to Ocelote
+```bash
+HPC_workflow/run_sims_update.sh HPC_workflow/PBS/run_sims_update_chr2.pbs
 ```
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 2 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote2.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 1 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote1.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 3 ocelote >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_ocelote3.log 2>&1
-```
-
-ICE
-```
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 2 cluster >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_clu.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 1 smp >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_smp.log 2>&1
-*/30 * * * * /home/u15/agladstein/ABC/macsSwig_AJmodels/checkque_ice.sh 500000 2000 /rsgrps/mfh4/Ariella/macsSwig_AJmodels_rscale4Trel100 3 htc >>/home/u15/agladstein/ABC/macsSwig_AJmodels/crontab_htc.log 2>&1
-```
-
-Use, your own absolute paths.  
-If the file switch.txt exists in /home/u15/agladstein/ABC/macsSwig_AJmodels, checkque_ice.sh will submit PBS scripts. Once the goal is reached, switch.txt will be removed.
-
-#### Checking the que and remaining hrs
-The crontab files run the shell scripts checkque.sh and checkque_ice.sh check the number of completed runs in the designated directory, the number of CPU hrs left to use, and the number of jobs currently in the que.  
-The shell scripts currently allow for a minimum of 350 hrs a day to be left for the group.  
-If there are no more available standard hours, it will submit jobs to qualified (on smp and Ocelote) and windfall.  
-checkque.sh runs as  
-`checkque.sh sim_goal results_dir que_max pbs`
-and checkque_ice.sh runs as  
-`checkque.sh sim_goal que_max output_dir model system`
- 
-
-#### Generating PBS with jinja
-To automatically create PBS scripts for all models and HPC systerms use the shell script main_function_AJmodel_j2.sh  
-This should be run from the working directory.  
-
-On ICE:  
-`./main_function_AJmodel_j2.sh htc output_dir model`  
-`./main_function_AJmodel_j2.sh smp output_dir model`  
-`./main_function_AJmodel_j2.sh cluster output_dir model`
-
-On Ocelote:  
-`./main_function_AJmodel_j2.sh ocelote output_dir model`  
-
-where model = 1, 2, or 3  
-This will use the template template.pbs.j2 to create pbs files.  
-*Note: the virtual env is specified in main_function_AJmodel_j2 - and must already be created (with requirements installed) to use jinja.*
-
-##### jinja Documentation
-http://jinja.pocoo.org/docs/2.9/  
-https://github.com/kolypto/j2cli
-
-### Submitting PBS from the command line
-You will need to edit the jinja template or pbs scripts created from the jinja template.
-You need to change the line ``#PBS -M agladstein@email.arizona.edu`` in all pbs scripts to your email and change the line ``#PBS -W group_list=mfh`` to your group.
-You can find your group with ``groups``.
-
-Submit a pbs script by:
-`qsub main_function_AJmodel2_chr1.pbs`
 
 ### Basic Commands on HPC
 `qstat` shows all of the jobs currently in the que or running.  
