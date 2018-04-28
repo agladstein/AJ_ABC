@@ -78,10 +78,10 @@ Then enter ``ocelote`` for Ocelote or ``ice`` for HTC, SMP, or Cluster.
 #### Ocelote
 ```
 module avail
-module show python/2/2.7.11
-module load python/2/2.7.11
-virtualenv -p /cm/shared/uaapps/python/2.7.11/bin/python macss_env_ocelote_2.7.11
-source macss_env_ocelote_2.7.11/bin/activate
+module show python/2/2.7.14
+module load python/2/2.7.14
+virtualenv -p /cm/shared/uaapps/python/2.7.14/bin/python ~/env/macss_env_ocelote_2.7.14
+source ~/env/macss_env_ocelote_2.7.14/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```

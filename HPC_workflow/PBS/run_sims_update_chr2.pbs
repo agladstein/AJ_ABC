@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -N SimUpdate2
+#PBS -W group_list=mfh
+#PBS -q standard
+##PBS -J 1-2858
+#PBS -J 1-500
+#PBS -l cput=150:00:00
+#PBS -l walltime=50:00:00
+#PBS -l select=1:ncpus=7:mem=42gb
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load parallel
+module load python/2/2.7.14
+
+cd $PBS_O_WORKDIR
+
+PBS_ID=$(echo ${PBS_JOBID} | cut -d '[' -f1)
+echo "PBS_ID: ${PBS_ID}"
+
+CHR=2
+POSTERIOR=/rsgrps/mfh4/Ariella/macsSwig_AJmodels_update/Posterior/chr$((${CHR} - 1))/ABC_M2_genome_estimate_1446124_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt
+
+BUCKET_OUT_PATH=/rsgrps/mfh4/Ariella/macsSwig_AJmodels_update/chr${CHR}/${PBS_ID}
+echo "BUCKET_OUT_PATH: ${BUCKET_OUT_PATH}"
+mkdir -p ${BUCKET_OUT_PATH}
+
+
+JOB_ID=${PBS_ID}_${PBS_ARRAY_INDEX}
+echo "JOB_ID: ${JOB_ID}"
+
+echo "seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py 1 ill_650_test.bed ${CHR} 1000000 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}"
+seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py 1 ill_650_test.bed ${CHR} 1000000 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}
