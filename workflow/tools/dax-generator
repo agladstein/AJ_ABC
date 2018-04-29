@@ -104,8 +104,8 @@ for job_id in range(job_start, job_end + 1):
     sim_job = Job(name="run-sim.sh")
     sim_job.uses(model_file, link=Link.INPUT)
     sim_job.uses(snp_file, link=Link.INPUT)
-    # sim_job.addArguments(model, str(job_id), snp_file, "full", str(chrom))
-    sim_job.addArguments(model, str(job_id), snp_file, "100000", str(chrom))
+    sim_job.addArguments(model, str(job_id), snp_file, "full", str(chrom))
+    # sim_job.addArguments(model, str(job_id), snp_file, "100000", str(chrom))
 
     # output files
     # f1 = File("outputs-" + str(job_id) + ".tar.gz")
