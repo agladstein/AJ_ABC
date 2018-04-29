@@ -68,6 +68,20 @@ Having trouble getting Vagrant started? Make sure you are in the correct directo
 
 -------------------------
 
+## Getting the posteriors
+
+We used the posterior densities from chr1 with 10 PLS components, and reduced parameters to estimate. 
+See https://github.com/agladstein/ABC_results_AJ/blob/master/chr1_AJmodels/RunABC_pls.ipynb
+
+These results are in the Data Store in `/iplant/home/agladstein/ABC_AJmodels_instant_newreal`
+
+```bash
+cd Posteriors/chr1
+iget -K /iplant/home/agladstein/ABC_AJmodels_instant_newreal/ReduceParams/PLS/ABC_M2_genome_estimate_1446124_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt
+```
+
+-------------------------
+
 ## Running on University of Arizona HPC
 There are four University of Arizona HPC systems - Ocelote, HTC, SMP, and Cluster. All four systems shared the same storage space. Log onto any any of the HPC systems with
 ``ssh name@hpc.arizona.edu``
