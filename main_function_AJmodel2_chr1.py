@@ -73,7 +73,7 @@ def main(arguments):
     total_asc = asc_nb_af + asc_nb_eu + asc_nb_as
     total = total_CGI + total_asc
 
-    chr_number = arguments[3]
+    chr_number = int(arguments[3])
 
     path = arguments[8]
 
