@@ -80,7 +80,6 @@ def main(arguments):
     #### Check if necessary directories exist.
     sim_data_dir = str(path)+'/sim_data_AJ_M2'
     germline_out_dir=str(path)+'/germline_out_AJ_M2'
-    sim_values_dir=str(path)+'/sim_values_AJ_M2'
     results_sims_dir=str(path)+'/results_sims_AJ_M2'
 
     try:
@@ -92,11 +91,6 @@ def main(arguments):
         os.makedirs(germline_out_dir)
     except OSError:
         if not os.path.isdir(germline_out_dir):
-            raise
-    try:
-        os.makedirs(sim_values_dir)
-    except OSError:
-        if not os.path.isdir(sim_values_dir):
             raise
     try:
         os.makedirs(results_sims_dir)
@@ -579,31 +573,16 @@ def main(arguments):
     ################
     #####write parameter values to file
 
-    param_file=str(sim_values_dir)+'/sim_'+str(job)+'_values.txt'
-    fileoutparam=open(param_file,'w')
+    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\tTAg'
 
-    ##write parameter values
-    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\tTAg\n'
-    fileoutparam.write(head_param)
+    result = '{}/results_{}.txt'.format(path, job)
+    out_file = open(result, 'w')
 
-    for z in range(len(para_out)):
-        if z==(len(para_out)-1):
-            fileoutparam.write("%s\n" % para_out[z])
-        else:
-            fileoutparam.write("%s\t" % para_out[z])
+    header = str(head_param) + '\t' + str(head)
+    params = '\t'.join([str(r) for r in para_out])
+    stats = '\t'.join([str(r) for r in res])
 
-    fileoutparam.close()
-
-    filesummary=str(results_sims_dir)+'/ms_output_'+str(job)+'.summary'
-    filesumm=open(filesummary,'w')
-    filesumm.write(head)
-
-    out=''
-    for g in range(len(res)):
-        out=out+str(res[g])+'\t'
-    out=out[:-1]+'\n'
-
-    filesumm.write(out)
-    filesumm.close()
+    out_file.write(str(header) + '\n' + str(params) + '\t' + str(stats) + '\n')
+    out_file.close()
 
     return [res,para_out]
