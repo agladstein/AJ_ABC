@@ -118,7 +118,8 @@ def main(arguments):
     # print "read SNP file"
     SNP = []
     for line in fileSNP:
-        SNP.append(line)
+        if line.split()[0] == 'chr{}'.format(chr_number):
+            SNP.append(line)
     fileSNP.close()
 
     ###get sites from snp array
