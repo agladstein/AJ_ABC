@@ -80,7 +80,6 @@ def main(arguments):
     #### Check if necessary directories exist.
     sim_data_dir = str(path)+'/sim_data_AJ_M2'
     germline_out_dir=str(path)+'/germline_out_AJ_M2'
-    results_sims_dir=str(path)+'/results_sims_AJ_M2'
 
     try:
         os.makedirs(sim_data_dir)
@@ -91,11 +90,6 @@ def main(arguments):
         os.makedirs(germline_out_dir)
     except OSError:
         if not os.path.isdir(germline_out_dir):
-            raise
-    try:
-        os.makedirs(results_sims_dir)
-    except OSError:
-        if not os.path.isdir(results_sims_dir):
             raise
 
     ##############START SIMULATIONS
@@ -566,7 +560,7 @@ def main(arguments):
         res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqEu_asc_bits, pi_Eu_asc, neu_CGI))
         res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqJ_asc_bits, pi_J_asc, nJ))
         res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqM_asc_bits, pi_M_asc, nM))
-        head = head + 'FST_eAwA_ASC\tFST_eAEu_ASC\tFST_eAJ_ASC\tFST_eAM_ASC\tFST_MJ_ASC\tFST_wAEu_ASC\tFST_wAJ_ASC\tFST_wAM_ASC\n'
+        head = head + 'FST_eAwA_ASC\tFST_eAEu_ASC\tFST_eAJ_ASC\tFST_eAM_ASC\tFST_MJ_ASC\tFST_wAEu_ASC\tFST_wAJ_ASC\tFST_wAM_ASC'
 
     print 'finished calculating ss'
 
