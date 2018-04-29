@@ -8,7 +8,7 @@ INPUT_FILE=$3
 SIM_SIZE=$4
 CHR=$5
 
-POSTERIOR=Posteriors/chr${CHR}/ABC_M2_genome_estimate_1446124_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt
+POSTERIOR=Posteriors/chr$((${CHR} - 1))/ABC_M2_genome_estimate_1446124_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt
 
 # untar the model code
 tar xzf model.tar.gz
