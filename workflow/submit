@@ -11,7 +11,7 @@ fi
 # did the user specify the number of jobs
 if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" -o "x$4" == "x" ]; then
     echo "Please specify model, job start id, end id, and if you want Comet."
-    echo "Example: ./submit run_sims_AJmodel2_chr1_all.py 100 300 False"
+    echo "Example: ./submit run_sims_AJmodel2_chr1_all.py 100 300 False 2"
     exit 1
 fi
 
@@ -19,24 +19,25 @@ MODEL=$1
 JOB_START=$2
 JOB_END=$3
 export WANTS_COMET=$4
+CHR=$5
 TOP_DIR=`pwd`
 HOSTNAME=`hostname -f`
 
-export RUN_ID=macsswig_simsaj_genome_`date +'%s'`
+export RUN_ID=macsswig_simsaj_update_chr${CHR}_`date +'%s'`
 
 # where are we submitting from?
 if [ -e /stash2 ]; then
     # OSG Connect
-    SUBMIT_ENV="OSG_Connect"
+    export SUBMIT_ENV="OSG"
 
     module load pegasus
     module load stashcp
 
     export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
 
-else
+elif [ "X$HOSTNAME" = "Xsubmit-4.chtc.wisc.edu" ]; then
     # Default - CondorIO from a subdir
-    SUBMIT_ENV="Default"
+    export SUBMIT_ENV="CHTC"
 
     export RUN_DIR=$PWD/runs/$RUN_ID
 fi
@@ -60,7 +61,7 @@ envsubst <sites.xml.template >$SC
 
 # generate the dax
 export PYTHONPATH=`pegasus-config --python`
-./tools/dax-generator $RUN_ID $RUN_DIR $MODEL $JOB_START $JOB_END
+./tools/dax-generator $RUN_ID $RUN_DIR $MODEL $JOB_START $JOB_END $CHR
 mv dax.xml $RUN_DIR/
 
 echo
@@ -69,7 +70,7 @@ echo "Directory: $RUN_DIR/outputs"
 echo
 
 # plan and submit the  workflow
-if [ "$SUBMIT_ENV" = "OSG_Connect" ]; then
+if [ "$SUBMIT_ENV" = "OSG" ]; then
 
     pegasus-plan \
         -Dpegasus.catalog.site.file=$SC \

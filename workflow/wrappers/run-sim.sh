@@ -6,6 +6,9 @@ MODEL=$1
 JOB_ID=$2
 INPUT_FILE=$3
 SIM_SIZE=$4
+CHR=$5
+
+POSTERIOR=Posteriors/chr${CHR}/ABC_M2_genome_estimate_1446124_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt
 
 # untar the model code
 tar xzf model.tar.gz
@@ -17,11 +20,11 @@ export LD_LIBRARY_PATH=$PWD/workflow/macss_env/lib
 export PATH=$PWD/workflow/macss_env/bin:$PATH
 which -a python
 
-CMD="python $MODEL $JOB_ID $INPUT_FILE $SIM_SIZE 0 prior 0"
+CMD="python $MODEL $JOB_ID $INPUT_FILE $CHR $SIM_SIZE 0 $POSTERIOR 0"
 echo
 echo "Running: $CMD"
 $CMD
 mv results* ../
-mv *.match ../
+#mv *.match ../
 
 

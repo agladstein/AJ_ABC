@@ -63,6 +63,7 @@ run_dir = sys.argv[2]
 model = sys.argv[3]
 job_start = int(sys.argv[4])
 job_end = int(sys.argv[5])
+chrom = int(sys.argv[6])
 
 # Give all jobs a priority based on the current time. We do this as we want
 # workflows to finish in the order we submitted them.
@@ -89,9 +90,9 @@ model_file = File("model.tar.gz")
 model_file.addPFN(PFN("file://" + run_dir + "/model.tar.gz", "local"))
 dax.addFile(model_file)
 
-input_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed")
-input_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed", "local"))
-dax.addFile(input_file)
+snp_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed")
+snp_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed", "local"))
+dax.addFile(snp_file)
 
 current_outputs = []
 input_id = 0
@@ -99,8 +100,8 @@ for job_id in range(job_start, job_end + 1):
     # the real work
     sim_job = Job(name="run-sim.sh")
     sim_job.uses(model_file, link=Link.INPUT)
-    sim_job.uses(input_file, link=Link.INPUT)
-    sim_job.addArguments(model, str(job_id), input_file, "full")
+    sim_job.uses(snp_file, link=Link.INPUT)
+    sim_job.addArguments(model, str(job_id), snp_file, "full", chrom)
 
     # output files
     f1 = File("outputs-" + str(job_id) + ".tar.gz")
