@@ -29,5 +29,8 @@ mkdir -p ${BUCKET_OUT_PATH}
 JOB_ID=${PBS_ID}_${PBS_ARRAY_INDEX}
 echo "JOB_ID: ${JOB_ID}"
 
-echo "seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py ${JOB_ID}_{} ill_650_test.bed ${CHR} 1000000 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}"
-seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py ${JOB_ID}_{} ill_650_test.bed ${CHR} 1000000 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}
+#echo "seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py ${JOB_ID}_{} ill_650_test.bed ${CHR} 1000000 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}"
+#seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py ${JOB_ID}_{} ill_650_test.bed ${CHR} 1000000 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}
+
+echo "seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py ${JOB_ID}_{} ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed ${CHR} full 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}"
+seq 1 7 | parallel -j 7 ~/env/macss_env_ocelote_2.7.14/bin/python run_sims_AJmodel2_chr1_all.py ${JOB_ID}_{} ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed ${CHR} full 0 ${POSTERIOR} 0 ${BUCKET_OUT_PATH}
