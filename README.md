@@ -187,7 +187,42 @@ When the fourth argument of `./submit` is `TRUE`, OSG will automatically fill ac
 
 Jetstream instances can be controlled via openstack.
 
-### Monitoring
+1. find openstack api credentials
+2. log into horizon
+3. download openrc file
+4. create virtualenv, install python openstack tools
+5. source openrc file
+6. run openstack command
+
+
+user: aglad  
+secret key: 8b2a9758bef242e3f8837725837eeac532ecb8e50463d2482f3ce584a86920f2  
+horizon url: https://tacc.jetstream-cloud.org  
+
+Set up openstack
+```bash
+pyenv install 2.7.14
+pyenv shell 2.7.14 #need to do this every time log in
+pip install python-openstackclient
+source aglad-openrc3.sh #need to do this every time log in
+```
+
+show all instances on TACC
+```
+openstack server list
+```
+
+Start instances
+```
+openstack server create --image 6fc85a08-aad6-40f8-bd5c-ff953c731a09 --flavor 4 --min 2 --max 4 --wait --network aglad-net aj_update_worker
+```
+
+Delete instances
+```
+openstack server list --format value --column Name | grep aj_update_worker | xargs -L 1 openstack server delete
+```
+
+### Monitoring on OSG
 
 The system will send email notifications when the workflow changes state, but if you want to see the current state, use the
 `pegasus-status` command. For example:
@@ -230,6 +265,21 @@ If workflow fails, use the following commands to rescue results that haven't bee
 find . -type f -path \*.txt | head -1 | xargs head -1 >final.out
 find . -type f -path \*.txt | xargs -L 1 tail -n +2 >>final.out
 mv final.out final_results.txt
+```
+
+### Monitoring on CHTC
+
+Get status of all jobs
+
+```bash
+cd /home/nu_agladstein/macsswig_simsaj/workflow/runs
+ls | xargs -I % pegasus-status --noqueue /home/nu_agladstein/macsswig_simsaj/workflow/runs/%/workflow/%
+```
+
+Find dagid of jobs
+
+```bash
+pegasus-status -v | grep macsswig_simsaj-0
 ```
 
 ### Statistics / Debugging
