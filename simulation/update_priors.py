@@ -1,6 +1,7 @@
 from __future__ import division
 import pandas as pd
 import numpy as np
+from collections import OrderedDict
 from def_params_M2_inst import param_sim_asc_rand, choose_case
 
 
@@ -26,7 +27,7 @@ def posterior_to_param_value(histogram_name, param):
 
 def assign_param_value(histogram_df):
 
-    parameters_update = {}
+    parameters_update = OrderedDict()
 
     [parameters, para_out, daf] = param_sim_asc_rand()
 
@@ -38,7 +39,7 @@ def assign_param_value(histogram_df):
             if 'Log10' in param:
                 parameters_update[param.split('Log10_')[1]] = float(round(10 ** value))
             elif 'Asc' in param:
-                parameters_update['ASC_{}'.format(param.split('_')[1])] = value
+                parameters_update['ASC_{}'.format(param.split('_')[1])] = int(value)
             elif 'TAF' in param:
                 parameters_update['Taf'] = value
             elif param == 'daf':

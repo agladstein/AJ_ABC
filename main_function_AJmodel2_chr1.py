@@ -7,7 +7,7 @@ from bitarray import bitarray
 import itertools
 from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from ascertainment.pseudo_array import pseudo_array_bits
-from simulation import def_params_M2_inst, run_sim_M2_inst, update_priors
+from simulation import run_sim_M2_inst, update_priors
 from summary_statistics import afs_stats_bitarray
 
 # from memory_profiler import profile
@@ -34,7 +34,6 @@ def main(arguments):
         random.seed(seed_option)
 
     histogram_name = arguments[6]
-    # histogram_name = "ABC_M2_estimate_1446125_10pls_1000ret_model0_MarginalPosteriorDensities_Obs0.txt"
     histogram_df = update_priors.create_hist_df(histogram_name)
     [parameters, para_out, case, daf] = update_priors.assign_param_value(histogram_df)
 
@@ -566,17 +565,18 @@ def main(arguments):
 
     ################
     #####write parameter values to file
-
-    head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\tTAg'
-
     result = '{}/results_{}.txt'.format(path, job)
     out_file = open(result, 'w')
 
+    # head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\tTAg'
+    head_param = '\t'.join([str(param) for param in parameters.keys()])
+    params = '\t'.join([str(value) for value in parameters.values()])
+
     header = str(head_param) + '\t' + str(head)
-    params = '\t'.join([str(r) for r in para_out])
     stats = '\t'.join([str(r) for r in res])
 
     out_file.write(str(header) + '\n' + str(params) + '\t' + str(stats) + '\n')
     out_file.close()
+
 
     return [res,para_out]
