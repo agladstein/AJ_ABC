@@ -91,10 +91,10 @@ model_file = File("model.tar.gz")
 model_file.addPFN(PFN("file://" + run_dir + "/model.tar.gz", "local"))
 dax.addFile(model_file)
 
-# snp_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed")
-# snp_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed", "local"))
-snp_file = File("test_genome.bed")
-snp_file.addPFN(PFN("file://" + base_dir + "/../test_genome.bed", "local"))
+snp_file = File("ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed")
+snp_file.addPFN(PFN("file://" + base_dir + "/../ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned.bed", "local"))
+# snp_file = File("test_genome.bed")
+# snp_file.addPFN(PFN("file://" + base_dir + "/../test_genome.bed", "local"))
 dax.addFile(snp_file)
 
 current_outputs = []
