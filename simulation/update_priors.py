@@ -1,6 +1,7 @@
 from __future__ import division
 import pandas as pd
 import numpy as np
+import math
 from collections import OrderedDict
 from def_params_M2_inst import param_sim_asc_rand, choose_case
 
@@ -54,4 +55,31 @@ def assign_param_value(histogram_df):
         if param not in parameters_update:
             parameters_update[param] = parameters[param]
 
-    return [parameters_update, para_out, case, daf]
+    [para_out_update, head_param_list] = create_para_list(parameters_update, daf)
+
+    return [parameters_update, para_out_update, head_param_list, case, daf]
+
+
+def create_para_list(parameters_update, daf):
+
+    para_out_update = []
+    head_param_list = []
+
+    head_param_list.append('daf')
+    para_out_update.append(daf)
+
+    for param in parameters_update:
+        if 'ASC' in param:
+            head_param_list.append('Asc_{}'.format(param.split('_')[1]))
+            para_out_update.append(parameters_update[param])
+        elif 'N' in param:
+            head_param_list.append('Log10_{}'.format(param))
+            para_out_update.append(math.log10(parameters_update[param]))
+        elif 'Taf' in param:
+            head_param_list.append('TAF')
+            para_out_update.append(parameters_update[param])
+        else:
+            head_param_list.append(param)
+            para_out_update.append(parameters_update[param])
+
+    return [para_out_update, head_param_list]

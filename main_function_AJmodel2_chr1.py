@@ -35,7 +35,7 @@ def main(arguments):
 
     histogram_name = arguments[6]
     histogram_df = update_priors.create_hist_df(histogram_name)
-    [parameters, para_out, case, daf] = update_priors.assign_param_value(histogram_df)
+    [parameters, para_out, head_param_list, case, daf] = update_priors.assign_param_value(histogram_df)
 
 
     ####Samples to be simulated
@@ -569,8 +569,8 @@ def main(arguments):
     out_file = open(result, 'w')
 
     # head_param = 'Asc_NAF\tAsc_NEU\tAsc_NCHB\tdaf\tLog10_NAF\tLog10_NANC\tLog10_NCEU\tLog10_NCHB\tLog10_NWA\tLog10_NEA\tLog10_NAg\tLog10_NJ\tLog10_NM\tm\tTgrowth_Af\tTAF\tTEM\tTeu_as\tTA\tTMJ\tTAEW\tTm\tTAg'
-    head_param = '\t'.join([str(param) for param in parameters.keys()])
-    params = '\t'.join([str(value) for value in parameters.values()])
+    head_param = '\t'.join([str(param) for param in head_param_list])
+    params = '\t'.join([str(value) for value in para_out])
 
     header = str(head_param) + '\t' + str(head)
     stats = '\t'.join([str(r) for r in res])

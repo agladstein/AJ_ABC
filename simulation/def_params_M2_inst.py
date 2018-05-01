@@ -1,6 +1,7 @@
 import math
 import random
 from random import randint
+from collections import OrderedDict
 
 
 def param_sim_asc_rand():
@@ -8,7 +9,7 @@ def param_sim_asc_rand():
     If running ABC, parameter values come from the priors."""
 
     para_out = []
-    parameters = {}
+    parameters = OrderedDict()
 
     ###Discovery panel
     low = 2
