@@ -12,8 +12,8 @@ echo "#########################"
 echo "ATMO ${ATMO_DIR}"
 echo "HPC ${HPC_DIR}"
 
-echo "rsync -azv --remove-source-files --exclude '*germline*' --exclude '*sim_data*' --exclude '*ped' --exclude '*map' --exclude '*match' --exclude '*log' --exclude 'macsargs*' agladstein@${HOST_NAME}:${HPC_DIR}/ ${ATMO_DIR}"
-rsync -azv --remove-source-files --exclude '*germline*' --exclude '*sim_data*' --exclude '*ped' --exclude '*map' --exclude '*match' --exclude '*log' --exclude 'macsargs*' agladstein@${HOST_NAME}:${HPC_DIR}/ ${ATMO_DIR}
+echo "rsync -azv --remove-source-files --exclude '*Posterior*' --exclude '*germline*' --exclude '*sim_data*' --exclude '*ped' --exclude '*map' --exclude '*match' --exclude '*log' --exclude 'macsargs*' agladstein@${HOST_NAME}:${HPC_DIR}/ ${ATMO_DIR}"
+rsync -azv --remove-source-files --exclude '*Posterior*' --exclude '*germline*' --exclude '*sim_data*' --exclude '*ped' --exclude '*map' --exclude '*match' --exclude '*log' --exclude 'macsargs*' agladstein@${HOST_NAME}:${HPC_DIR}/ ${ATMO_DIR}
 
 
 echo "Finished transfer"
