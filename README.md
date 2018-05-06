@@ -349,7 +349,9 @@ The Pegasus workflow outputs `final_results.txt` for all the simulations in the 
 The number of lines in the final output equals the number of simulations plus one for the header.  
 To combine `final_results.txt` across multiple workflows to create the input for ABCtoolbox use the shell script `combine_Pegasus_final.sh`  
 e.g.  
-`/vol_c/src/macsswig_simsaj/combine_Pegasus_final.sh update 2`
+```bash
+/vol_c/src/macsswig_simsaj/combine_Pegasus_final.sh update 2
+```
 
 *This script will overwrite the file `/vol_c/ABC_AJmodels_${VERSION}` if it already exists.*  
 *DO NOT RUN THIS SCRIPT IF THE ORIGINAL RESULTS FILES ARE NOT IN THE DIRECTORY `/vol_c/results_macsSwig_AJmodels_${VERSION}`*
@@ -363,7 +365,7 @@ On Atmosphere use the script `combine_HPC_final.sh` to combine all the simulatio
 
 #### OSG, CHTC, and HPC 
 ```bash
-cd /vol_c/ABC_AJmodels_genome
+cd /vol_c/ABC_AJmodels_update
 cp input_ABC_OSG_CHTC_chr2.txt input_ABC_OSG_CHTC_HPC_chr2.txt
 tail -n +2 input_ABC_HPC_chr2.txt >>input_ABC_OSG_CHTC_HPC_chr2.txt
 ```
