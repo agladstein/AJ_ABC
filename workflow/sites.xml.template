@@ -28,7 +28,7 @@
         <profile namespace="condor" key="request_memory" >ifthenelse(isundefined(DAGNodeRetry) || DAGNodeRetry == 0, 1024, 4096)</profile>
         <profile namespace="condor" key="request_disk" >3 GB</profile>
         <profile namespace="condor" key="+WantsStashCache" >True</profile>
-	<profile namespace="condor" key="+WantsComet" >${WANTS_COMET}</profile>
+	    <profile namespace="condor" key="+WantsComet" >${WANTS_COMET}</profile>
     </site>
     
     <site  handle="condorpool" arch="x86_64" os="LINUX">
