@@ -48,10 +48,11 @@ if [ -e switch${CHR}.txt ] ; then
         #check number of jobs in que
         JOBS=$($qstat | grep "agladstein" | cut -d " " -f1)
         echo $JOBS
-        n=$(qstat -t -u agladstein | wc -l)
-        echo "You have $n jobs"
-        echo "$(qstat -t -u agladstein | grep -w "Q" | wc -l) are in the queue"
-        echo "$(qstat -t -u agladstein | grep -w "R" | wc -l) are in running"
+        r=$($qstat -t -u agladstein | grep -w "R" | wc -l)
+        q=$($qstat -t -u agladstein | grep -w "Q" | wc -l)
+        n=$(($r + $q))
+        echo "$q are in the queue"
+        echo "$r are running"
         if [ "$n" -ge "$QUEMAX" ]; then
 	        echo "That's enough jobs"
 	        exit
@@ -65,9 +66,9 @@ if [ -e switch${CHR}.txt ] ; then
             rsync -za macsSwig_AJmodels /xdisk/agladstein/
             cd /xdisk/agladstein/macsSwig_AJmodels
 
-            echo "Submit to windfall"
+            echo "Submit job"
             echo "$qsub HPC_workflow/PBS/run_sims_update_chr${CHR}.pbs"
-#            $qsub HPC_workflow/PBS/run_sims_update_chr${CHR}.pbs
+            $qsub HPC_workflow/PBS/run_sims_update_chr${CHR}.pbs
         fi
     fi
 else
