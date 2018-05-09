@@ -7,20 +7,19 @@ set -e # quits at first error
 
 GOAL=$1
 QUEMAX=$2
-VERSION=genome #$3
+VERSION=update #$3
 OUT=/rsgrps/mfh4/Ariella/macsSwig_AJmodels_${VERSION}
-MODEL=$4
-SYSTEM=$5 #smp, cluster, htc
+CHR=$3
 
-RESULTS=${OUT}/results_sims_AJ_M${MODEL}
+RESULTS=${OUT}/results_sims_AJ_chr${CHR}
 
-ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}/HPC
+ATMO_DIR=/vol_c/results_macsSwig_AJmodels_${VERSION}/HPC/chr${CHR}
 
 set -f
 
-if [ -e switch${MODEL}.txt ] ; then
+if [ -e switch${CHR}.txt ] ; then
 
-    IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/669a0e602306776ffa8d8be33e63574dfa2d1766/atmo_instance_ip.txt)
+    IP_ADDRESS=$(curl https://gist.githubusercontent.com/agladstein/2bdc122f50314f2a4c7cbc9544e7a325/raw/atmo_instance_ip.txt)
 
     echo ""
     echo "#################"
@@ -30,61 +29,49 @@ if [ -e switch${MODEL}.txt ] ; then
     echo "Que max: ${QUEMAX} "
     echo "Version: ${VERSION}"
     echo "Out path: ${OUT}"
-    echo "Model: ${MODEL}"
-    echo "System: ${SYSTEM}"
+    echo "chr: ${CHR}"
 
-    if [ "$SYSTEM" == "ocelote" ] ; then
-        qstat=/cm/shared/apps/pbspro/current/bin/qstat
-        qsub=/cm/shared/apps/pbspro/current/bin/qsub
-    else
-        qstat=/usr/local/bin/qstat_local
-        qsub=/usr/pbs/bin/qsub
-    fi
+    qstat=/cm/shared/apps/pbspro/current/bin/qstat
+    qsub=/cm/shared/apps/pbspro/current/bin/qsub
+
 
     #check number of completed simulations
     echo "Check for ${GOAL} completed runs in $RESULTS"
-    COMP=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR} -type f | wc -l)
+    COMP=$(ssh agladstein@${IP_ADDRESS} find ${ATMO_DIR} -maxdepth 2 -type f | wc -l)
     echo "${COMP} runs have completed"
     if [ "$COMP" -ge "$GOAL" ]; then
         echo "Goal completed"
-        rm switch${MODEL}.txt
+        rm switch${CHR}.txt
         echo "Goal completed. ${COMP} runs have completed in $RESULTS." | sendmail agladstein@email.arizona.edu
         exit
     else
         #check number of jobs in que
-        if [ "$SYSTEM" == "cluster" ]; then
-            JOBS=$($qstat | grep "agladstein" | grep -v smp | grep -v htc | cut -d " " -f1)
-        elif [ "$SYSTEM" == "ocelote" ]; then
-            JOBS=$($qstat | grep "agladstein" | cut -d " " -f1)
-        else
-            JOBS=$($qstat | grep "agladstein" | grep $SYSTEM | cut -d " " -f1)
-        fi
+        JOBS=$($qstat | grep "agladstein" | cut -d " " -f1)
         echo $JOBS
-        n=0
-        for j in $JOBS; do
-	        q=$($qstat -t $j | grep -w "Q" | wc -l)
-	        n=$(($n + $q))
-        done
-        echo "You have $n jobs in the que"
+        r=$($qstat -t -u agladstein | grep -w "R" | wc -l)
+        q=$($qstat -t -u agladstein | grep -w "Q" | wc -l)
+        n=$(($r + $q))
+        echo "$q are in the queue"
+        echo "$r are running"
         if [ "$n" -ge "$QUEMAX" ]; then
-	        echo "That's enough jobs in the que"
+	        echo "That's enough jobs"
 	        exit
         else
 	        #create PBS scripts
-            echo "./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}"
-            ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${MODEL}
+#            echo "./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${CHR}"
+#            ./main_function_AJmodel_j2.sh ${SYSTEM} ${OUT} ${CHR}
 
             cd /home/u15/agladstein/ABC
             echo "rsync -za macsSwig_AJmodels /xdisk/agladstein/macsSwig_AJmodels; cd /xdisk/agladstein/macsSwig_AJmodels"
             rsync -za macsSwig_AJmodels /xdisk/agladstein/
             cd /xdisk/agladstein/macsSwig_AJmodels
 
-            echo "Submit to windfall"
-            echo "$qsub HPC_workflow/PBS/macsargs_model${MODEL}_${SYSTEM}_windfall.pbs"
-            $qsub HPC_workflow/PBS/macsargs_model${MODEL}_${SYSTEM}_windfall.pbs
+            echo "Submit job"
+            echo "$qsub HPC_workflow/PBS/run_sims_update_chr${CHR}.pbs"
+            $qsub HPC_workflow/PBS/run_sims_update_chr${CHR}.pbs
         fi
     fi
 else
-    echo "switch${MODEL}.txt does not exist"
+    echo "switch${CHR}.txt does not exist"
     exit
 fi
