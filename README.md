@@ -102,16 +102,6 @@ pip install -r requirements.txt
 
 If requirements.txt on Ocelote based on architecture and packages available, this may not work on other environments. You may have to delete requirements.txt and recompile it using `pip-compile`.
 
-#### ICE
-```
-module avail
-module show python/2.7.9
-module load python/2.7.9
-virtualenv -p /uaopt/python/2.7.9/bin/python macss_env_ICE_2.7.9
-source macss_env_ICE_2.7.9/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
 
 ### Submit Update job to Ocelote
 ```bash
@@ -183,8 +173,29 @@ The output of the command is something similar to:
 Note how Pegasus uses a directory as "handle" to the workflow. This directory path can be used with various Pegasus commands.
 
 ### Starting up Jetstream Instances
-When the fourth argument of `./submit` is `TRUE`, OSG will automatically fill active Jetstream instances.
 
+#### Atmosphere-cli
+
+Use a pyenv environment to run the atmosphere-cli
+```
+pyenv shell 3.6.5
+pip3 install pipenv
+pipenv --python 3.6 install --dev
+pipenv run atmo instance list
+source $(pipenv --venv)/bin/activate
+```
+
+Example of creating an instance
+```
+atmo instance create --size-alias 4 --source-alias 6fc85a08-aad6-40f8-bd5c-ff953c731a09 --project 879d6093-8b2d-4f7e-89bc-2176349551a8 --allocation-source-id  0dcd7ab4-de24-4760-bba8-e626ae5f14ab --identity  aa2dabe6-ef23-4bb7-9641-1ccf51a4c6c9 ariella_worker_atmocli
+```
+
+To create multiple instances in parallel
+```
+seq 1 16 | xargs -L 1 -P 4 echo atmo instance
+```
+
+#### Openstack
 Jetstream instances can be controlled via openstack.
 
 1. find openstack api credentials
@@ -254,11 +265,13 @@ To get the run time of recently completed jobs
 To get the run time of currently running jobs  
 `condor_q agladstein`
 
-To see if workflows are configured to run with Comet/Jetstream/Bridges resources  
-`condor_q -const 'Owner == "agladstein" && JobUniverse == 5' -af Iwd -af WantsComet | sort | uniq`
-
 To see how many jobs are currently running on Comet/Jetstream/Bridges  
 `condor_q -const 'Owner == "agladstein" && JobUniverse == 5' -af Iwd -af RemoteHost | egrep -i 'jetstream|bridges|comet' | awk '{print $1;}' | sort | uniq -c`
+
+or to see jobs on Jetstream
+```
+condor_status -pool condor.grid.uchicago.edu
+```
 
 If workflow fails, use the following commands to rescue results that haven't been merged
 ```bash
