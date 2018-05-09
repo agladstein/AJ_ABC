@@ -351,7 +351,7 @@ def main():
     res.append(afs_stats_bitarray.FST2(seqWA_asc_bits, pi_WA_asc, nWA, seqM_asc_bits, pi_M_asc, nM))
     head = head + 'FST_eAwA_ASC\tFST_eAEu_ASC\tFST_eAJ_ASC\tFST_eAM_ASC\tFST_MJ_ASC\tFST_wAEu_ASC\tFST_wAJ_ASC\tFST_wAM_ASC\n'
 
-    filesummary='{}/real_output_M23.summary'.format(dir_data)
+    filesummary='{}/real_output_M23_IBD.summary'.format(dir_data)
     filesumm=open(filesummary,'w')
     filesumm.write(head)
 
