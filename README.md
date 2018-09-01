@@ -38,6 +38,10 @@ https://github.com/sgusev/GERMLINE
 Intermediate files go to sim_data_AJ_M1 and germline_out_AJ_M1 and are NOT rm in python script.  
 Output files go to sim_values_AJ_M1 and results_sims_AJ_M1.
 
+## Data Availability
+
+The final simulation output can be accessed on figshare https://doi.org/10.6084/m9.figshare.7010120
+
 ## Citation
 The manuscript has been submitted. If you make use of this work in your research, we would appreciate the following citation:
 
@@ -46,6 +50,6 @@ Gladstein, A.L. and Hammer, M.F. (2018). Substructured population growth in the 
 
 This work is based on code from Consuelo Quinto-Cortes and Krishna Veeramah, used in the papers:  
 
-Quinto-CortÃ©s, C. D., Woerner, A. E., Watkins, J. C., & Hammer, M. F. (2018). Modeling SNP array ascertainment with Approximate Bayesian Computation for demographic inference. Scientific Reports, 8, 10209. http://doi.org/10.1038/s41598-018-28539-y  
+Quinto-Cortés, C. D., Woerner, A. E., Watkins, J. C., & Hammer, M. F. (2018). Modeling SNP array ascertainment with Approximate Bayesian Computation for demographic inference. Scientific Reports, 8, 10209. http://doi.org/10.1038/s41598-018-28539-y  
 
-Veeramah, K. R., Wegmann, D., Woerner, A., Mendez, F. L., Watkins, J. C., Destro-Bisol, G., â€¦ Hammer, M. F. (2012). An Early Divergence of KhoeSan Ancestors from Those of Other Modern Humans Is Supported by an ABC-Based Analysis of Autosomal Resequencing Data. Molecular Biology and Evolution, 29(2), 617â€“630. http://doi.org/10.1093/molbev/msr212
+Veeramah, K. R., Wegmann, D., Woerner, A., Mendez, F. L., Watkins, J. C., Destro-Bisol, G., … Hammer, M. F. (2012). An Early Divergence of KhoeSan Ancestors from Those of Other Modern Humans Is Supported by an ABC-Based Analysis of Autosomal Resequencing Data. Molecular Biology and Evolution, 29(2), 617–630. http://doi.org/10.1093/molbev/msr212
