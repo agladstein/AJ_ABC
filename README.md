@@ -11,10 +11,15 @@ Please go to the [wiki](https://github.com/agladstein/AJ_ABC/wiki)!
 ## Data Availability
 
 The final simulation output can be accessed on figshare 
- - Chromosome 1 simulation summary statistics: https://doi.org/10.6084/m9.figshare.7010120  
- - Whole genome simulation summary statistics: 10.6084/m9.figshare.7010180
- - Chromosomes 2-5 updated posterior as priors simulation summary statistics: 10.6084/m9.figshare.7010195  
-(This will be made public once the paper has been published)
+https://figshare.com/projects/Substructured_population_growth_in_the_Ashkenazi_Jews_inferred_with_Approximate_Bayesian_Computation/37856
+
+ - Chromosome 1 simulation summary statistics: https://doi.org/10.6084/m9.figshare.7503854.v1
+ - Whole genome simulation summary statistics: https://doi.org/10.6084/m9.figshare.7010180.v1
+ - Chromosomes 2-5 updated posterior as priors simulation summary statistics: https://doi.org/10.6084/m9.figshare.7010195.v1
+ - Whole genome sequence and SNP array data used to calucate summary statistics for ABC: https://doi.org/10.6084/m9.figshare.7503812.v1
+ - Original Ashkenazi SNP array data: https://doi.org/10.6084/m9.figshare.7503827.v1
+ - Ashkenazi SNP array data in PLINK format, hg18: https://doi.org/10.6084/m9.figshare.7503815.v1
+ - Combined Jewish, European, and Middle Eastern SNP array data: https://doi.org/10.6084/m9.figshare.7503818.v1
 
 ## Citation
 The manuscript has been submitted. If you make use of this work in your research, we would appreciate the following citation:
