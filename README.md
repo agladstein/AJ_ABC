@@ -24,7 +24,7 @@ https://figshare.com/projects/Substructured_population_growth_in_the_Ashkenazi_J
  - Combined Jewish, European, and Middle Eastern SNP array data: https://doi.org/10.6084/m9.figshare.7503818.v1
 
 ## Citation
-The manuscript has been submitted. If you make use of this work in your research, we would appreciate the following citation:
+If you make use of this work in your research, we would appreciate the following citation:
 
 Gladstein A.L. and Hammer M.F. (2019). Substructured population growth in the Ashkenazi Jews inferred with Approximate Bayesian Computation. Molecular Biology And Evolution. Molecular Biology and Evolution, msz047. https://doi.org/10.1093/molbev/msz047
 
